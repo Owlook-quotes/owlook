@@ -2260,7 +2260,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (edit) {
       const isNew = edit.mode === "new";
       // stessa altezza della riga delle liste: sotto non si sposta nulla
-      $("#lists").innerHTML = `<div class="ledit" style="height:${listsH}px"><input id="lname" maxlength="30" autocomplete="off" spellcheck="false" placeholder="Nome della lista" value="${isNew ? "" : esc(curList().name)}" aria-label="Nome della lista">
+      $("#lists").innerHTML = `<div class="ledit" style="min-height:${listsH}px"><input id="lname" maxlength="30" autocomplete="off" spellcheck="false" placeholder="Nome della lista" value="${isNew ? "" : esc(curList().name)}" aria-label="Nome della lista">
         <button class="pill pri" data-a="lsave">${isNew ? "Crea" : "Salva"}</button>
         ${!isNew && st.lists.length > 1 ? `<button class="pill warn" data-a="ldel">${delArm ? "Conferma eliminazione" : "Elimina"}</button>` : ""}
         <button class="pill" data-a="lcancel">Annulla</button></div>`;
