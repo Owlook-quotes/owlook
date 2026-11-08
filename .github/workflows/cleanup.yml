@@ -1,0 +1,25 @@
+# Una tantum: cancella le release e i tag delle versioni precedenti alla 1.84.1
+name: Pulizia versioni precedenti
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancella release e tag vecchi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -u
+          KEEP="v1.84.1"
+          for t in $(gh release list -R "$REPO" --limit 200 --json tagName -q '.[].tagName'); do
+            [ "$t" = "$KEEP" ] && continue
+            echo "release $t"; gh release delete "$t" -R "$REPO" --cleanup-tag -y || true
+          done
+          for t in $(gh api "repos/$REPO/git/matching-refs/tags" -q '.[].ref' | sed 's#refs/tags/##'); do
+            [ "$t" = "$KEEP" ] && continue
+            echo "tag $t"; gh api -X DELETE "repos/$REPO/git/refs/tags/$t" || true
+          done
