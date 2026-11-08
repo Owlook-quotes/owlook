@@ -114,11 +114,6 @@ h2{font-size:clamp(28px,3vw,38px);line-height:1.1;letter-spacing:-.025em;margin:
 .what{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
 .what li{padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
 .what b{font-weight:600}.what b:first-child{display:block}
-.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:30px}
-.gal figure{margin:0}
-.gal img{display:block;width:100%;height:auto;aspect-ratio:11/10;object-fit:cover;object-position:right top;border-radius:16px;border:1px solid var(--line);background:#111;box-shadow:var(--shadow);transition:transform .2s ease}
-.gal figure:hover img{transform:translateY(-3px)}
-.gal figcaption{font-size:15px;color:var(--muted);margin-top:10px}
 
 footer{border-top:1px solid var(--line);margin-top:72px;padding:28px 0 48px;font-size:14px;color:var(--muted)}
 footer .row{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:14px}
@@ -142,15 +137,13 @@ footer p{margin:0 0 4px;max-width:80ch}
 @media (max-width:1100px){
   .hero{grid-template-columns:1fr;gap:40px;padding-bottom:56px}
   .facts,.install{grid-template-columns:minmax(0,1fr);gap:24px}
-  .browsers,.what,.gal{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
+  .browsers,.what,}
 @media (max-width:640px){
   .wrap{padding:0 16px}
   .owlw,.owlw svg{width:56px;height:56px}
   .lede{font-size:17px}
   .cta .t{font-size:19px}
-  .duo,.browsers,.what,.gal{grid-template-columns:1fr}
-  .card{padding:22px 18px}
+  .duo,.browsers,.what,  .card{padding:22px 18px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
 </style>
@@ -318,17 +311,6 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       <li data-t="f5"><b>Titoli in evidenza</b> e futures sempre visibili in alto, e una <b>modalità zen</b> senza distrazioni</li>
       <li data-t="f6"><b>Solo notizie importanti</b> con grado, tag e un avviso quando ne esce una nuova</li>
     </ul>
-    <div class="gal">
-      <figure><img loading="lazy" src="screenshots/watchlist-dark.png" alt=""><figcaption data-t="c1">Lista dei preferiti</figcaption></figure>
-      <figure><img loading="lazy" src="screenshots/candles-dark.png" alt=""><figcaption data-t="c2">Grafico a candele</figcaption></figure>
-      <figure><img loading="lazy" src="screenshots/history-dark.png" alt=""><figcaption data-t="c7">Andamento storico</figcaption></figure>
-      <figure><img loading="lazy" src="screenshots/news-dark.png" alt=""><figcaption data-t="c8">Notizie importanti</figcaption></figure>
-      <figure><img loading="lazy" src="screenshots/portfolio-dark.png" alt=""><figcaption data-t="c3">Portafoglio</figcaption></figure>
-      <figure><img loading="lazy" src="screenshots/economic-calendar-dark.png" alt=""><figcaption data-t="c5">Calendario macroeconomico</figcaption></figure>
-      <figure><img loading="lazy" src="screenshots/earnings-dark.png" alt=""><figcaption data-t="c4">Risultati delle trimestrali</figcaption></figure>
-      <figure><img loading="lazy" src="screenshots/zen-dark.png" alt=""><figcaption data-t="c9">Modalità zen</figcaption></figure>
-      <figure><img loading="lazy" src="screenshots/settings-dark.png" alt=""><figcaption data-t="c6">Impostazioni</figcaption></figure>
-    </div>
   </section>
   </main>
 
@@ -386,7 +368,6 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       "f4":"<b>Calendar</b> of US earnings and macro data",
       "f5":"<b>Featured tickers</b> and futures always visible at the top, and a distraction-free <b>zen mode</b>",
       "f6":"<b>Important news only</b> with grade, tag and an alert when a new story comes out",
-      "c1":"Favorites list","c2":"Candlestick chart","c3":"Portfolio","c4":"Earnings results","c5":"Economic calendar","c6":"Settings","c7":"Price history","c8":"Important news","c9":"Zen mode",
       "v1-a":"Video: the macro and earnings calendars, in the calendar and results views","v2-a":"Video: the portfolio and the news about a ticker","vid-h":"See it in action","vid-p":"Calendars, portfolio and news, always in the same panel.",
       "v1-h":"US calendar","v1-p":"Macro data with forecasts and actual values, the week's earnings and results with a mini chart of the session.",
       "v2-h":"Portfolio and news","v2-p":"Return of each holding and of the total, and only the stories that matter, with grade and tag.",
