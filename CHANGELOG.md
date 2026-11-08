@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.84.2 beta
+
+- Featured tickers box: the change pills now have exactly the same colours as in the lists and the portfolio (their background no longer mixes with the lighter sheen of the box).
+
 ## 1.84.1 beta
 
 - Licence: Owlook's code is source available under the PolyForm Noncommercial License 1.0.0. You can read, use, change and share it for any noncommercial purpose; selling it or using it to make money is not allowed. The Owlook name and logo are not covered by the licence.
