@@ -35,16 +35,16 @@ Create your lists and see price, today's change and the last close at a glance. 
 Up to six indices or stocks always visible at the top of every page, in a column or in one row.
 
 🕯️ Professional charts
-Candlesticks from 1 minute to 1 month with EMA, VWAP, RSI, Bollinger bands and more, or the long-term price history. Save your favourite chart setups.
+Candlesticks from 1 minute to 1 month with technical indicators, or the long-term price history. Save your favourite chart setups.
 
 💼 Portfolio
 Quantity, average cost, today's gain and total return for every holding and for the whole portfolio, converted into your currency.
 
 📰 Only the news that matters
-Stories from major outlets (Reuters, AP, Bloomberg, WSJ, CNBC…), official press releases and SEC 8-K filings, ranked by importance and tagged (results, outlook, deals, management…). Turn on an alert to get a notification when a new story comes out.
+Stories from major news outlets, official press releases and company filings, ranked by importance and tagged (results, outlook, deals, management…). Turn on an alert to get a notification when a new story comes out.
 
 🗓️ US economic and earnings calendar
-Payrolls, CPI, GDP, the Fed and more, with forecasts and actual values. The week's earnings with estimates, actual EPS, surprise and a live chart of the session for companies reporting today.
+Jobs, inflation, growth and central bank decisions, with forecasts and actual values. The week's earnings with estimates, actual EPS, surprise and a live chart of the session for companies reporting today.
 
 🧘 Zen mode
 Click the owl: only your tickers stay on screen, the controls appear when you need them.
@@ -53,10 +53,10 @@ Click the owl: only your tickers stay on screen, the controls appear when you ne
 
 🔒 Private and transparent
 • No account, no ads, no analytics. There is no Owlook server: your lists, portfolio and settings stay in your browser.
-• Data comes directly from public sources: Yahoo Finance, Google News, Nasdaq, SEC, official US statistics sites, Forex Factory; logos from Brandfetch and others. They only receive ticker symbols and company names, never the pages you visit.
+• Market data comes directly from public sources, listed in the privacy policy. They only receive ticker symbols and company names, never the pages you visit.
 • Source available (PolyForm Noncommercial): https://github.com/Owlook-quotes/owlook
 
-Data from Yahoo Finance (unofficial) may be delayed or inaccurate. For information only, not financial advice. Owlook is not affiliated with Yahoo, Nasdaq, Google or TradingView. Charts: TradingView Lightweight Charts™ © TradingView, Inc.
+Prices come from unofficial sources and may be delayed or inaccurate. For information only, not financial advice. Owlook is not affiliated with its data providers. Charts: TradingView Lightweight Charts™ © TradingView, Inc.
 ```
 
 **Descrizione (IT):**
@@ -71,16 +71,16 @@ Crea le tue liste e vedi a colpo d'occhio prezzo, variazione di oggi e dell'ulti
 Fino a sei indici o azioni sempre visibili in cima a ogni pagina, in colonna o in una riga.
 
 🕯️ Grafici professionali
-Candele da 1 minuto a 1 mese con EMA, VWAP, RSI, bande di Bollinger e altri indicatori, oppure l'andamento storico di lungo periodo. Salva le tue impostazioni preferite.
+Candele da 1 minuto a 1 mese con indicatori tecnici, oppure l'andamento storico di lungo periodo. Salva le tue impostazioni preferite.
 
 💼 Portafoglio
 Quantità, prezzo medio di carico, guadagno di oggi e rendimento totale di ogni titolo e dell'intero portafoglio, convertiti nella tua valuta.
 
 📰 Solo le notizie che contano
-Articoli delle grandi testate (Reuters, AP, Bloomberg, WSJ, CNBC…), comunicati ufficiali e moduli 8-K della SEC, con grado d'importanza e tag (risultati, previsioni, accordi, dirigenti…). Attiva un avviso per ricevere una notifica quando ne esce una nuova.
+Articoli delle grandi testate, comunicati ufficiali e documenti depositati dalle società, con grado d'importanza e tag (risultati, previsioni, accordi, dirigenti…). Attiva un avviso per ricevere una notifica quando ne esce una nuova.
 
 🗓️ Calendario economico e degli utili USA
-Occupazione, inflazione, PIL, Fed e altro, con valori attesi e pubblicati. Le trimestrali della settimana con stime, EPS effettivo, sorpresa e grafico della seduta in diretta per chi pubblica oggi.
+Lavoro, inflazione, crescita e decisioni della banca centrale, con valori attesi e pubblicati. Le trimestrali della settimana con stime, EPS effettivo, sorpresa e grafico della seduta in diretta per chi pubblica oggi.
 
 🧘 Modalità zen
 Clicca il gufo: sullo schermo restano solo i tuoi titoli, i comandi compaiono quando servono.
@@ -89,10 +89,10 @@ Clicca il gufo: sullo schermo restano solo i tuoi titoli, i comandi compaiono qu
 
 🔒 Privato e trasparente
 • Niente account, pubblicità o statistiche. Non esiste un server di Owlook: liste, portafoglio e impostazioni restano nel tuo browser.
-• I dati arrivano direttamente da fonti pubbliche: Yahoo Finance, Google News, Nasdaq, SEC, siti ufficiali di statistica USA, Forex Factory; loghi da Brandfetch e altri. Ricevono solo i simboli e i nomi dei titoli, mai le pagine che visiti.
+• I dati arrivano direttamente da fonti pubbliche, elencate nell'informativa sulla privacy. Ricevono solo i simboli e i nomi dei titoli, mai le pagine che visiti.
 • Codice sorgente pubblico (PolyForm Noncommercial): https://github.com/Owlook-quotes/owlook
 
-Dati da Yahoo Finance (non ufficiale), possono essere in ritardo o inesatti. Solo a scopo informativo, non è una consulenza finanziaria. Owlook non è affiliato a Yahoo, Nasdaq, Google o TradingView. Grafici: TradingView Lightweight Charts™ © TradingView, Inc.
+I prezzi arrivano da fonti non ufficiali e possono essere in ritardo o inesatti. Solo a scopo informativo, non è una consulenza finanziaria. Owlook non è affiliato ai fornitori dei dati. Grafici: TradingView Lightweight Charts™ © TradingView, Inc.
 ```
 
 **Sito web:** https://owlook-quotes.github.io/owlook/
