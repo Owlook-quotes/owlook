@@ -109,12 +109,13 @@ Show stock market quotes, charts, a portfolio and US economic and earnings calen
 |---|---|
 | `storage` | Saves the user's watchlists, portfolio, settings and cached calendar data locally in the browser. |
 | `unlimitedStorage` | The logo cache (small images of company logos, saved locally so they are not downloaded again) can exceed the default storage quota. |
-| `scripting` | Injects the panel into the active tab when the user clicks the toolbar icon or uses the keyboard shortcut, and loads the bundled chart library into the page only when the user opens a chart. |
-| `activeTab` | Lets the toolbar icon and the shortcut show the panel on the current tab even when the user has restricted the extension's site access to "on click". |
+| `scripting` | Shows the panel in the active tab when the user clicks the toolbar icon or uses the keyboard shortcut; if the user chose "On every page" and granted the optional site access, registers the panel on http/https pages. Also loads the bundled chart library into the page only when the user opens a chart. |
+| `activeTab` | By default the extension has no access to the sites the user visits: the toolbar icon and the shortcut show the panel on the current tab only, when the user asks for it. |
 | `alarms` | Checks every 2 minutes for new stories about the tickers for which the user turned on news alerts (it does nothing when no alerts are on). |
 | `notifications` | Shows a browser notification when a new story comes out for a ticker the user asked to be alerted about; clicking it opens the article. |
 | `sidePanel` | Opens the same panel in the browser side panel on pages where it cannot be shown (new tab, browser pages, offline). |
-| Host permissions `http://*/*`, `https://*/*` | The panel is meant to be available on any website the user visits, so the content script runs on all http/https pages (the user can exclude sites in the settings). The extension also downloads public market data from several providers (Yahoo Finance, Nasdaq, US government statistics sites, Forex Factory, logo services). It does not read, store or transmit the content of the pages. |
+| Host permissions (data sources) | Downloads public market data only from these sources: Yahoo Finance (quotes, charts, symbol search, news), Nasdaq (earnings calendar), SEC (company filings), BLS, BEA, Census Bureau, Federal Reserve and FRED (US economic calendar and figures), Forex Factory (forecasts), Google News (headlines), and company logos from Financial Modeling Prep, Parqet, CoinCap and flagcdn. Only ticker symbols are sent, never anything about the user or the pages they visit. |
+| Optional host permissions `http://*/*`, `https://*/*` | Optional and not granted at install. Requested only if the user chooses to see the panel on every page: a welcome page explains it first and offers the alternative (panel only when clicking the icon). Used only to display the panel on top of pages; the extension does not read, store or transmit page content. The user can switch back at any time in the settings and exclude sites. |
 
 **Codice remoto:** "No, I am not using remote code." (Tutto il codice è nel pacchetto; dalla rete arrivano solo dati JSON/testo e immagini.)
 
@@ -124,6 +125,6 @@ Show stock market quotes, charts, a portfolio and US economic and earnings calen
 
 ## Consigli per l'approvazione
 
-- Con l'accesso a tutti i siti la revisione è più approfondita e può durare da qualche giorno a qualche settimana. Le motivazioni qui sopra spiegano perché serve.
+- L'accesso a tutti i siti è facoltativo (`optional_host_permissions`): all'installazione Chrome chiede solo i siti delle fonti dati e le notifiche. Nella Dashboard la casella "Motivazione dell'autorizzazione host" è una sola: incolla insieme le due righe "Host permissions" qui sopra.
 - Per aggiornare: alza `version` in `extension/manifest.json`, fai il push (la release su GitHub si crea da sola) e carica `Owlook-ChromeWebStore.zip` della nuova release nella Dashboard (stessi file del pacchetto su GitHub, con impronta e attestato).
 - La scorciatoia predefinita (Alt+Shift+M) non è riservata da Chrome; l'utente può cambiarla in `chrome://extensions/shortcuts`.

@@ -838,12 +838,82 @@ chrome.runtime.onConnect.addListener((port) => {
   });
 });
 
+// ---------- Dove compare il widget: su ogni pagina o solo col clic ----------
+// Owlook chiede l'accesso a tutti i siti solo se l'utente lo sceglie (pagina di benvenuto o impostazioni).
+// Con l'accesso: il widget è registrato su tutte le pagine http/https. Senza: compare solo nella scheda
+// in cui clicchi l'icona o usi la scorciatoia (activeTab), finché non cambi pagina.
+// where (storage.local): "all" | "click" | assente (non ancora scelto) · every: vero se il widget è su ogni pagina
+const ALL = ["http://*/*", "https://*/*"];
+const WJS = ["indicators.js", "i18n.js", "content.js"];
+const CSID = "owlook";
+const hasAll = () => chrome.permissions.contains({ origins: ALL }).catch(() => false);
+let syncing = Promise.resolve();
+function syncEvery(injectOpen) {
+  syncing = syncing.then(async () => {
+    const granted = await hasAll();
+    const { where } = await chrome.storage.local.get("where");
+    const on = granted && where !== "click";
+    let reg = [];
+    try { reg = await chrome.scripting.getRegisteredContentScripts({ ids: [CSID] }); } catch (_) {}
+    try {
+      if (on && !reg.length) await chrome.scripting.registerContentScripts([{ id: CSID, matches: ALL, js: WJS, runAt: "document_idle", persistAcrossSessions: true }]);
+      if (!on && reg.length) await chrome.scripting.unregisterContentScripts({ ids: [CSID] });
+    } catch (_) {}
+    await chrome.storage.local.set({ every: on });
+    // appena attivato: compare subito anche nelle schede già aperte, senza ricaricarle
+    if (on && injectOpen) {
+      const tabs = await chrome.tabs.query({ url: ALL }).catch(() => []);
+      for (const t of tabs) if (canEmbed(t) && !(await isExcluded(t))) addWidget(t.id).catch(() => {});
+    }
+    return on;
+  }).catch(() => false);
+  return syncing;
+}
+// inserisce il widget in una scheda, se non c'è già. "new" se l'ho appena inserito
+async function addWidget(tabId) {
+  const [r] = await chrome.scripting.executeScript({ target: { tabId }, func: () => !!document.getElementById("mt-host") });
+  if (r && r.result) return true;
+  await chrome.scripting.executeScript({ target: { tabId }, files: WJS });
+  return "new";
+}
+const welcome = (ask) => chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html" + (ask ? "#ask" : "")) });
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  await syncEvery(false);
+  const { where } = await chrome.storage.local.get("where");
+  // prima installazione, o aggiornamento da una versione che non chiedeva ancora: la guida, una volta sola
+  if (reason === "install" || (reason === "update" && !where && !(await hasAll()))) welcome(false);
+});
+chrome.runtime.onStartup.addListener(() => syncEvery(false));
+chrome.permissions.onAdded.addListener(async (p) => {
+  if (!(await hasAll())) return;
+  await chrome.storage.local.set({ where: "all" }); // l'accesso dato (dalla guida o da Chrome) vale come scelta
+  syncEvery(true);
+});
+chrome.permissions.onRemoved.addListener(() => syncEvery(false));
+syncEvery(false);
+chrome.runtime.onMessage.addListener((msg, _sender, send) => {
+  // impostazioni: "Su ogni pagina". Se l'accesso c'è già basta la scelta; se no lo chiede la guida
+  // (Chrome mostra la richiesta solo da una pagina di Owlook, dopo un clic)
+  if (msg.type === "everyon") {
+    hasAll().then(async (g) => {
+      if (g) { await chrome.storage.local.set({ where: "all" }); await syncEvery(true); send("on"); }
+      else { welcome(true); send("ask"); }
+    });
+    return true;
+  }
+  // "Solo col clic": tolgo il widget dalle pagine nuove (l'accesso resta, non usato, per riattivarlo con un clic)
+  if (msg.type === "everyoff") {
+    chrome.storage.local.set({ where: "click" }).then(() => syncEvery(false)).then(() => send(true));
+    return true;
+  }
+});
+
 // ---------- Clic sull'icona e scorciatoia di Chrome ----------
-// Inserisce il widget nella scheda (anche se era già aperta prima dell'installazione).
+// Inserisce il widget nella scheda se non c'è (modalità "solo col clic", o scheda aperta prima dell'installazione).
+// Vero se il widget c'è; "new" se l'ho appena inserito.
 async function ensureWidget(tab) {
   try {
-    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["indicators.js", "i18n.js", "content.js"] });
-    return true;
+    return await addWidget(tab.id);
   } catch (_) {
     // Pagine speciali (chrome://, Web Store, pagina di errore…): Chrome non lo permette → pannello laterale
     openSide(tab);
@@ -873,9 +943,11 @@ try { if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) chrome.sidePane
 chrome.action.onClicked.addListener(async (tab) => {
   if (!canEmbed(tab)) return openSide(tab);
   if (await isExcluded(tab)) return;
-  if (!(await ensureWidget(tab))) return;
+  const w = await ensureWidget(tab);
+  if (!w) return;
   const { hidden, open } = await chrome.storage.local.get(["hidden", "open"]);
-  chrome.storage.local.set(hidden ? { hidden: false, open: true } : { open: !open });
+  // appena comparso col clic: aperto; già presente: apro o chiudo il pannello
+  chrome.storage.local.set(hidden || w === "new" ? { hidden: false, open: true } : { open: !open });
 });
 // Scorciatoia di Chrome (predefinita Alt+Shift+M): mostra il widget o lo nasconde
 chrome.commands.onCommand.addListener(async (cmd, tab) => {
@@ -883,10 +955,12 @@ chrome.commands.onCommand.addListener(async (cmd, tab) => {
   if (tab && !canEmbed(tab)) return openSide(tab);
   if (!tab) [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (tab && !canEmbed(tab)) return openSide(tab);
-  if (!tab || (await isExcluded(tab)) || !(await ensureWidget(tab))) return;
+  if (!tab || (await isExcluded(tab))) return;
+  const w = await ensureWidget(tab);
+  if (!w) return;
   const { hidden, open } = await chrome.storage.local.get(["hidden", "open"]);
-  // nascosto: lo riapro col pannello; visibile (anche solo la barra, col pannello chiuso): lo nascondo subito
-  chrome.storage.local.set(hidden ? { hidden: false, open: true } : { hidden: true });
+  // nascosto o appena comparso: lo apro col pannello; visibile (anche solo la barra, col pannello chiuso): lo nascondo subito
+  chrome.storage.local.set(hidden || w === "new" ? { hidden: false, open: true } : { hidden: true });
 });
 chrome.runtime.onMessage.addListener((msg, _sender, send) => {
   if (msg.type === "cmdkey") {

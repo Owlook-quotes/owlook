@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owlook</title>
+<link rel="icon" href="icons/32.png">
+<style>
+/* la scritta "owlook": stesso carattere del widget (Schibsted Grotesk ExtraBold, licenza OFL, solo le lettere che servono) */
+@font-face{font-family:OwlookWM;font-weight:800;src:url(data:font/woff;base64,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) format("woff")}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:#0b0a10;color:#f3f1fb;font:16px/1.5 -apple-system,"SF Pro Text","Segoe UI Variable Text","Segoe UI",Inter,Roboto,sans-serif;overflow:hidden}
+/* dietro: una pagina qualsiasi con il widget, sfocata e scurita */
+.bg{position:fixed;inset:-20px;filter:blur(7px) saturate(.85);pointer-events:none}
+.pg{position:absolute;inset:0;background:#17151f;padding:46px 60px}
+.pg .nav{display:flex;gap:14px;align-items:center;margin-bottom:34px}.pg .nav b{width:170px;height:16px;border-radius:8px;background:#352f44}.pg .nav i{width:60px;height:10px;border-radius:5px;background:#2a2536}
+.pg .cols{display:grid;grid-template-columns:1.5fr 1fr;gap:30px;max-width:820px}
+.pg .img{height:260px;border-radius:12px;background:linear-gradient(135deg,#2c2546,#1f1b2e)}.pg .img.sm{height:150px;margin-bottom:14px}
+.pg .h{height:20px;border-radius:10px;background:#383246;margin:20px 0 10px;width:92%}.pg .h.s{width:58%;margin-top:0}
+.pg .t{height:9px;border-radius:5px;background:#29243a;margin:11px 0}.pg .t.w{width:84%}.pg .t.w2{width:66%}
+.wd{position:absolute;right:42px;top:36px;width:368px}
+.wd .b,.wd .p{background:#1f1d26;border-radius:18px;padding:14px 16px;border:1px solid rgba(255,255,255,.06)}
+.wd .b{margin-bottom:10px}.wd .p{height:500px}
+.wd .r{display:flex;align-items:center;gap:10px;height:34px}.wd .r s{width:24px;height:24px;border-radius:7px;background:#4b3fa0}
+.wd .r u{flex:1;height:10px;border-radius:5px;background:#3a3646}.wd .r em{width:58px;height:16px;border-radius:5px;background:#1e5c3d}.wd .r em.d{background:#6b2f22}
+.shade{position:fixed;inset:0;background:rgba(8,6,16,.72)}
+/* la scheda */
+main{position:fixed;inset:0;display:grid;place-items:center;padding:24px;overflow:auto}
+.card{width:min(540px,100%);border-radius:22px;padding:34px 38px 28px;background:linear-gradient(180deg,#221d33,#1a1726);
+  box-shadow:0 40px 90px -20px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.08),0 0 90px rgba(98,54,255,.18)}
+.card[hidden]{display:none}
+.brand{display:flex;align-items:center;gap:9px;font:800 23px/1 OwlookWM,system-ui,sans-serif;letter-spacing:-.045em;margin-bottom:22px}
+.brand img{width:32px;height:32px}
+h1{margin:0 0 10px;font-weight:800;font-size:30px;line-height:1.12;letter-spacing:-.025em}
+p{margin:0;color:#c4bfdc}
+.q{margin:18px 0;padding:13px 16px;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);font-size:14px;color:#aaa4c6}
+.q em{font-style:normal;color:#ece9f7}
+ul{list-style:none;margin:0 0 24px;padding:0;display:grid;gap:10px}
+li{display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.4;color:#dcd8ee}
+li i{flex:none;width:20px;height:20px;border-radius:50%;background:rgba(44,199,124,.16);color:#3ddc8d;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;margin-top:1px}
+.btns{display:flex;flex-direction:column;gap:6px}
+button{font:inherit;cursor:pointer;border:0}
+.b1{height:48px;border-radius:13px;background:#6236ff;color:#fff;font-weight:600;font-size:16px;box-shadow:0 8px 24px -8px rgba(98,54,255,.8);transition:background .15s}
+.b1:hover{background:#7150ff}
+.b2{height:42px;border-radius:13px;background:none;color:#b9b3d6;font-size:15px}
+.b2:hover{color:#fff;background:rgba(255,255,255,.05)}
+button:focus-visible{outline:2px solid #b9a9ff;outline-offset:3px}
+.sm{margin-top:12px;text-align:center;font-size:12.5px;color:#7f7a98}
+.ok{width:62px;height:62px;border-radius:50%;background:rgba(44,199,124,.15);color:#3ddc8d;display:grid;place-items:center;font-size:30px;font-weight:800;margin-bottom:18px}
+.gap{height:24px}
+/* "l'icona è qui": in alto a destra, dove Chrome mette le estensioni */
+.tip{position:fixed;right:22px;top:14px;padding:10px 14px;border-radius:12px;background:#9580ff;color:#140c33;font-weight:600;font-size:14.5px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.tip:before{content:"";position:absolute;right:30px;top:-5px;width:12px;height:12px;background:#9580ff;transform:rotate(45deg)}
+.tip[hidden]{display:none}
+@media (max-width:560px){.card{padding:26px 22px 22px}h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <div class="pg"><div class="nav"><b></b><i></i><i></i><i></i><i></i></div><div class="cols"><div><div class="img"></div><div class="h"></div><div class="h s"></div><div class="t"></div><div class="t w"></div><div class="t"></div><div class="t w2"></div></div><div><div class="img sm"></div><div class="h"></div><div class="t"></div><div class="t w"></div><div class="img sm"></div></div></div></div>
+  <div class="wd"><div class="b"><div class="r"><u></u><em></em></div><div class="r"><u></u><em></em></div><div class="r"><u></u><em class="d"></em></div></div>
+  <div class="p"><div class="r"><s></s><u></u><em></em></div><div class="r"><s></s><u></u><em></em></div><div class="r"><s></s><u></u><em class="d"></em></div><div class="r"><s></s><u></u><em class="d"></em></div><div class="r"><s></s><u></u><em></em></div><div class="r"><s></s><u></u><em class="d"></em></div><div class="r"><s></s><u></u><em></em></div></div></div>
+</div>
+<div class="shade" aria-hidden="true"></div>
+<main>
+  <section class="card" id="ask" aria-labelledby="ask-h">
+    <div class="brand"><img src="icons/128.png" alt="">owlook</div>
+    <h1 id="ask-h" data-t="askH"></h1>
+    <p data-t="askP"></p>
+    <div class="q" data-h="askQ"></div>
+    <ul><li><i>✓</i><span data-t="li1"></span></li><li><i>✓</i><span data-t="li2"></span></li><li><i>✓</i><span data-t="li3"></span></li></ul>
+    <div class="btns"><button class="b1" id="go" data-t="go"></button><button class="b2" id="click" data-t="click"></button></div>
+    <div class="sm" data-t="later"></div>
+  </section>
+  <section class="card" id="done" aria-labelledby="done-h" hidden>
+    <div class="ok" aria-hidden="true">✓</div>
+    <h1 id="done-h" data-t="doneH"></h1>
+    <p data-t="doneP"></p>
+    <div class="gap"></div>
+    <div class="btns"><button class="b1" data-close data-t="closeTab"></button></div>
+  </section>
+  <section class="card" id="alt" aria-labelledby="alt-h" hidden>
+    <div class="brand"><img src="icons/128.png" alt="">owlook</div>
+    <h1 id="alt-h" data-t="altH"></h1>
+    <p id="altP"></p>
+    <div class="q" data-h="altQ"></div>
+    <div class="btns"><button class="b1" data-close data-t="gotIt"></button></div>
+  </section>
+</main>
+<div class="tip" id="tip" hidden data-t="tip"></div>
+<script src="welcome.js"></script>
+</body>
+</html>

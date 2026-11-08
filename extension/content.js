@@ -148,6 +148,8 @@
   const KEY0 = st.key;
   st.excl = []; // siti in cui il widget non compare
   st.nsub = {}; // notizie: titoli con gli avvisi attivi { simbolo: da quando (ms) }
+  // il widget è su ogni pagina (accesso a tutti i siti dato e scelto) o compare solo col clic: lo decide il service worker
+  let EVERY = false, evAsk = false;
   const KEYS = ["lists", "cl", "theme", "hidden", "open", "bar", "sort", "cr", "ci", "lr", "ind", "key", "excl", "fut", "lay", "tz", "view", "pf", "tab", "psort", "pfcur", "fxr", "fxh", "lang", "nm", "rowc", "slotsOpen", "pfb", "glass", "calv", "ecap", "esess", "emine", "barOff", "tpl", "eview", "rcol", "nsub", "barRow", "zen", "nf"];
   let rec = false; // registrazione della scorciatoia in corso
   let delArm = false, findQ = "", impData = null;
@@ -1782,6 +1784,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       <div class="sectp" data-sp="g">
       <div class="field"><span id="langlbl" data-nt></span><div class="seg" id="langseg" data-nt></div></div>
       <div class="field"><span id="nflbl" data-nt></span><div class="seg" id="nfseg" data-nt></div></div>
+      <div class="field"><span>Dove compare il widget</span><div class="seg" id="evseg"></div><p class="hint" id="evhint"></p></div>
       <div class="field"><span>Clic sulla riga di un titolo</span><div class="seg" id="rowcseg"></div></div>
       <div class="field"><span>Fuso orario dell'orologio e del grafico</span><select class="pill txtsel" id="tzsel" aria-label="Fuso orario"></select>
         <p class="hint">Vale per l'orologio e per gli orari sull'asse del grafico. Il calendario economico resta nel tuo fuso, con l'ora di New York accanto.</p></div>
@@ -3029,6 +3032,10 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     ts.innerHTML = st.lists.map((l) => `<option value="${esc(l.id)}">${esc(l.name)} (${l.items.length})</option>`).join("");
     ts.value = st.lists.some((l) => l.id === keep) ? keep : st.cl;
     $("#tzsel").innerHTML = TZS.map(([z, l]) => `<option value="${z}"${tzOf()[0] === z ? " selected" : ""}>${esc(l)}</option>`).join("");
+    $("#evseg").innerHTML = [[true, "Su ogni pagina"], [false, "Solo col clic"]].map(([v, l]) => `<button data-a="every" data-v="${v}" class="${EVERY === v ? "on" : ""}">${l}</button>`).join("");
+    $("#evhint").textContent = evAsk && !EVERY ? "Conferma nella scheda di Owlook che si è appena aperta."
+      : EVERY ? "Owlook disegna solo il widget: non legge le pagine e non raccoglie dati."
+      : "Il widget compare solo nella scheda in cui clicchi l'icona di Owlook o usi la scorciatoia, finché non cambi pagina.";
     $("#futseg").innerHTML = [[true, "Sì"], [false, "No"]].map(([v, l]) => `<button data-a="futmode" data-v="${v}" class="${futOn() === v ? "on" : ""}">${l}</button>`).join("");
     $("#langlbl").textContent = L("Lingua", "Language");
     $("#nflbl").textContent = L("Formato dei numeri", "Number format");
@@ -5863,6 +5870,11 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       st.bar = B; slot = null; slotRes = [];
     }
     else if (a === "theme") { st.theme = b.dataset.t; drawSettings(); }
+    else if (a === "every") { // su ogni pagina (chiede l'accesso a tutti i siti, se manca) o solo col clic
+      const v = b.dataset.v === "true";
+      if (v === EVERY) return;
+      chrome.runtime.sendMessage({ type: v ? "everyon" : "everyoff" }).then((r) => { evAsk = r === "ask"; drawSettings(); }, () => {});
+    }
     else if (a === "futmode") { st.fut = b.dataset.v === "true"; listOrder = null; drawSettings(); pushSubs(); }
     else if (a === "list") { if (b.dataset.id === st.cl) return; st.cl = b.dataset.id; listOrder = null; requestAnimationFrame(() => fadeIn($("#list"))); }
     else if (a === "ldel") {
@@ -6149,6 +6161,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   // Sincronizza le impostazioni tra le schede aperte
   chrome.storage.onChanged.addListener((ch, area) => {
     if (area !== "local") return;
+    if (ch.every) { EVERY = ch.every.newValue === true; evAsk = false; drawSettings(); }
     if (ch.nnew) { // notizie nuove trovate dal controllo periodico (o lette in un'altra scheda)
       NNEW = ch.nnew.newValue || {}; draw();
       if (newsOn && cur && NNEW[cur]) loadNews(true);
@@ -6216,6 +6229,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const all = st.lists.flatMap((l) => l.items);
     st.bar = st.bar.map((it) => (it ? { ...fixName(it), n: (all.find((y) => y.s === it.s) || fixName(it)).n } : it));
     if (JSON.stringify([st.lists, st.bar]) !== before) persist();
+    EVERY = v.every === true;
     wasVis = !isHidden() && isOpen(); // pagina appena caricata: nessun ripristino automatico
     setLang(st.lang === "en" || st.lang === "it" ? st.lang : /^it\b/i.test(navigator.language || "") ? "it" : "en", true);
     // Mostro subito l'ultimo valore registrato (anche da altre schede), poi aggiorno

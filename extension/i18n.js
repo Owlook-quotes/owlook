@@ -3,6 +3,10 @@
 (() => {
   const dict = {
     // ---- pannello, liste, barra in alto ----
+    "Dove compare il widget": "Where the widget appears", "Su ogni pagina": "On every page", "Solo col clic": "Only on click",
+    "Conferma nella scheda di Owlook che si è appena aperta.": "Confirm in the Owlook tab that just opened.",
+    "Owlook disegna solo il widget: non legge le pagine e non raccoglie dati.": "Owlook only draws the widget: it doesn't read pages or collect data.",
+    "Il widget compare solo nella scheda in cui clicchi l'icona di Owlook o usi la scorciatoia, finché non cambi pagina.": "The widget appears only on the tab where you click the Owlook icon or use the shortcut, until you leave the page.",
     "Nascondi": "Hide", "Variazione %": "% change", "Impostazioni": "Settings", "Calendario economico USA": "US economic calendar", "Calendario USA": "US calendar", "Utili": "Earnings", "Utili trimestrali delle società USA · orari nel tuo fuso": "US company earnings · your time zone", "Settimana precedente": "Previous week", "Settimana successiva": "Next week",
     "Nascondi il widget (lo riporti con la scorciatoia o cliccando l'icona dell'estensione)": "Hide the widget (bring it back with the shortcut or by clicking the extension icon)",
     "Ripristina posizione e dimensioni": "Reset position and size", "Ripristina posizione e dimensioni del pannello": "Reset the panel's position and size",
