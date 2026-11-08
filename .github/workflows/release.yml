@@ -1,0 +1,65 @@
+# Pubblica l'estensione: quando cambia la versione in extension/manifest.json crea la release "v<versione>"
+# con Owlook-Chrome.zip (la cartella "extension" rinominata "owlook"), la sua impronta SHA-256 e un attestato
+# firmato da GitHub che dice da quale codice è stato creato. "Run workflow" la ricrea per la versione attuale.
+# Il link https://github.com/<repo>/releases/latest/download/Owlook-Chrome.zip scarica sempre l'ultima.
+name: Pubblica estensione
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["extension/**"]
+
+permissions:
+  contents: write      # creare la release
+  id-token: write      # firmare l'attestato
+  attestations: write  # pubblicare l'attestato
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Versione
+        id: v
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VER=$(node -p "require('./extension/manifest.json').version")
+          echo "ver=$VER" >> "$GITHUB_OUTPUT"
+          if gh release view "v$VER" >/dev/null 2>&1 && [ "${{ github.event_name }}" = "push" ]; then
+            echo "La release v$VER esiste già: nessuna nuova versione."; echo "skip=1" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Zip
+        if: steps.v.outputs.skip != '1'
+        run: |
+          set -euo pipefail
+          rm -rf owlook && cp -r extension owlook
+          # file con data fissa e ordine fisso: lo stesso codice dà sempre lo stesso zip (e la stessa impronta)
+          find owlook -exec touch -h -d "2026-01-01T00:00:00Z" {} +
+          find owlook -type f | LC_ALL=C sort | TZ=UTC zip -qX -D Owlook-Chrome.zip -@
+          sha256sum Owlook-Chrome.zip | tee Owlook-Chrome.zip.sha256
+          # per il Chrome Web Store: gli stessi file, con manifest.json nella radice dello zip (non dentro una cartella)
+          (cd owlook && find . -type f | sed 's|^\./||' | LC_ALL=C sort | TZ=UTC zip -qX -D ../Owlook-ChromeWebStore.zip -@)
+          sha256sum Owlook-ChromeWebStore.zip | tee Owlook-ChromeWebStore.zip.sha256
+      - name: Attestato di provenienza
+        if: steps.v.outputs.skip != '1'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            Owlook-Chrome.zip
+            Owlook-ChromeWebStore.zip
+      - name: Release
+        if: steps.v.outputs.skip != '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          VER="${{ steps.v.outputs.ver }}"; TAG="v$VER"; SUM=$(cut -d' ' -f1 Owlook-Chrome.zip.sha256); SUM2=$(cut -d' ' -f1 Owlook-ChromeWebStore.zip.sha256)
+          { cat .github/release-notes.md; printf '\n**SHA-256** `Owlook-Chrome.zip`: `%s`\n\n**SHA-256** `Owlook-ChromeWebStore.zip` (stessi file, per il Chrome Web Store): `%s`\n' "$SUM" "$SUM2"; } > notes.md
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" Owlook-Chrome.zip Owlook-Chrome.zip.sha256 Owlook-ChromeWebStore.zip Owlook-ChromeWebStore.zip.sha256 --clobber
+            gh release edit "$TAG" --title "Owlook $VER (beta)" --notes-file notes.md --latest
+          else
+            gh release create "$TAG" Owlook-Chrome.zip Owlook-Chrome.zip.sha256 Owlook-ChromeWebStore.zip Owlook-ChromeWebStore.zip.sha256 --target "$GITHUB_SHA" --title "Owlook $VER (beta)" --notes-file notes.md --latest
+          fi

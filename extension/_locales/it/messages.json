@@ -1,0 +1,17 @@
+{
+  "name": {
+    "message": "Owlook – Quotazioni e grafici di borsa"
+  },
+  "short": {
+    "message": "Owlook"
+  },
+  "desc": {
+    "message": "Quotazioni di azioni, ETF e cripto su ogni pagina: liste, portafoglio, grafici a candele, calendario utili e macro."
+  },
+  "action": {
+    "message": "Mostra / nascondi Owlook"
+  },
+  "cmd": {
+    "message": "Apri o chiudi Owlook"
+  }
+}

@@ -1,0 +1,21 @@
+Owlook
+Copyright (c) 2026 the Owlook author. Free, independent project, released under the PolyForm Noncommercial License 1.0.0
+(see LICENSE): the source code is public and may be used, changed and shared for noncommercial purposes only.
+
+This extension includes third-party software:
+
+TradingView Lightweight Charts™
+Copyright (c) 2026 TradingView, Inc. https://www.tradingview.com/
+Licensed under the Apache License, Version 2.0: see lib/LICENSE-lightweight-charts.txt
+(extension/lib/ in the source repository).
+The charts in Owlook are made with TradingView Lightweight Charts™; TradingView is
+the creator of that product. A link to https://www.tradingview.com/ is shown on every
+chart (TradingView logo) and in the data note under the list (the "i" button).
+
+Lightweight Charts™ incorporates parts of tslib (https://github.com/Microsoft/tslib),
+(c) Microsoft Corporation, covered by the BSD Zero Clause License.
+
+Schibsted Grotesk (wordmark "owlook", letters o, w, l, k, z, e, n only)
+Copyright 2023 The Schibsted-Grotesk Project Authors (https://github.com/schibsted/schibsted-grotesk)
+Licensed under the SIL Open Font License, Version 1.1: see lib/NOTICE-schibsted-grotesk.txt
+(extension/lib/ in the source repository).

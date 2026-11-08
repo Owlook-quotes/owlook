@@ -1,0 +1,17 @@
+{
+  "name": {
+    "message": "Owlook – Stock Quotes & Charts"
+  },
+  "short": {
+    "message": "Owlook"
+  },
+  "desc": {
+    "message": "Live stock, ETF and crypto quotes on any page: watchlists, portfolio, candlestick charts, earnings and economic calendar."
+  },
+  "action": {
+    "message": "Show / hide Owlook"
+  },
+  "cmd": {
+    "message": "Open or close Owlook"
+  }
+}

@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owlook download</title>
+<meta name="description" content="Owlook: quotazioni di borsa in un pannello sopra qualsiasi pagina web. Estensione gratuita per Chrome, Edge, Brave, Opera, Vivaldi e Arc.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" type="image/png" href="favicon.png">
+<meta property="og:title" content="Owlook">
+<meta property="og:description" content="Stock quotes at a glance in a browser extension for Chrome, Edge, Brave, Opera, Vivaldi and Arc.">
+<meta property="og:image" content="https://owlook-quotes.github.io/owlook/media/owlook-charts-poster.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f5fb; --bg2:#eceafa; --surface:rgba(255,255,255,.72); --solid:#ffffff; --ink:#15122a; --muted:#5d5972; --line:rgba(21,18,42,.09);
+  --violet:#6a46ff; --btn:#6a46ff; --tint:#ece7ff; --code:#efedf7; --ok:#14935a; --no:#c2410c; --zen:#6f5fc4;
+  --glow:rgba(106,70,255,.18); --shadow:0 1px 0 rgba(21,18,42,.04),0 24px 60px -30px rgba(70,40,200,.45);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d0b14; --bg2:#151122; --surface:rgba(30,26,44,.62); --solid:#18151f; --ink:#eeecf6; --muted:#a39fb6; --line:rgba(255,255,255,.08);
+    --violet:#9580ff; --btn:#6a46ff; --tint:#231d3d; --code:#221e2e; --ok:#34d399; --no:#fb923c; --zen:#9a8bec;
+    --glow:rgba(115,82,255,.28); --shadow:0 1px 0 rgba(0,0,0,.3),0 30px 70px -30px rgba(0,0,0,.85);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d0b14; --bg2:#151122; --surface:rgba(30,26,44,.62); --solid:#18151f; --ink:#eeecf6; --muted:#a39fb6; --line:rgba(255,255,255,.08);
+  --violet:#9580ff; --btn:#6a46ff; --tint:#231d3d; --code:#221e2e; --ok:#34d399; --no:#fb923c; --zen:#9a8bec;
+  --glow:rgba(115,82,255,.28); --shadow:0 1px 0 rgba(0,0,0,.3),0 30px 70px -30px rgba(0,0,0,.85);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  background-image:radial-gradient(900px 520px at 78% -6%,var(--glow),transparent 70%),radial-gradient(700px 420px at -10% 40%,rgba(80,200,190,.07),transparent 70%);background-repeat:no-repeat}
+a{color:var(--violet)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--violet);outline-offset:3px;border-radius:10px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+code{font:500 .88em/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code);padding:.2em .45em;border-radius:6px;white-space:nowrap}
+
+.top{display:flex;justify-content:flex-end;padding-top:16px}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.lang button{font:600 13px/1 inherit;font-family:inherit;color:var(--muted);background:none;border:0;padding:7px 12px;border-radius:999px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--tint);color:var(--ink)}
+
+/* apertura: testo a sinistra, video grande a destra (entra in uno schermo da 13") */
+.hero{display:grid;grid-template-columns:minmax(300px,370px) minmax(0,1fr);gap:48px;align-items:center;padding:6px 0 72px}
+.mark{display:flex;align-items:center;gap:14px;margin:0;position:relative}
+.owlw{position:relative;flex:none;width:68px;height:68px}
+.owlw svg{position:relative;width:68px;height:68px;display:block}
+.mark svg .oi{fill:var(--violet);transition:fill .6s ease}
+.mark .wm{font:800 clamp(52px,6vw,72px)/.9 "Schibsted Grotesk",sans-serif;letter-spacing:-.045em}
+/* modalità zen del logo: occhi chiusi, aura e "zen" */
+.mark .oe{transform-box:fill-box;transform-origin:50% 45%;transition:transform .4s cubic-bezier(.2,.8,.2,1) .1s,opacity .25s ease .1s}
+.mark .zc{fill:none;stroke:var(--zen);stroke-width:105;stroke-linecap:round;stroke-dasharray:440;stroke-dashoffset:440;opacity:0;transition:opacity .12s ease,stroke-dashoffset 0s linear .12s}
+.mark .aura{position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--zen) 45%,transparent) 0,color-mix(in srgb,var(--zen) 20%,transparent) 45%,transparent 70%);box-shadow:0 0 0 2px color-mix(in srgb,var(--zen) 55%,transparent)}
+.mark .zt{font:800 clamp(16px,1.8vw,21px)/1 "Schibsted Grotesk",sans-serif;color:var(--zen);align-self:flex-end;margin:0 0 .35em -8px;max-width:0;opacity:0;overflow:hidden;transition:max-width .5s cubic-bezier(.2,.8,.2,1),opacity .4s ease}
+.mark.zen svg .oi{fill:var(--zen)}
+.mark.zen .oe{transform:scaleY(.08);opacity:0;transition:transform .3s cubic-bezier(.4,0,.6,1),opacity .2s ease .1s}
+.mark.zen .zc{stroke-dashoffset:0;opacity:1;transition:stroke-dashoffset .5s cubic-bezier(.2,.8,.2,1) .15s,opacity 0s linear .15s}
+.mark.zen .zt{max-width:2.4em;opacity:1}
+.mark.zen .aura{animation:aura 2.6s cubic-bezier(.25,.6,.35,1) .25s}
+@keyframes aura{0%{transform:scale(.9);opacity:0}14%{opacity:.85}100%{transform:scale(2);opacity:0}}
+.lede{font-size:19px;line-height:1.45;color:var(--muted);max-width:30ch;margin:18px 0 26px}
+
+.note{background:var(--tint);border-radius:14px;padding:12px 16px;font-size:15px;margin:0 0 14px}
+.note[hidden]{display:none}
+.cta{display:flex;align-items:center;gap:16px;text-decoration:none;color:#fff;background:linear-gradient(135deg,#7a5bff,#5b36f2);border-radius:18px;padding:18px 22px;box-shadow:0 18px 40px -18px rgba(106,70,255,.8),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .15s,filter .15s}
+.cta:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.cta:active{transform:translateY(1px)}
+.cta .t{display:block;font-weight:700;font-size:21px;line-height:1.2}
+.cta .s{display:block;font-size:14px;color:rgba(255,255,255,.85);margin-top:3px}
+.cta svg{flex:none;width:26px;height:26px;margin-left:auto;stroke:currentColor}
+.meta{font-size:14px;color:var(--muted);margin:12px 0 0;min-height:1.4em}
+.works{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 0;padding:0;list-style:none}
+.works li{font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px}
+.works li.me{border-color:var(--violet);color:var(--violet)}
+
+.frame{margin:0;padding:8px;border-radius:24px;background:linear-gradient(160deg,color-mix(in srgb,var(--violet) 40%,transparent),transparent 45%) border-box,var(--surface);border:1px solid var(--line);box-shadow:var(--shadow),0 0 80px -30px var(--glow)}
+.frame video{display:block;width:100%;height:auto;border-radius:17px;background:#111}
+.shot{width:100%;max-width:calc((100vh - 120px) * 1.6 + 18px);justify-self:end}
+.shot video{aspect-ratio:16/10}
+
+/* due video affiancati */
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin-top:26px}
+.duo figure{margin:0}
+.duo video{aspect-ratio:11/10}
+.duo figcaption{margin:14px 6px 0}
+.duo figcaption b{display:block;font-size:18px;margin-bottom:2px}
+.duo figcaption span{color:var(--muted);font-size:15px}
+
+section.block{padding:72px 0 8px}
+h2{font-size:clamp(28px,3vw,38px);line-height:1.1;letter-spacing:-.025em;margin:0 0 10px}
+.intro{color:var(--muted);margin:0 0 26px;max-width:62ch;font-size:17px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:32px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+
+.install{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:start}
+.steps{margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 18px 48px;min-height:34px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:32px;height:32px;border-radius:50%;background:var(--tint);color:var(--violet);font-weight:700;font-size:15px;display:grid;place-items:center}
+.steps b{font-weight:600}
+.copy{font:600 12px/1 inherit;font-family:inherit;color:var(--violet);background:none;border:1px solid var(--line);border-radius:999px;padding:4px 9px;margin-left:6px;cursor:pointer;vertical-align:1px}
+.side h3{font-size:16px;margin:0 0 4px}
+.side p{margin:0 0 18px;color:var(--muted);font-size:15px}
+
+.browsers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 36px;margin:0;padding:0;list-style:none}
+.browsers li{display:flex;align-items:baseline;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.browsers .y{color:var(--ok);font-weight:700;width:1em;flex:none}
+.browsers .n{color:var(--no);font-weight:700;width:1em;flex:none}
+.browsers small{color:var(--muted);font-size:13px}
+
+.what{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;list-style:none;padding:0;margin:0}
+.what li{padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+.what b{font-weight:600}.what b:first-child{display:block}
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:30px}
+.gal figure{margin:0}
+.gal img{display:block;width:100%;height:auto;aspect-ratio:11/10;object-fit:cover;object-position:right top;border-radius:16px;border:1px solid var(--line);background:#111;box-shadow:var(--shadow);transition:transform .2s ease}
+.gal figure:hover img{transform:translateY(-3px)}
+.gal figcaption{font-size:15px;color:var(--muted);margin-top:10px}
+
+footer{border-top:1px solid var(--line);margin-top:72px;padding:28px 0 48px;font-size:14px;color:var(--muted)}
+footer .row{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:14px}
+footer p{margin:0 0 4px;max-width:80ch}
+
+.facts{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:48px;align-items:start}
+.perm{margin:0;padding:0;list-style:none}
+.perm li{padding:13px 0;border-bottom:1px solid var(--line)}
+.perm li:first-child{padding-top:0}
+.perm b{font-weight:600}
+.perm p{margin:3px 0 0;color:var(--muted);font-size:15px}
+.perm code{font-size:.8em}
+.never{margin:0 0 22px;padding:0;list-style:none}
+.never li{padding:5px 0 5px 22px;position:relative}
+.never li::before{content:"✕";position:absolute;left:0;color:var(--no);font-weight:700}
+.side2 h3{font-size:16px;margin:0 0 6px}
+.side2 p{margin:0 0 18px;color:var(--muted);font-size:15px}
+.verify{background:var(--code);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:14px;color:var(--muted)}
+.verify p{margin:0 0 8px}
+.verify pre{margin:0 0 8px;font:500 12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--bg);color:var(--ink);padding:8px 10px;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere}
+@media (max-width:1100px){
+  .hero{grid-template-columns:1fr;gap:40px;padding-bottom:56px}
+  .facts,.install{grid-template-columns:minmax(0,1fr);gap:24px}
+  .browsers,.what,.gal{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .owlw,.owlw svg{width:56px;height:56px}
+  .lede{font-size:17px}
+  .cta .t{font-size:19px}
+  .duo,.browsers,.what,.gal{grid-template-columns:1fr}
+  .card{padding:22px 18px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="lang" role="group" aria-label="Lingua / Language">
+      <button type="button" data-lang="it" aria-pressed="true">IT</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+
+  <main>
+  <section class="hero">
+    <div>
+      <h1 class="mark" id="mark" aria-label="Owlook"><span class="owlw" aria-hidden="true"><span class="aura"></span><svg viewBox="220 340 2089 2089" aria-hidden="true" focusable="false"><g transform="translate(0.000000,2700.000000) scale(0.100000,-0.100000)"><g class="oi"><path d="M11425 23293 c-421 -7 -739 -32 -1205 -93 -498 -66 -768 -121 -1350
+-276 -508 -135 -1105 -354 -1526 -558 -776 -378 -1467 -871 -2039 -1457 -1355
+-1388 -2132 -3344 -2305 -5809 -29 -405 -22 -1055 16 -1475 39 -444 87 -791
+160 -1160 75 -379 95 -458 168 -685 35 -107 92 -294 126 -415 442 -1572 1336
+-3131 2606 -4545 187 -208 831 -854 1029 -1031 1132 -1014 2261 -1761 3525
+-2332 482 -217 956 -362 1345 -411 273 -34 380 -41 675 -41 295 0 402 7 675
+41 389 49 863 194 1345 411 1264 571 2393 1318 3525 2332 198 177 842 823
+1029 1031 1270 1414 2164 2973 2606 4545 34 121 91 308 126 415 73 227 93 306
+168 685 73 369 121 716 160 1160 135 1503 -129 3349 -677 4745 -715 1822
+-1942 3165 -3651 3996 -421 204 -1018 423 -1526 558 -582 155 -852 210 -1350
+276 -589 77 -851 93 -1500 89 -777 -5 -1365 -4 -1700 1 -173 3 -378 5 -455 3z
+m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
+724 1617 1198 2585 1390 350 69 473 82 816 88 392 7 590 -6 924 -63 315 -53
+433 -79 640 -139 1346 -394 2338 -1254 2932 -2540 156 -338 303 -777 379
+-1131 80 -371 88 -422 113 -649 46 -425 51 -523 50 -960 -1 -567 -37 -1006
+-119 -1460 -24 -132 -51 -283 -60 -335 -20 -122 -144 -627 -195 -795 -22 -71
+-55 -182 -74 -245 -70 -236 -217 -627 -327 -870 -27 -61 -49 -113 -49 -116 0
+-16 -239 -497 -329 -660 -440 -806 -993 -1580 -1651 -2309 -322 -357 -882
+-899 -1249 -1210 -52 -44 -113 -96 -135 -116 -107 -94 -511 -409 -667 -521
+-52 -37 -130 -93 -174 -124 -862 -615 -1967 -1196 -2655 -1395 -341 -99 -547
+-128 -945 -136 -640 -13 -1093 89 -1795 401 -139 62 -612 299 -731 366 -625
+353 -1008 600 -1506 973 -181 134 -489 377 -583 458 -30 26 -93 80 -140 120
+-494 419 -1066 995 -1506 1514 -529 624 -1007 1321 -1369 1995 -43 80 -109
+201 -146 270 -104 192 -149 291 -270 595 -215 540 -383 1037 -434 1285 -19 94
+-48 221 -65 282 -16 62 -43 190 -59 283 -17 94 -46 256 -65 360 -86 475 -136
+1291 -107 1770 43 714 114 1134 290 1700 422 1359 1283 2380 2476 2938 485
+226 1220 418 1751 456 171 12 648 13 789 1z"/><path class="oe" d="M6705 14936 c-55 -15 -85 -45 -85 -83 0 -41 72 -102 230 -196 255
+-150 320 -209 339 -310 5 -29 12 -158 15 -287 8 -326 30 -470 122 -795 135
+-473 415 -813 825 -997 138 -62 220 -86 415 -120 180 -32 520 -31 734 0 316
+48 375 27 511 -176 193 -288 361 -702 604 -1487 71 -229 86 -260 131 -260 80
+0 87 120 81 1369 -4 1003 -4 1002 -57 1277 -19 100 -105 386 -148 494 -234
+585 -657 1062 -1171 1320 -232 116 -473 191 -761 237 -129 21 -171 22 -935 24
+-651 3 -809 1 -850 -10z"/><path class="oe" d="M16970 14939 c-249 -24 -415 -59 -625 -131 -650 -224 -1151 -711
+-1450 -1409 -40 -92 -139 -407 -159 -504 -57 -276 -66 -470 -66 -1501 0 -1110
+6 -1189 84 -1189 43 0 59 30 117 220 224 733 314 978 477 1297 136 265 226
+383 325 429 56 25 161 24 342 -2 530 -76 1007 7 1352 237 115 77 300 261 381
+381 90 133 182 331 236 508 81 268 104 425 115 815 9 296 13 313 95 387 29 27
+99 77 157 113 308 191 354 234 318 302 -29 53 -21 53 -849 54 -421 1 -803 -2
+-850 -7z"/><path d="M13592 8759 c-31 -16 -137 -124 -396 -403 -477 -515 -486 -523 -588
+-495 -52 14 -115 76 -532 527 -170 183 -325 345 -346 358 -56 37 -109 31 -133
+-16 -22 -43 -19 -113 18 -367 29 -198 161 -872 199 -1013 14 -52 39 -160 56
+-240 17 -80 48 -203 70 -275 21 -71 55 -191 74 -266 92 -351 373 -1127 499
+-1378 44 -90 58 -108 90 -124 55 -28 106 -12 146 46 107 156 455 1108 561
+1537 12 47 37 137 55 200 19 63 48 178 65 254 17 77 46 199 65 272 19 73 46
+197 60 276 14 79 41 213 60 298 43 199 105 609 105 699 0 109 -48 149 -128
+110z"/></g></g><path class="zc" d="M705 1400Q875 1545 1045 1400"/><path class="zc" d="M1485 1400Q1655 1545 1825 1400"/></svg></span><span class="wm" aria-hidden="true">owlook</span><span class="zt" aria-hidden="true">zen</span></h1>
+      <p class="lede" data-t="lede">Le quotazioni di borsa sempre sott'occhio, in un piccolo pannello sopra qualsiasi pagina web.</p>
+
+      <p class="note" id="note" hidden></p>
+
+      <a class="cta" id="cta" href="https://github.com/Owlook-quotes/owlook/releases/latest/download/Owlook-Chrome.zip">
+        <span><span class="t" id="cta-t">Aggiungi a Chrome</span><span class="s" data-t="cta-s">Estensione gratuita, scarica il file zip</span></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>
+      </a>
+      <p class="meta" id="meta" data-t="meta">I link scaricano sempre l'ultima versione.</p>
+      <ul class="works" id="works" aria-label="Browser">
+        <li data-b="chrome">Chrome</li><li data-b="edge">Edge</li><li data-b="brave">Brave</li><li data-b="opera">Opera</li><li data-b="vivaldi">Vivaldi</li><li data-b="arc">Arc</li>
+      </ul>
+    </div>
+
+    <figure class="shot frame">
+      <video id="demo" src="media/owlook-charts.mp4" poster="media/owlook-charts-poster.jpg" width="1280" height="800" autoplay muted loop playsinline preload="auto" aria-label="Video: Owlook sopra una pagina web apre il grafico a candele di un titolo e poi l'andamento storico di un altro" data-t-aria="shot-alt"></video>
+    </figure>
+  </section>
+
+  <section class="block" aria-labelledby="vid-h">
+    <h2 id="vid-h" data-t="vid-h">Guardalo all'opera</h2>
+    <p class="intro" data-t="vid-p">Calendari, portafoglio e notizie, sempre nello stesso pannello.</p>
+    <div class="duo">
+      <figure class="frame"><video class="vd" src="media/owlook-calendar.mp4" poster="media/owlook-calendar-poster.jpg" width="880" height="800" autoplay muted loop playsinline preload="metadata" aria-label="Video: il calendario macro e quello degli utili, nella vista calendario e nei risultati" data-t-aria="v1-a"></video>
+        <figcaption><b data-t="v1-h">Calendario USA</b><span data-t="v1-p">Dati macro con valori attesi e pubblicati, trimestrali della settimana e risultati con il mini grafico della seduta.</span></figcaption></figure>
+      <figure class="frame"><video class="vd" src="media/owlook-pfnews.mp4" poster="media/owlook-pfnews-poster.jpg" width="880" height="800" autoplay muted loop playsinline preload="metadata" aria-label="Video: il portafoglio e le notizie di un titolo" data-t-aria="v2-a"></video>
+        <figcaption><b data-t="v2-h">Portafoglio e notizie</b><span data-t="v2-p">Rendimento di ogni titolo e del totale, e solo le notizie che contano, con grado e tag.</span></figcaption></figure>
+    </div>
+  </section>
+  <section class="block" id="install" aria-labelledby="install-h">
+    <h2 id="install-h" data-t="install-h">Come si installa</h2>
+    <p class="intro" data-t="install-p">Un minuto, una volta sola.</p>
+    <div class="install card">
+      <ol class="steps">
+        <li data-t="s1">Scompatta <code>Owlook-Chrome.zip</code>: ottieni la cartella <code>owlook</code>. Mettila dove non la cancellerai, perché il browser la usa da lì.</li>
+        <li data-t="s2">Scrivi <code class="xurl">chrome://extensions</code><button type="button" class="copy">Copia</button> nella barra degli indirizzi e attiva <b>Modalità sviluppatore</b>.</li>
+        <li data-t="s3">Premi <b>Carica estensione non pacchettizzata</b> e scegli la cartella <code>owlook</code>.</li>
+        <li data-t="s4">Apri una pagina qualsiasi e premi <b>Alt+Maiusc+M</b> (sul Mac <b>Option+Maiusc+M</b>), oppure clicca l'icona di Owlook.</li>
+      </ol>
+      <div class="side">
+        <h3 data-t="why-h">Perché la modalità sviluppatore?</h3>
+        <p data-t="why-p">Owlook non è ancora nei negozi di estensioni, quindi si installa a mano. Il codice è pubblico su GitHub e i tuoi dati restano nel browser: niente account, niente tracciamento.</p>
+        <h3 data-t="upd-h">Aggiornare</h3>
+        <p data-t="upd-p">Scarica la nuova versione, copia i file sopra la vecchia cartella <code>owlook</code> e premi ⟳ su Owlook nella pagina delle estensioni. Liste, portafoglio e impostazioni restano.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="br-h">
+    <h2 id="br-h" data-t="br-h">Su quali browser funziona</h2>
+    <p class="intro" data-t="br-p">Sui browser per computer basati su Chromium.</p>
+    <ul class="browsers">
+      <li><span class="y" aria-hidden="true">✓</span><span>Google Chrome</span></li>
+      <li><span class="y" aria-hidden="true">✓</span><span>Microsoft Edge</span></li>
+      <li><span class="y" aria-hidden="true">✓</span><span>Brave</span></li>
+      <li><span class="y" aria-hidden="true">✓</span><span data-t="b-opera">Opera e Opera GX</span></li>
+      <li><span class="y" aria-hidden="true">✓</span><span>Vivaldi</span></li>
+      <li><span class="y" aria-hidden="true">✓</span><span>Arc</span></li>
+      <li><span class="n" aria-hidden="true">✕</span><span data-t="b-safari">Safari <small>non supportato</small></span></li>
+      <li><span class="n" aria-hidden="true">✕</span><span data-t="b-ff">Firefox <small>non ancora</small></span></li>
+      <li><span class="n" aria-hidden="true">✕</span><span data-t="b-mob">Telefoni e tablet <small>non supportati</small></span></li>
+    </ul>
+  </section>
+
+  <section class="block" id="trasparenza" aria-labelledby="tr-h">
+    <h2 id="tr-h" data-t="tr-h">Cosa fa e cosa non fa</h2>
+    <p class="intro" data-t="tr-p">Il codice di Owlook è tutto pubblico e leggibile, non compresso né offuscato (l'unico file compresso è la libreria dei grafici di TradingView, identica all'originale). Ecco cosa chiede al browser e perché, con il link al punto del codice.</p>
+    <div class="facts card">
+      <ul class="perm">
+        <li><b data-t="p1-h">Salvare i tuoi dati nel browser</b> <code>storage</code> <code>unlimitedStorage</code><p data-t="p1">Liste, portafoglio, impostazioni e i loghi già scaricati restano solo sul tuo computer. Lo spazio senza limite serve per i loghi.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/content.js" data-t="p1-l">Vedi il codice</a></li>
+        <li><b data-t="p2-h">Accesso ai siti</b> <code>http://*/*</code> <code>https://*/*</code><p data-t="p2">Serve per mostrare il pannello sopra le pagine e per scaricare prezzi e calendari dalle fonti qui accanto. Non legge né salva il contenuto delle pagine: guarda solo il colore dello sfondo sotto al pannello, per scegliere il contrasto.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/manifest.json" data-t="p2-l">Vedi il manifest</a></li>
+        <li><b data-t="p3-h">Inserire il pannello</b> <code>scripting</code> <code>activeTab</code><p data-t="p3">Aggiunge il pannello alla scheda quando premi l'icona o la scorciatoia, e carica la libreria dei grafici solo quando apri un grafico.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/background.js" data-t="p3-l">Vedi il codice</a></li>
+        <li><b data-t="p5-h">Avvisi delle notizie</b> <code>alarms</code> <code>notifications</code><p data-t="p5">Solo per i titoli in cui hai premuto «Avvisami»: ogni 2 minuti controlla se ci sono notizie nuove e te lo segnala con una notifica del browser.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/background.js" data-t="p5-l">Vedi il codice</a></li>
+        <li><b data-t="p4-h">Pannello laterale</b> <code>sidePanel</code><p data-t="p4">Apre Owlook di lato dove il pannello non può comparire, per esempio nella nuova scheda o nelle pagine del browser.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/panel.html" data-t="p4-l">Vedi il codice</a></li>
+      </ul>
+      <div class="side2">
+        <h3 data-t="nv-h">Cosa non fa</h3>
+        <ul class="never" data-t="nv">
+          <li>Non ha account, pubblicità né statistiche di utilizzo.</li>
+          <li>Non manda niente all'autore: non esiste un server di Owlook.</li>
+          <li>Non legge, non salva e non invia le pagine che visiti.</li>
+          <li>Non scarica codice da internet: esegue solo i file che vedi su GitHub.</li>
+        </ul>
+        <h3 data-t="src-h">Da dove prende i dati</h3>
+        <p data-t="src">Prezzi e grafici: Yahoo Finance. Notizie: solo quelle importanti, da agenzie e testate principali e comunicati ufficiali (tramite Yahoo Finance e Google News) e moduli 8-K della SEC. Trimestrali: Nasdaq e Yahoo Finance. Calendario macro: BLS, BEA, Census, Federal Reserve, Dipartimento del Lavoro, FRED, ISM, ADP e Conference Board, con le attese di Forex Factory. Loghi: Brandfetch, Financial Modeling Prep, Parqet, CoinCap e flagcdn. A questi siti arriva solo il simbolo del titolo (per esempio AAPL), mai la pagina che stai guardando.</p>
+        <h3 data-t="ve-h">Verifica il file</h3>
+        <div class="verify">
+          <p data-t="ve-p">Lo zip lo crea GitHub dal codice pubblico, con un attestato firmato che lo collega al codice da cui è nato. Puoi controllarlo con il programma <a href="https://cli.github.com/">GitHub CLI</a>:</p>
+          <pre>gh attestation verify Owlook-Chrome.zip -R Owlook-quotes/owlook</pre>
+          <p data-t="ve-p2">L'impronta SHA-256 di ogni versione è nella <a href="https://github.com/Owlook-quotes/owlook/releases/latest">pagina della release</a>. La libreria dei grafici è TradingView Lightweight Charts 5.2.1, identica al file ufficiale pubblicato su npm.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="gal-h">
+    <h2 id="gal-h" data-t="gal-h">Cosa trovi dentro</h2>
+    <ul class="what">
+      <li data-t="f1"><b>Preferiti e liste</b> con prezzo e variazione di oggi e dell'ultima chiusura</li>
+      <li data-t="f2"><b>Grafici</b> a linee e a candele, da un giorno a cinque anni</li>
+      <li data-t="f3"><b>Portafoglio</b> con quantità, prezzo medio e guadagno</li>
+      <li data-t="f4"><b>Calendario</b> delle trimestrali e dei dati macro USA</li>
+      <li data-t="f5"><b>Titoli in evidenza</b> e futures sempre visibili in alto, e una <b>modalità zen</b> senza distrazioni</li>
+      <li data-t="f6"><b>Solo notizie importanti</b> con grado, tag e un avviso quando ne esce una nuova</li>
+    </ul>
+    <div class="gal">
+      <figure><img loading="lazy" src="screenshots/watchlist-dark.png" alt=""><figcaption data-t="c1">Lista dei preferiti</figcaption></figure>
+      <figure><img loading="lazy" src="screenshots/candles-dark.png" alt=""><figcaption data-t="c2">Grafico a candele</figcaption></figure>
+      <figure><img loading="lazy" src="screenshots/history-dark.png" alt=""><figcaption data-t="c7">Andamento storico</figcaption></figure>
+      <figure><img loading="lazy" src="screenshots/news-dark.png" alt=""><figcaption data-t="c8">Notizie importanti</figcaption></figure>
+      <figure><img loading="lazy" src="screenshots/portfolio-dark.png" alt=""><figcaption data-t="c3">Portafoglio</figcaption></figure>
+      <figure><img loading="lazy" src="screenshots/economic-calendar-dark.png" alt=""><figcaption data-t="c5">Calendario macroeconomico</figcaption></figure>
+      <figure><img loading="lazy" src="screenshots/earnings-dark.png" alt=""><figcaption data-t="c4">Risultati delle trimestrali</figcaption></figure>
+      <figure><img loading="lazy" src="screenshots/zen-dark.png" alt=""><figcaption data-t="c9">Modalità zen</figcaption></figure>
+      <figure><img loading="lazy" src="screenshots/settings-dark.png" alt=""><figcaption data-t="c6">Impostazioni</figcaption></figure>
+    </div>
+  </section>
+  </main>
+
+  <footer>
+    <div class="row">
+      <a href="https://github.com/Owlook-quotes/owlook" data-t="code">Codice sorgente su GitHub</a>
+      <a href="https://github.com/Owlook-quotes/owlook/releases" data-t="all">Tutte le versioni</a>
+      <a href="https://github.com/Owlook-quotes/owlook/issues" data-t="bug">Segnala un problema</a>
+      <a href="privacy.html" data-t="priv">Privacy</a>
+    </div>
+    <p data-t="disc">Dati da Yahoo Finance (non ufficiale), possono essere in ritardo o inesatti. Solo a scopo informativo, non è una consulenza finanziaria. Owlook non è affiliato a Yahoo, Nasdaq, Google o agli altri marchi citati. Codice sorgente pubblico con <a href="https://github.com/Owlook-quotes/owlook/blob/main/LICENSE">licenza PolyForm Noncommercial</a>: uso solo non commerciale.</p>
+    <p>Charts: <a href="https://www.tradingview.com/">TradingView Lightweight Charts™</a> © TradingView, Inc.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var T = {
+    en: {
+      "lede":"Stock quotes always in sight, in a small panel on top of any web page.",
+      "cta-s":"Free extension, downloads a zip file",
+      "meta":"The link always downloads the latest version.",
+      "shot-alt":"Video: Owlook on top of a web page opens a stock's candlestick chart, then another stock's price history",
+      "install-h":"How to install","install-p":"One minute, once.",
+      "s1":"Unzip <code>Owlook-Chrome.zip</code>: you get an <code>owlook</code> folder. Keep it somewhere you won't delete it, because the browser loads it from there.",
+      "s2":"Type <code class=\"xurl\">chrome://extensions</code><button type=\"button\" class=\"copy\">Copy</button> in the address bar and turn on <b>Developer mode</b>.",
+      "s3":"Click <b>Load unpacked</b> and choose the <code>owlook</code> folder.",
+      "s4":"Open any web page and press <b>Alt+Shift+M</b> (on a Mac <b>Option+Shift+M</b>), or click the Owlook icon.",
+      "why-h":"Why developer mode?",
+      "why-p":"Owlook isn't in the extension stores yet, so you install it by hand. The code is public on GitHub and your data stays in your browser: no account, no tracking.",
+      "upd-h":"Updating",
+      "upd-p":"Download the new version, copy its files over the old <code>owlook</code> folder and press ⟳ on Owlook in the extensions page. Lists, portfolio and settings are kept.",
+      "br-h":"Which browsers it works on","br-p":"Chromium-based browsers on computers.",
+      "b-opera":"Opera and Opera GX",
+      "b-safari":"Safari <small>not supported</small>","b-ff":"Firefox <small>not yet</small>","b-mob":"Phones and tablets <small>not supported</small>",
+      "tr-h":"What it does and doesn't do",
+      "tr-p":"All of Owlook's code is public and readable, not minified or obfuscated (the only minified file is TradingView's chart library, identical to the original). Here is what it asks the browser for and why, with a link to the code.",
+      "p1-h":"Save your data in the browser","p1":"Lists, portfolio, settings and the logos already downloaded stay only on your computer. Unlimited space is for the logos.","p1-l":"See the code",
+      "p2-h":"Access to sites","p2":"Needed to show the panel on top of pages and to download prices and calendars from the sources listed here. It doesn't read or save the content of pages: it only looks at the background colour under the panel, to pick the contrast.","p2-l":"See the manifest",
+      "p3-h":"Add the panel","p3":"Adds the panel to the tab when you press the icon or the shortcut, and loads the chart library only when you open a chart.","p3-l":"See the code",
+      "p5-h":"News alerts","p5":"Only for the tickers where you pressed “Notify me”: every 2 minutes it checks for new stories and tells you with a browser notification.","p5-l":"See the code",
+      "p4-h":"Side panel","p4":"Opens Owlook on the side where the panel can't appear, for example on the new tab or on browser pages.","p4-l":"See the code",
+      "nv-h":"What it doesn't do",
+      "nv":"<li>No account, ads or usage statistics.</li><li>Nothing is sent to the author: there is no Owlook server.</li><li>It doesn't read, save or send the pages you visit.</li><li>It doesn't download code from the internet: it runs only the files you see on GitHub.</li>",
+      "src-h":"Where the data comes from",
+      "src":"Prices and charts: Yahoo Finance. News: important stories only, from major agencies and outlets and official press releases (through Yahoo Finance and Google News) and SEC Form 8-K filings. Earnings: Nasdaq and Yahoo Finance. Economic calendar: BLS, BEA, Census, Federal Reserve, Department of Labor, FRED, ISM, ADP and The Conference Board, with forecasts from Forex Factory. Logos: Brandfetch, Financial Modeling Prep, Parqet, CoinCap and flagcdn. These sites only receive the ticker (for example AAPL), never the page you are viewing.",
+      "ve-h":"Verify the file",
+      "ve-p":"GitHub builds the zip from the public code, with a signed attestation that links it to the code it came from. You can check it with <a href=\"https://cli.github.com/\">GitHub CLI</a>:",
+      "ve-p2":"The SHA-256 fingerprint of each version is on the <a href=\"https://github.com/Owlook-quotes/owlook/releases/latest\">release page</a>. The chart library is TradingView Lightweight Charts 5.2.1, identical to the official file published on npm.",
+      "priv":"Privacy",
+      "gal-h":"What's inside",
+      "f1":"<b>Favorites and lists</b> with price, today's change and the last close",
+      "f2":"<b>Charts</b> in lines or candles, from one day to five years",
+      "f3":"<b>Portfolio</b> with quantity, average price and gain",
+      "f4":"<b>Calendar</b> of US earnings and macro data",
+      "f5":"<b>Featured tickers</b> and futures always visible at the top, and a distraction-free <b>zen mode</b>",
+      "f6":"<b>Important news only</b> with grade, tag and an alert when a new story comes out",
+      "c1":"Favorites list","c2":"Candlestick chart","c3":"Portfolio","c4":"Earnings results","c5":"Economic calendar","c6":"Settings","c7":"Price history","c8":"Important news","c9":"Zen mode",
+      "v1-a":"Video: the macro and earnings calendars, in the calendar and results views","v2-a":"Video: the portfolio and the news about a ticker","vid-h":"See it in action","vid-p":"Calendars, portfolio and news, always in the same panel.",
+      "v1-h":"US calendar","v1-p":"Macro data with forecasts and actual values, the week's earnings and results with a mini chart of the session.",
+      "v2-h":"Portfolio and news","v2-p":"Return of each holding and of the total, and only the stories that matter, with grade and tag.",
+      "code":"Source code on GitHub","all":"All versions","bug":"Report a problem",
+      "disc":"Data from Yahoo Finance (unofficial), may be delayed or inaccurate. For information only, not financial advice. Owlook is not affiliated with Yahoo, Nasdaq, Google or the other brands mentioned. Source available under the <a href=\"https://github.com/Owlook-quotes/owlook/blob/main/LICENSE\">PolyForm Noncommercial license</a>: noncommercial use only.",
+      "add":"Add to {b}","copy":"Copy","copied":"Copied",
+      "ver":"Version {v} beta, {s}. The link always downloads the latest version.",
+      "n-safari":"You're using Safari. Owlook works with Chrome, Edge, Brave, Opera, Vivaldi and Arc: open this page in one of them.",
+      "n-firefox":"You're using Firefox. Owlook works with Chrome, Edge, Brave, Opera, Vivaldi and Arc: open this page in one of them.",
+      "n-mobile":"Owlook works in browsers on computers. Open this page on your computer to install it."
+    },
+    it: {}
+  };
+  document.querySelectorAll("[data-t]").forEach(function(el){ T.it[el.getAttribute("data-t")] = el.innerHTML; });
+  document.querySelectorAll("[data-t-alt]").forEach(function(el){ T.it[el.getAttribute("data-t-alt")] = el.alt; });
+  document.querySelectorAll("[data-t-aria]").forEach(function(el){ T.it[el.getAttribute("data-t-aria")] = el.getAttribute("aria-label"); });
+  T.it.add = "Aggiungi a {b}"; T.it.copy = "Copia"; T.it.copied = "Copiato";
+  T.it.ver = "Versione {v} beta, {s}. Il link scarica sempre l'ultima versione.";
+  T.it["n-safari"] = "Stai usando Safari. Owlook funziona con Chrome, Edge, Brave, Opera, Vivaldi e Arc: apri questa pagina con uno di questi browser.";
+  T.it["n-firefox"] = "Stai usando Firefox. Owlook funziona con Chrome, Edge, Brave, Opera, Vivaldi e Arc: apri questa pagina con uno di questi browser.";
+  T.it["n-mobile"] = "Owlook funziona sui browser per computer. Apri questa pagina dal computer per installarlo.";
+
+  // which browser?
+  var ua = navigator.userAgent || "";
+  var mobile = (navigator.userAgentData && navigator.userAgentData.mobile) || /android|iphone|ipod|ipad|mobile/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var br = mobile ? "mobile" : /Firefox\//.test(ua) ? "firefox" : /Edg\//.test(ua) ? "edge" : /OPR\//.test(ua) ? "opera"
+         : navigator.brave ? "brave" : /Vivaldi/.test(ua) ? "vivaldi" : /Chrome\//.test(ua) ? "chrome" : /Safari\//.test(ua) ? "safari" : "chrome";
+  var NAME = {chrome:"Chrome", edge:"Edge", brave:"Brave", opera:"Opera", vivaldi:"Vivaldi"};
+  var name = NAME[br] || "Chrome", xurl = (NAME[br] ? br : "chrome") + "://extensions";
+
+  var lang, rel = null;
+  function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+  function nf(x,d){ return x.toLocaleString(lang==="it"?"it-IT":"en-US",{maximumFractionDigits:d}); }
+  function render(){
+    document.getElementById("cta-t").textContent = T[lang].add.replace("{b}", name);
+    document.querySelectorAll(".xurl").forEach(function(c){ c.textContent = xurl; });
+    var note = document.getElementById("note"), nk = {safari:"n-safari", firefox:"n-firefox", mobile:"n-mobile"}[br];
+    note.hidden = !nk; if (nk) note.textContent = T[lang][nk];
+    var meta = document.getElementById("meta");
+    if (rel) {
+      var a = (rel.assets||[]).filter(function(x){ return x.name === "Owlook-Chrome.zip"; })[0];
+      var v = (rel.tag_name||"").replace(/^(desktop-)?v/,"");
+      if (v && a) meta.textContent = T[lang].ver.replace("{v}", v).replace("{s}", a.size < 1048576 ? nf(Math.max(1,Math.round(a.size/1024)),0)+" KB" : nf(a.size/1048576,1)+" MB");
+    }
+  }
+  function setLang(l){
+    lang = l; document.documentElement.lang = l;
+    document.querySelectorAll("[data-t]").forEach(function(el){ var s=T[l][el.getAttribute("data-t")]; if(s!=null) el.innerHTML=s; });
+    document.querySelectorAll("[data-t-alt]").forEach(function(el){ var s=T[l][el.getAttribute("data-t-alt")]; if(s!=null) el.alt=s; });
+    document.querySelectorAll("[data-t-aria]").forEach(function(el){ var s=T[l][el.getAttribute("data-t-aria")]; if(s!=null) el.setAttribute("aria-label", s); });
+    document.querySelectorAll(".lang button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.lang===l)); });
+    render();
+  }
+  document.querySelectorAll(".lang button").forEach(function(b){
+    b.addEventListener("click",function(){ store("owlook-lang",b.dataset.lang); setLang(b.dataset.lang); });
+  });
+  var saved = store("owlook-lang");
+  setLang(saved==="it"||saved==="en" ? saved : ((navigator.language||"en").toLowerCase().indexOf("it")===0 ? "it" : "en"));
+  var chip = document.querySelector('.works [data-b="'+br+'"]'); if (chip) chip.classList.add("me");
+
+  // reduced motion: no autoplay, show a still with the chart open
+  var demo = document.getElementById("demo"), rm = matchMedia("(prefers-reduced-motion: reduce)");
+  function still(){ if (!rm.matches) { demo.play && demo.play().catch(function(){}); return; } demo.pause(); var go=function(){ try{ demo.currentTime = 6.5; }catch(_){} }; if (demo.readyState >= 1) go(); else demo.addEventListener("loadedmetadata", go, {once:true}); }
+  if (demo) { if (rm.matches) demo.removeAttribute("autoplay"); still(); rm.addEventListener && rm.addEventListener("change", still); }
+
+  // the logo turns into its zen version every 5 seconds and back (like the widget)
+  var mark = document.getElementById("mark");
+  if (mark && !rm.matches) setInterval(function(){ if (!document.hidden) mark.classList.toggle("zen"); }, 5000);
+  // the two smaller videos play only while on screen
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function(es){ es.forEach(function(e){ var v = e.target; if (rm.matches) return; if (e.isIntersecting) v.play().catch(function(){}); else v.pause(); }); }, {threshold:.25});
+    document.querySelectorAll("video.vd").forEach(function(v){ if (rm.matches) { v.removeAttribute("autoplay"); v.pause(); } io.observe(v); });
+  }
+
+  // copy the extensions address (pages can't open it with a link)
+  document.addEventListener("click", function(e){
+    var b = e.target.closest && e.target.closest(".copy"); if (!b) return;
+    var done = function(){ b.textContent = T[lang].copied; setTimeout(function(){ b.textContent = T[lang].copy; }, 1600); };
+    try { navigator.clipboard.writeText(xurl).then(done, function(){}); } catch(_) {}
+  });
+  // after the download, bring the steps into view
+  document.getElementById("cta").addEventListener("click", function(){
+    setTimeout(function(){ document.getElementById("install").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); }, 500);
+  });
+
+  fetch("https://api.github.com/repos/Owlook-quotes/owlook/releases/latest",{headers:{Accept:"application/vnd.github+json"}})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(j){ if(j){ rel = j; render(); } }).catch(function(){});
+})();
+</script>
+</body>
+</html>
