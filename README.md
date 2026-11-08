@@ -5,7 +5,7 @@
   <img src="docs/owlook-logo-light.png" alt="Owlook" width="320">
 </picture>
 
-**Market quotes always in view while you browse.** Owlook is a free browser extension that puts a small glass panel on top of any web page, with watchlists, a portfolio, candlestick and price-history charts, and the US economic and earnings calendars.
+**Market quotes always in view while you browse.** Owlook is a free browser extension that puts a small glass panel on top of any web page, with watchlists, a portfolio, candlestick and price-history charts, important news, and the US economic and earnings calendars.
 
 > **Beta.** Owlook is new and still being tested. Things may break, data sources may change, and features may move around between versions. Bug reports are very welcome (see [Feedback](#feedback)).
 
@@ -14,20 +14,22 @@
 *Versione italiana più sotto ([vai](#italiano)).*
 
 <p align="center">
-  <img src="docs/screenshots/watchlist-dark.png" width="32%" alt="Watchlist, dark theme">
-  <img src="docs/screenshots/portfolio-light.png" width="32%" alt="Portfolio, light theme">
-  <img src="docs/screenshots/settings-dark.png" width="32%" alt="Settings">
+  <img src="store/screenshots/1-watchlist.png" width="100%" alt="Owlook: your markets, on every page">
 </p>
 <p align="center">
-  <img src="docs/screenshots/candles-dark.png" width="49%" alt="Candlestick chart with indicators">
-  <img src="docs/screenshots/history-light.png" width="49%" alt="Price history chart">
+  <img src="store/screenshots/2-chart.png" width="49%" alt="Candlestick charts with indicators">
+  <img src="store/screenshots/3-news.png" width="49%" alt="Only the news that matters">
 </p>
 <p align="center">
-  <img src="docs/screenshots/earnings-dark.png" width="49%" alt="US earnings calendar">
-  <img src="docs/screenshots/economic-calendar-dark.png" width="49%" alt="US economic calendar">
+  <img src="store/screenshots/4-portfolio.png" width="49%" alt="Portfolio">
+  <img src="store/screenshots/5-calendar.png" width="49%" alt="US earnings and economic calendar">
+</p>
+<p align="center">
+  <a href="https://owlook-quotes.github.io/owlook/"><img src="docs/media/owlook-charts-poster.jpg" width="70%" alt="Watch the videos on the website"></a><br>
+  <sub>▶ Watch Owlook in action on the <a href="https://owlook-quotes.github.io/owlook/">website</a>.</sub>
 </p>
 
-<sub>Screenshots taken with demo data on a test page.</sub>
+<sub>Images made with demo tickers, logos and data.</sub>
 
 ## Features
 
@@ -139,6 +141,19 @@ To try changes, load the `extension` folder with **Load unpacked**.
 ## Italiano
 
 **Quotazioni sempre visibili mentre navighi.** Owlook è un'estensione gratuita che mostra, sopra qualsiasi pagina, un piccolo pannello di vetro con liste di titoli, portafoglio, grafici a candele e andamento storico, calendario economico e calendario degli utili delle società USA.
+
+<p align="center">
+  <img src="store/screenshots-it/1-watchlist.png" width="100%" alt="Owlook: la borsa, su ogni pagina">
+</p>
+<p align="center">
+  <img src="store/screenshots-it/2-chart.png" width="49%" alt="Grafici a candele con indicatori">
+  <img src="store/screenshots-it/3-news.png" width="49%" alt="Solo le notizie che contano">
+</p>
+<p align="center">
+  <img src="store/screenshots-it/4-portfolio.png" width="49%" alt="Portafoglio">
+  <img src="store/screenshots-it/5-calendar.png" width="49%" alt="Calendario utili e macro USA">
+</p>
+<p align="center"><sub>▶ Guarda i video sul <a href="https://owlook-quotes.github.io/owlook/">sito</a>. Immagini con titoli, loghi e dati dimostrativi.</sub></p>
 
 > **Versione beta.** Owlook è nuova e ancora in fase di test: possono esserci errori, le fonti dei dati possono cambiare e alcune funzioni possono cambiare da una versione all'altra. Le segnalazioni sono benvenute (vedi sotto).
 
