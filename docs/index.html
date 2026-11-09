@@ -73,6 +73,9 @@ code{font:500 .88em/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;backg
 .cta .t{display:block;font-weight:700;font-size:21px;line-height:1.2}
 .cta .s{display:block;font-size:14px;color:rgba(255,255,255,.85);margin-top:3px}
 .cta svg{flex:none;width:26px;height:26px;margin-left:auto;stroke:currentColor}
+.cta .cw{width:34px;height:34px;margin-left:0;stroke:none}
+.cta:hover .ar{transform:translateX(3px)}.cta .ar{transition:transform .15s}
+.meta a{color:inherit}
 .meta{font-size:14px;color:var(--muted);margin:12px 0 0;min-height:1.4em}
 .works{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 0;padding:0;list-style:none}
 .works li{font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px}
@@ -210,11 +213,13 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
 
       <p class="note" id="note" hidden></p>
 
-      <a class="cta" id="cta" href="https://github.com/Owlook-quotes/owlook/releases/latest/download/Owlook-Chrome.zip">
-        <span><span class="t" id="cta-t">Aggiungi a Chrome</span><span class="s" data-t="cta-s">Estensione gratuita, scarica il file zip</span></span>
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>
+      <a class="cta" id="cta" href="https://chromewebstore.google.com/detail/eejkikdiikidddfdpeejelhfcfhieelp">
+        <!-- simbolo di Chrome: Simple Icons (CC0), il pulsante porta alla pagina di Owlook sul Chrome Web Store -->
+        <svg class="cw" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29zm13.342 2.166a5.446 5.446 0 0 1 1.45 7.09l.002.001h-.002l-5.344 9.257c.206.01.413.016.621.016 6.627 0 12-5.373 12-12 0-1.54-.29-3.011-.818-4.364zM12 16.364a4.364 4.364 0 1 1 0-8.728 4.364 4.364 0 0 1 0 8.728Z"/></svg>
+        <span><span class="t" id="cta-t">Aggiungi a Chrome</span><span class="s" data-t="cta-s">Gratis dal Chrome Web Store</span></span>
+        <svg class="ar" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
       </a>
-      <p class="meta" id="meta" data-t="meta">I link scaricano sempre l'ultima versione.</p>
+      <p class="meta" id="meta" data-t="meta">Si aggiorna da solo. Preferisci il file zip? <a href="#manual">Installazione manuale</a></p>
       <ul class="works" id="works" aria-label="Browser">
         <li data-b="chrome">Chrome</li><li data-b="edge">Edge</li><li data-b="brave">Brave</li><li data-b="opera">Opera</li><li data-b="vivaldi">Vivaldi</li><li data-b="arc">Arc</li>
       </ul>
@@ -237,19 +242,18 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   </section>
   <section class="block" id="install" aria-labelledby="install-h">
     <h2 id="install-h" data-t="install-h">Come si installa</h2>
-    <p class="intro" data-t="install-p">Un minuto, una volta sola.</p>
+    <p class="intro" data-t="install-p">Dal Chrome Web Store, in pochi secondi.</p>
     <div class="install card">
       <ol class="steps">
-        <li data-t="s1">Scompatta <code>Owlook-Chrome.zip</code>: ottieni la cartella <code>owlook</code>. Mettila dove non la cancellerai, perché il browser la usa da lì.</li>
-        <li data-t="s2">Scrivi <code class="xurl">chrome://extensions</code><button type="button" class="copy">Copia</button> nella barra degli indirizzi e attiva <b>Modalità sviluppatore</b>.</li>
-        <li data-t="s3">Premi <b>Carica estensione non pacchettizzata</b> e scegli la cartella <code>owlook</code>.</li>
-        <li data-t="s4">Apri una pagina qualsiasi e premi <b>Alt+Maiusc+M</b> (sul Mac <b>Option+Maiusc+M</b>), oppure clicca l'icona di Owlook.</li>
+        <li data-t="s1">Premi <b>Aggiungi a Chrome</b> qui sopra e poi <b>Aggiungi estensione</b> nella pagina dello store.</li>
+        <li data-t="s2">Si apre una breve guida: scegli se vedere Owlook su ogni pagina o solo quando clicchi la sua icona. Puoi cambiare idea nelle impostazioni.</li>
+        <li data-t="s3">Apri una pagina qualsiasi e premi <b>Alt+Maiusc+M</b> (sul Mac <b>Option+Maiusc+M</b>), oppure clicca l'icona di Owlook.</li>
       </ol>
-      <div class="side">
-        <h3 data-t="why-h">Perché la modalità sviluppatore?</h3>
-        <p data-t="why-p">Owlook non è ancora nei negozi di estensioni, quindi si installa a mano. Il codice è pubblico su GitHub e i tuoi dati restano nel browser: niente account, niente tracciamento.</p>
+      <div class="side" id="manual">
+        <h3 data-t="man-h">Installazione manuale</h3>
+        <p data-t="man-p">Senza passare dallo store: scarica <a href="https://github.com/Owlook-quotes/owlook/releases/latest/download/Owlook-Chrome.zip">Owlook-Chrome.zip</a> e scompattalo. Scrivi <code class="xurl">chrome://extensions</code><button type="button" class="copy">Copia</button> nella barra degli indirizzi, attiva <b>Modalità sviluppatore</b>, premi <b>Carica estensione non pacchettizzata</b> e scegli la cartella <code>owlook</code>.</p>
         <h3 data-t="upd-h">Aggiornare</h3>
-        <p data-t="upd-p">Scarica la nuova versione, copia i file sopra la vecchia cartella <code>owlook</code> e premi ⟳ su Owlook nella pagina delle estensioni. Liste, portafoglio e impostazioni restano.</p>
+        <p data-t="upd-p">Dallo store Owlook si aggiorna da solo. Con l'installazione manuale scarica la nuova versione, copia i file sopra la vecchia cartella <code>owlook</code> e premi ⟳ su Owlook nella pagina delle estensioni. Liste, portafoglio e impostazioni restano.</p>
       </div>
     </div>
   </section>
@@ -276,8 +280,8 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     <div class="facts card">
       <ul class="perm">
         <li><b data-t="p1-h">Salvare i tuoi dati nel browser</b> <code>storage</code> <code>unlimitedStorage</code><p data-t="p1">Liste, portafoglio, impostazioni e i loghi già scaricati restano solo sul tuo computer. Lo spazio senza limite serve per i loghi.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/content.js" data-t="p1-l">Vedi il codice</a></li>
-        <li><b data-t="p2-h">Accesso ai siti</b> <code>http://*/*</code> <code>https://*/*</code><p data-t="p2">Serve per mostrare il pannello sopra le pagine e per scaricare prezzi e calendari dalle fonti qui accanto. Non legge né salva il contenuto delle pagine: guarda solo il colore dello sfondo sotto al pannello, per scegliere il contrasto.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/manifest.json" data-t="p2-l">Vedi il manifest</a></li>
-        <li><b data-t="p3-h">Inserire il pannello</b> <code>scripting</code> <code>activeTab</code><p data-t="p3">Aggiunge il pannello alla scheda quando premi l'icona o la scorciatoia, e carica la libreria dei grafici solo quando apri un grafico.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/background.js" data-t="p3-l">Vedi il codice</a></li>
+        <li><b data-t="p2-h">Accesso a tutti i siti, facoltativo</b> <code>http://*/*</code> <code>https://*/*</code><p data-t="p2">Lo chiede solo se scegli di vedere Owlook su ogni pagina, e serve solo a mostrare il pannello sopra le pagine. Non legge né salva il contenuto delle pagine: guarda solo il colore dello sfondo sotto al pannello, per scegliere il contrasto. Senza questo accesso Owlook compare quando clicchi la sua icona. Per scaricare i dati contatta solo le fonti elencate qui accanto.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/manifest.json" data-t="p2-l">Vedi il manifest</a></li>
+        <li><b data-t="p3-h">Inserire il pannello</b> <code>scripting</code> <code>activeTab</code><p data-t="p3">Aggiunge il pannello alla scheda quando premi l'icona o la scorciatoia (o a ogni pagina, se l'hai scelto), e carica la libreria dei grafici solo quando apri un grafico.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/background.js" data-t="p3-l">Vedi il codice</a></li>
         <li><b data-t="p5-h">Avvisi delle notizie</b> <code>alarms</code> <code>notifications</code><p data-t="p5">Solo per i titoli in cui hai premuto «Avvisami»: ogni 2 minuti controlla se ci sono notizie nuove e te lo segnala con una notifica del browser.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/background.js" data-t="p5-l">Vedi il codice</a></li>
         <li><b data-t="p4-h">Pannello laterale</b> <code>sidePanel</code><p data-t="p4">Apre Owlook di lato dove il pannello non può comparire, per esempio nella nuova scheda o nelle pagine del browser.</p><a href="https://github.com/Owlook-quotes/owlook/blob/main/extension/panel.html" data-t="p4-l">Vedi il codice</a></li>
       </ul>
@@ -331,26 +335,25 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   var T = {
     en: {
       "lede":"Stock quotes always in sight, in a small panel on top of any web page.",
-      "cta-s":"Free extension, downloads a zip file",
-      "meta":"The link always downloads the latest version.",
+      "cta-s":"Free on the Chrome Web Store",
+      "meta":"Updates automatically. Prefer the zip file? <a href=\"#manual\">Manual install</a>",
       "shot-alt":"Video: Owlook on top of a web page opens a stock's candlestick chart, then another stock's price history",
-      "install-h":"How to install","install-p":"One minute, once.",
-      "s1":"Unzip <code>Owlook-Chrome.zip</code>: you get an <code>owlook</code> folder. Keep it somewhere you won't delete it, because the browser loads it from there.",
-      "s2":"Type <code class=\"xurl\">chrome://extensions</code><button type=\"button\" class=\"copy\">Copy</button> in the address bar and turn on <b>Developer mode</b>.",
-      "s3":"Click <b>Load unpacked</b> and choose the <code>owlook</code> folder.",
-      "s4":"Open any web page and press <b>Alt+Shift+M</b> (on a Mac <b>Option+Shift+M</b>), or click the Owlook icon.",
-      "why-h":"Why developer mode?",
-      "why-p":"Owlook isn't in the extension stores yet, so you install it by hand. The code is public on GitHub and your data stays in your browser: no account, no tracking.",
+      "install-h":"How to install","install-p":"From the Chrome Web Store, in a few seconds.",
+      "s1":"Click <b>Add to Chrome</b> above, then <b>Add extension</b> on the store page.",
+      "s2":"A short guide opens: choose whether to see Owlook on every page or only when you click its icon. You can change your mind in the settings.",
+      "s3":"Open any web page and press <b>Alt+Shift+M</b> (on a Mac <b>Option+Shift+M</b>), or click the Owlook icon.",
+      "man-h":"Manual install",
+      "man-p":"Without the store: download <a href=\"https://github.com/Owlook-quotes/owlook/releases/latest/download/Owlook-Chrome.zip\">Owlook-Chrome.zip</a> and unzip it. Type <code class=\"xurl\">chrome://extensions</code><button type=\"button\" class=\"copy\">Copy</button> in the address bar, turn on <b>Developer mode</b>, click <b>Load unpacked</b> and choose the <code>owlook</code> folder.",
       "upd-h":"Updating",
-      "upd-p":"Download the new version, copy its files over the old <code>owlook</code> folder and press ⟳ on Owlook in the extensions page. Lists, portfolio and settings are kept.",
+      "upd-p":"From the store Owlook updates by itself. With a manual install, download the new version, copy its files over the old <code>owlook</code> folder and press ⟳ on Owlook in the extensions page. Lists, portfolio and settings are kept.",
       "br-h":"Which browsers it works on","br-p":"Chromium-based browsers on computers.",
       "b-opera":"Opera and Opera GX",
       "b-safari":"Safari <small>not supported</small>","b-ff":"Firefox <small>not yet</small>","b-mob":"Phones and tablets <small>not supported</small>",
       "tr-h":"What it does and doesn't do",
       "tr-p":"All of Owlook's code is public and readable, not minified or obfuscated (the only minified file is TradingView's chart library, identical to the original). Here is what it asks the browser for and why, with a link to the code.",
       "p1-h":"Save your data in the browser","p1":"Lists, portfolio, settings and the logos already downloaded stay only on your computer. Unlimited space is for the logos.","p1-l":"See the code",
-      "p2-h":"Access to sites","p2":"Needed to show the panel on top of pages and to download prices and calendars from the sources listed here. It doesn't read or save the content of pages: it only looks at the background colour under the panel, to pick the contrast.","p2-l":"See the manifest",
-      "p3-h":"Add the panel","p3":"Adds the panel to the tab when you press the icon or the shortcut, and loads the chart library only when you open a chart.","p3-l":"See the code",
+      "p2-h":"Access to all sites, optional","p2":"Requested only if you choose to see Owlook on every page, and used only to show the panel on top of pages. It doesn't read or save the content of pages: it only looks at the background colour under the panel, to pick the contrast. Without this access Owlook appears when you click its icon. To download data it only contacts the sources listed here.","p2-l":"See the manifest",
+      "p3-h":"Add the panel","p3":"Adds the panel to the tab when you press the icon or the shortcut (or to every page, if you chose so), and loads the chart library only when you open a chart.","p3-l":"See the code",
       "p5-h":"News alerts","p5":"Only for the tickers where you pressed “Notify me”: every 2 minutes it checks for new stories and tells you with a browser notification.","p5-l":"See the code",
       "p4-h":"Side panel","p4":"Opens Owlook on the side where the panel can't appear, for example on the new tab or on browser pages.","p4-l":"See the code",
       "nv-h":"What it doesn't do",
@@ -374,7 +377,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       "code":"Source code on GitHub","all":"All versions","bug":"Report a problem",
       "disc":"Data from Yahoo Finance (unofficial), may be delayed or inaccurate. For information only, not financial advice. Owlook is not affiliated with Yahoo, Nasdaq, Google or the other brands mentioned. Source available under the <a href=\"https://github.com/Owlook-quotes/owlook/blob/main/LICENSE\">PolyForm Noncommercial license</a>: noncommercial use only.",
       "add":"Add to {b}","copy":"Copy","copied":"Copied",
-      "ver":"Version {v} beta, {s}. The link always downloads the latest version.",
+      "ver":"Version {v}. Updates automatically. Prefer the zip file? <a href=\"#manual\">Manual install</a>",
       "n-safari":"You're using Safari. Owlook works with Chrome, Edge, Brave, Opera, Vivaldi and Arc: open this page in one of them.",
       "n-firefox":"You're using Firefox. Owlook works with Chrome, Edge, Brave, Opera, Vivaldi and Arc: open this page in one of them.",
       "n-mobile":"Owlook works in browsers on computers. Open this page on your computer to install it."
@@ -385,7 +388,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   document.querySelectorAll("[data-t-alt]").forEach(function(el){ T.it[el.getAttribute("data-t-alt")] = el.alt; });
   document.querySelectorAll("[data-t-aria]").forEach(function(el){ T.it[el.getAttribute("data-t-aria")] = el.getAttribute("aria-label"); });
   T.it.add = "Aggiungi a {b}"; T.it.copy = "Copia"; T.it.copied = "Copiato";
-  T.it.ver = "Versione {v} beta, {s}. Il link scarica sempre l'ultima versione.";
+  T.it.ver = "Versione {v}. Si aggiorna da solo. Preferisci il file zip? <a href=\"#manual\">Installazione manuale</a>";
   T.it["n-safari"] = "Stai usando Safari. Owlook funziona con Chrome, Edge, Brave, Opera, Vivaldi e Arc: apri questa pagina con uno di questi browser.";
   T.it["n-firefox"] = "Stai usando Firefox. Owlook funziona con Chrome, Edge, Brave, Opera, Vivaldi e Arc: apri questa pagina con uno di questi browser.";
   T.it["n-mobile"] = "Owlook funziona sui browser per computer. Apri questa pagina dal computer per installarlo.";
@@ -410,7 +413,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (rel) {
       var a = (rel.assets||[]).filter(function(x){ return x.name === "Owlook-Chrome.zip"; })[0];
       var v = (rel.tag_name||"").replace(/^(desktop-)?v/,"");
-      if (v && a) meta.textContent = T[lang].ver.replace("{v}", v).replace("{s}", a.size < 1048576 ? nf(Math.max(1,Math.round(a.size/1024)),0)+" KB" : nf(a.size/1048576,1)+" MB");
+      if (v && a) meta.innerHTML = T[lang].ver.replace("{v}", v);
     }
   }
   function setLang(l){
@@ -448,11 +451,6 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     var done = function(){ b.textContent = T[lang].copied; setTimeout(function(){ b.textContent = T[lang].copy; }, 1600); };
     try { navigator.clipboard.writeText(xurl).then(done, function(){}); } catch(_) {}
   });
-  // after the download, bring the steps into view
-  document.getElementById("cta").addEventListener("click", function(){
-    setTimeout(function(){ document.getElementById("install").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); }, 500);
-  });
-
   fetch("https://api.github.com/repos/Owlook-quotes/owlook/releases/latest",{headers:{Accept:"application/vnd.github+json"}})
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(j){ if(j){ rel = j; render(); } }).catch(function(){});

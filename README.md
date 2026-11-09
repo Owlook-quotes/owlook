@@ -9,7 +9,7 @@
 
 > **Beta.** Owlook is new and still being tested. Things may break, data sources may change, and features may move around between versions. Bug reports are very welcome (see [Feedback](#feedback)).
 
-**⬇️ Download: <https://owlook-quotes.github.io/owlook/>** (Chrome, Edge, Brave, Opera, Vivaldi, Arc)
+**⬇️ [Add to Chrome from the Chrome Web Store](https://chromewebstore.google.com/detail/eejkikdiikidddfdpeejelhfcfhieelp)** · Website: <https://owlook-quotes.github.io/owlook/> (Chrome, Edge, Brave, Opera, Vivaldi, Arc)
 
 *Versione italiana più sotto ([vai](#italiano)).*
 
@@ -44,7 +44,9 @@
 
 ## Install
 
-Owlook is not on the Chrome Web Store: you install it in developer mode, which takes a minute.
+**From the Chrome Web Store (recommended):** open [Owlook on the Chrome Web Store](https://chromewebstore.google.com/detail/eejkikdiikidddfdpeejelhfcfhieelp) and click **Add to Chrome**. A short guide opens: choose whether to see Owlook on every page or only when you click its icon. It updates by itself.
+
+**Manual install** (developer mode, if you prefer not to use the store):
 
 1. Download [`Owlook-Chrome.zip`](../../releases/latest/download/Owlook-Chrome.zip) and unzip it. You get an `owlook` folder.
 2. Open the extensions page of your browser: `chrome://extensions` (Edge: `edge://extensions`, Brave: `brave://extensions`, Opera: `opera://extensions`).
@@ -56,7 +58,7 @@ On pages where the widget cannot appear (no Internet connection, new tab, browse
 
 Keep the `owlook` folder where it is: the browser loads the extension from there.
 
-**Update**: unzip the new version, copy its files over the old folder (`owlook`), press ⟳ on the Owlook card in the extensions page, then reload your open tabs. Your lists, portfolio and settings are kept.
+**Update** (manual install only): unzip the new version, copy its files over the old folder (`owlook`), press ⟳ on the Owlook card in the extensions page, then reload your open tabs. Your lists, portfolio and settings are kept.
 
 ## Browsers
 
@@ -159,7 +161,9 @@ To try changes, load the `extension` folder with **Load unpacked**.
 
 **Funzioni:** liste con prezzi in tempo reale, variazione dall'ultima chiusura e di oggi, loghi e ordinamento; fino a sei titoli in evidenza in alto su ogni pagina (si possono nascondere); portafoglio con quantità, prezzo medio di carico, rendimento, valore e peso sul totale, con conversione di valuta; grafici a candele con indicatori e andamento storico, con zoom ricordato e impostazioni salvabili; calendario economico USA con le attese degli analisti; calendario degli utili con la settimana a colpo d'occhio, filtri per capitalizzazione, stime, EPS effettivo e sorpresa; solo notizie importanti di ogni titolo (tasto col giornale nella riga della lista: agenzie e testate principali, comunicati ufficiali delle aziende e moduli 8-K della SEC, con tag e grado da 1 a 3) con avvisi quando esce una notizia (controllo ogni 2 minuti) e un pallino viola sul tasto quando ce ne sono di nuove; tema chiaro e scuro, effetto vetro regolabile, colori di rialzo e ribasso personalizzabili, italiano e inglese.
 
-**Installazione:**
+**Installazione dal Chrome Web Store (consigliata):** apri [Owlook sul Chrome Web Store](https://chromewebstore.google.com/detail/eejkikdiikidddfdpeejelhfcfhieelp) e premi **Aggiungi a Chrome**. Si apre una breve guida: scegli se vedere Owlook su ogni pagina o solo quando clicchi la sua icona. Si aggiorna da solo.
+
+**Installazione manuale** (modalità sviluppatore, se preferisci non usare lo store):
 1. Scarica [`Owlook-Chrome.zip`](../../releases/latest/download/Owlook-Chrome.zip) e scompattalo: ottieni la cartella `owlook`.
 2. Apri la pagina delle estensioni del browser: `chrome://extensions` (Edge: `edge://extensions`, Brave: `brave://extensions`, Opera: `opera://extensions`).
 3. Attiva **Modalità sviluppatore**.
@@ -170,7 +174,7 @@ Dove il widget non può comparire (senza connessione, nuova scheda, pagine del b
 
 Lascia la cartella `owlook` dove si trova: il browser carica l'estensione da lì.
 
-**Aggiornamento:** scompatta la nuova versione, copia i file sopra la vecchia cartella (`owlook`), premi ⟳ sulla scheda di Owlook nella pagina delle estensioni e ricarica le pagine aperte. Liste, portafoglio e impostazioni restano.
+**Aggiornamento** (solo installazione manuale): scompatta la nuova versione, copia i file sopra la vecchia cartella (`owlook`), premi ⟳ sulla scheda di Owlook nella pagina delle estensioni e ricarica le pagine aperte. Liste, portafoglio e impostazioni restano.
 
 **Browser supportati:** Chrome, Edge, Brave, Opera e Opera GX, Vivaldi, Arc e gli altri browser per computer basati su Chromium. **Non** funziona su Safari (le estensioni per Safari si pubblicano solo col programma sviluppatori a pagamento di Apple), Firefox (non ancora) e sui browser per telefono e tablet. Dove il browser non ha il pannello laterale, Owlook si apre in una piccola finestra.
 
