@@ -337,11 +337,101 @@ function fedRate(html) {
   const num = (s) => { const [a, f] = s.trim().split("-"); let v = +a; if (f) { const [n, d] = f.split("/"); v += +n / +d; } return v; };
   return num(m[2]).toFixed(2) + "%";
 }
+// ---------- Comunicato BLS appena uscito (CPI, PPI, rapporto sul lavoro) ----------
+// La pagina del comunicato è online alle 8:30 in punto, l'API BLS si aggiorna qualche minuto dopo:
+// leggo i valori dal comunicato e uso l'API solo se la pagina non si lascia leggere.
+const REL_MONTHS = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+const MON_AB = ["Jan", "Feb", "Mar", "Apr", "May", "June?", "July?", "Aug", "Sept?", "Oct", "Nov", "Dec"];
+const REL_CODE = { cpi: "cpi", ppi: "ppi", nfp: "empsit" };
+const REL_TITLE = { cpi: /CONSUMER PRICE INDEX\s*[-–—]+\s*([A-Z]+)\s+(\d{4})/i, ppi: /PRODUCER PRICE INDEXES\s*[-–—]+\s*([A-Z]+)\s+(\d{4})/i, nfp: /THE EMPLOYMENT SITUATION\s*[-–—]+\s*([A-Z]+)\s+(\d{4})/i };
+const REL_NEED = { cpi: ["cpi_mm", "ccpi_mm"], ppi: ["ppi_mm", "cppi_mm"], nfp: ["nfp", "ur"] };
+function relText(html) {
+  return html.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;|&#160;/g, " ").replace(/&amp;/g, "&").replace(/&#8211;|&ndash;/g, "–").replace(/&#8212;|&mdash;/g, "—").replace(/&#8722;|&minus;/g, "-").replace(/&#\d+;|&\w+;/g, " ")
+    .replace(/[−]/g, "-").replace(/\s+/g, " ");
+}
+const pc = (v) => (v == null || isNaN(v) ? null : r1(v) + "%");
+// "increased 0.4 percent", "moved up 0.5 percent", "declined 0.2 percent", "was unchanged": variazione col segno giusto
+function relChg(txt, subject) {
+  const i = txt.search(subject);
+  if (i < 0) return null;
+  const seg = txt.slice(i, i + 260).split(/\.\s/)[0];
+  const m = /\b(unchanged|(?:[a-z]+\s){0,3}?)(?:by\s)?(-?\d+(?:\.\d+)?) percent/i.exec(seg);
+  if (/\bwas unchanged|\bunchanged\b/i.test(seg) && (!m || seg.search(/unchanged/i) < seg.indexOf(m[0]))) return 0;
+  if (!m) return null;
+  const v = +m[2];
+  return /(declin|decreas|fell|fall|down|lower|dropp|slipp)/i.test(m[1]) ? -Math.abs(v) : v;
+}
+// riga di una tabella: l'etichetta seguita da n numeri (o "-" se il dato manca)
+// (cerco solo nella tabella A; "last": l'ultima riga con quell'etichetta, es. il mese di quest'anno dopo quello dell'anno scorso)
+function relRow(txt, label, n, last) {
+  const a = txt.search(/Table A\b/), b = a < 0 ? -1 : txt.slice(a + 8).search(/Table B\b|Technical Note/);
+  const tab = a < 0 ? "" : txt.slice(a, b < 0 ? a + 6000 : a + 8 + b);
+  const re = new RegExp(label + "(?:\\s*\\(\\w+\\))?\\s+((?:(?:-?\\d+\\.\\d|-)\\s+){" + (n - 1) + "}(?:-?\\d+\\.\\d|-))(?=\\s|$)", "g");
+  let m, out = null;
+  while ((m = re.exec(tab))) { out = m[1].trim().split(/\s+/).map((x) => (x === "-" ? null : +x)); if (!last) break; }
+  return out;
+}
+function parseRelease(k, html, exp) {
+  let txt = relText(html);
+  const tm = REL_TITLE[k].exec(txt);
+  // il comunicato deve essere quello del mese atteso (prima delle 8:30 la pagina mostra ancora il mese prima)
+  if (!tm || REL_MONTHS.indexOf(tm[1].toUpperCase()) + 1 !== exp.m || +tm[2] !== exp.y) return null;
+  txt = txt.slice(tm.index); // solo il comunicato, senza i menu del sito
+  const vals = {}, prevs = {};
+  if (k === "cpi") {
+    // tabella A: 7 mesi destagionalizzati + variazione su 12 mesi (non destagionalizzata, "-" se non pubblicata)
+    const a = relRow(txt, "All items", 8), c = relRow(txt, "All items less food and energy", 8);
+    if (a) { vals.cpi_mm = pc(a[6]); prevs.cpi_mm = pc(a[5]); vals.cpi_yy = pc(a[7]); }
+    if (c) { vals.ccpi_mm = pc(c[6]); prevs.ccpi_mm = pc(c[5]); vals.ccpi_yy = pc(c[7]); }
+    vals.cpi_mm = vals.cpi_mm || pc(relChg(txt, /Consumer Price Index for All Urban Consumers \(CPI-U\)/i));
+    vals.ccpi_mm = vals.ccpi_mm || pc(relChg(txt, /index for all items less food and energy/i));
+  } else if (k === "ppi") {
+    // tabella A: una riga per mese; colonne: totale, senza alimentari/energia/commercio, … , 12 mesi totale, 12 mesi core
+    const lab = (m) => "\\b" + MON_AB[m - 1] + "\\.?", pm = exp.m === 1 ? 12 : exp.m - 1;
+    const r = relRow(txt, lab(exp.m), 12, true), q = relRow(txt, lab(pm), 12, true);
+    if (r) { vals.ppi_mm = pc(r[0]); vals.cppi_mm = pc(r[1]); vals.ppi_yy = pc(r[10]); vals.cppi_yy = pc(r[11]); }
+    if (q) { prevs.ppi_mm = pc(q[0]); prevs.cppi_mm = pc(q[1]); }
+    vals.ppi_mm = vals.ppi_mm || pc(relChg(txt, /Producer Price Index for final demand/i));
+    vals.cppi_mm = vals.cppi_mm || pc(relChg(txt, /final demand less foods, energy, and trade services/i));
+    vals.ppi_yy = vals.ppi_yy || pc(relChg(txt, /index for final demand \w+(?: \w+)? -?\d+\.\d percent for the 12 months/i));
+  } else if (k === "nfp") {
+    const p = /Total nonfarm payroll employment ([^.]*?)(?:by ([\d,]+)|\(([+\-]?[\d,]+)\))/i.exec(txt);
+    if (p) {
+      let v = +(p[2] || p[3]).replace(/[,+]/g, "");
+      if (p[2] && /(declin|decreas|fell|down|lost)/i.test(p[1])) v = -v;
+      vals.nfp = Math.round(v / 1000) + "K";
+    }
+    const u = /unemployment rate[^.]*?(\d+\.\d) percent/i.exec(txt);
+    if (u) vals.ur = u[1] + "%";
+    // "average hourly earnings … rose by 14 cents, or 0.2 percent, to $36.67" (a volte senza la percentuale)
+    const h = /average hourly earnings for all employees on private nonfarm payrolls ([^$]{0,80}?\$\d+\.\d\d)/i.exec(txt);
+    if (h) {
+      const pct = /(-?\d+\.\d) percent/.exec(h[1]), ce = /(\d+) cents?/.exec(h[1]), lv = /\$(\d+\.\d\d)/.exec(h[1]);
+      const neg = /(declin|decreas|fell|down)/i.test(h[1]);
+      if (pct) vals.ahe_mm = pc(neg ? -pct[1] : +pct[1]);
+      else if (ce && lv) { const d = (neg ? -1 : 1) * ce[1] / 100; vals.ahe_mm = pc((d / (lv[1] - d)) * 100); }
+      else if (/unchanged/i.test(h[1])) vals.ahe_mm = "0.0%";
+    }
+    const hy = /Over the (?:past|last) 12 months, average hourly earnings have ([a-z ]*?)by (\d+\.\d) percent/i.exec(txt);
+    if (hy) vals.ahe_yy = pc(/(declin|decreas|fell|down)/i.test(hy[1]) ? -hy[2] : +hy[2]);
+  }
+  for (const x of Object.keys(vals)) if (!vals[x]) delete vals[x];
+  return REL_NEED[k].every((x) => vals[x]) ? { vals, prevs } : null;
+}
+async function blsRelease(k, t) {
+  const html = await fetchText(`${BLS}/news.release/${REL_CODE[k]}.nr0.htm?t=${Math.floor(Date.now() / 2000)}`, 8000);
+  return parseRelease(k, html, expected(k, t));
+}
 async function computeActual(k, t, prev) {
   const y = nyParts(t).y, exp = expected(k, t), vals = {}, prevs = {};
   const both = (key, kind, ser) => { vals[key] = metric(kind, ser); prevs[key] = metric(kind, ser.slice(0, -1)); };
   let fresh = false;
   if (BLS_SER[k]) {
+    // prima il comunicato (subito alle 8:30); l'API solo se non riesco a leggerlo, dopo qualche minuto
+    const rel = await blsRelease(k, t).catch(() => null);
+    if (rel) return { vals: rel.vals, prevs: rel.prevs, fresh: true, src: "rel" };
+    if (Date.now() - t < 4 * 60000) return { vals: {}, prevs: {}, fresh: false };
     const defs = BLS_SER[k], ser = await blsSeries([...new Set(Object.values(defs).map((d) => d[1]))], y);
     const last = (id) => (ser[id] || [])[(ser[id] || []).length - 1];
     fresh = Object.values(defs).every(([, id]) => same(last(id), exp));
@@ -375,7 +465,8 @@ async function actual(k, t, prev) {
   if (Date.now() < t) return { fresh: false, vals: {} };
   // nei 10 minuti dopo l'uscita chiedo il dato ogni pochi secondi (BLS: finché resta margine sul limite giornaliero)
   const since = Date.now() - t, n = BLS_SER[k] ? await blsCount(false) : 0;
-  const wait = since > 6 * 3600000 ? 30 * 60000 : since < 10 * 60000 ? (BLS_SER[k] ? (n < 16 ? 4000 : n < 22 ? 20000 : 120000) : 2500) : ACT_WAIT[k] || 60000;
+  // BLS: il comunicato si legge ogni 2,5 s nei primi 4 minuti; dopo entra in gioco anche l'API, da dosare
+  const wait = since > 6 * 3600000 ? 30 * 60000 : since < 4 * 60000 ? 2500 : since < 10 * 60000 ? (BLS_SER[k] ? (n < 16 ? 4000 : n < 22 ? 20000 : 120000) : 2500) : ACT_WAIT[k] || 60000;
   if (c && Date.now() - c.at < wait) return c;
   if (!actJob[key]) actJob[key] = (async () => {
     let out;
