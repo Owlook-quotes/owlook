@@ -58,7 +58,7 @@ On pages where the widget cannot appear (no Internet connection, new tab, browse
 
 Keep the `owlook` folder where it is: the browser loads the extension from there.
 
-**Update** (manual install only): unzip the new version, copy its files over the old folder (`owlook`), press ⟳ on the Owlook card in the extensions page, then reload your open tabs. Your lists, portfolio and settings are kept.
+**Update** (manual install only; Owlook tells you in the panel when a new version is out, with a link to download it): unzip the new version, copy its files over the old folder (`owlook`), press ⟳ on the Owlook card in the extensions page, then reload your open tabs. Your lists, portfolio and settings are kept.
 
 ## Browsers
 
@@ -174,7 +174,7 @@ Dove il widget non può comparire (senza connessione, nuova scheda, pagine del b
 
 Lascia la cartella `owlook` dove si trova: il browser carica l'estensione da lì.
 
-**Aggiornamento** (solo installazione manuale): scompatta la nuova versione, copia i file sopra la vecchia cartella (`owlook`), premi ⟳ sulla scheda di Owlook nella pagina delle estensioni e ricarica le pagine aperte. Liste, portafoglio e impostazioni restano.
+**Aggiornamento** (solo installazione manuale; quando esce una nuova versione Owlook lo dice nel pannello, con il link per scaricarla): scompatta la nuova versione, copia i file sopra la vecchia cartella (`owlook`), premi ⟳ sulla scheda di Owlook nella pagina delle estensioni e ricarica le pagine aperte. Liste, portafoglio e impostazioni restano.
 
 **Browser supportati:** Chrome, Edge, Brave, Opera e Opera GX, Vivaldi, Arc e gli altri browser per computer basati su Chromium. **Non** funziona su Safari (le estensioni per Safari si pubblicano solo col programma sviluppatori a pagamento di Apple), Firefox (non ancora) e sui browser per telefono e tablet. Dove il browser non ha il pannello laterale, Owlook si apre in una piccola finestra.
 

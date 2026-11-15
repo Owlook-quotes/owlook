@@ -150,7 +150,18 @@
   st.nsub = {}; // notizie: titoli con gli avvisi attivi { simbolo: da quando (ms) }
   // il widget è su ogni pagina (accesso a tutti i siti dato e scelto) o compare solo col clic: lo decide il service worker
   let EVERY = false, evAsk = false;
-  const KEYS = ["lists", "cl", "theme", "hidden", "open", "bar", "sort", "cr", "ci", "lr", "ind", "key", "excl", "fut", "lay", "tz", "view", "pf", "tab", "psort", "pfcur", "fxr", "fxh", "lang", "nm", "rowc", "slotsOpen", "pfb", "glass", "calv", "ecap", "esess", "emine", "barOff", "tpl", "eview", "rcol", "nsub", "barRow", "zen", "nf"];
+  // nuova versione: dallo store (si installa al riavvio, o subito col tasto) o da scaricare dal sito (installazione manuale)
+  let UPD = null, UPDX = "";
+  function drawUpd() {
+    const el = $("#upd"); if (!el) return;
+    const u = UPD && UPD.v !== UPDX ? UPD : null;
+    el.hidden = !u;
+    if (!u) { el.innerHTML = ""; return; }
+    el.innerHTML = u.k === "cws"
+      ? `<span>${L(`Owlook ${esc(u.v)} è pronta: si installa al prossimo avvio di Chrome.`, `Owlook ${esc(u.v)} is ready: it installs the next time Chrome starts.`)}</span><button class="pill pri" data-a="updnow">${L("Aggiorna ora", "Update now")}</button><button class="icon sm" data-a="updx" aria-label="${L("Chiudi", "Close")}">${XSM}</button>`
+      : `<span>${L(`È uscita Owlook ${esc(u.v)}.`, `Owlook ${esc(u.v)} is out.`)}</span><a class="pill pri" href="https://owlook-quotes.github.io/owlook/#install" target="_blank" rel="noopener noreferrer">${L("Scarica dal sito", "Download from the site")}</a><button class="icon sm" data-a="updx" aria-label="${L("Chiudi", "Close")}">${XSM}</button>`;
+  }
+  const KEYS = ["lists", "cl", "theme", "hidden", "open", "bar", "sort", "cr", "ci", "lr", "ind", "key", "excl", "fut", "lay", "tz", "view", "pf", "tab", "psort", "pfcur", "fxr", "fxh", "lang", "nm", "rowc", "slotsOpen", "pfb", "glass", "calv", "ecap", "esess", "emine", "barOff", "tpl", "eview", "rcol", "nsub", "barRow", "zen", "nf", "fs"];
   let rec = false; // registrazione della scorciatoia in corso
   let delArm = false, findQ = "", impData = null;
   // Siti esclusi: un dominio vale anche per i suoi sottodomini (es. "example.com" → "news.example.com")
@@ -353,7 +364,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.row:focus-visible
 .yu{color:var(--up)}
 .yd{color:var(--dn)}
 
-.bar{position:fixed;top:12px;right:16px;display:grid;grid-template-rows:auto 1fr auto;width:340px;max-width:calc(100vw - 32px);background:var(--bbg);color:var(--bfg);border:1px solid var(--bbd);white-space:nowrap}
+.bar{position:fixed;top:12px;right:16px;display:grid;grid-template-rows:auto 1fr auto;width:326px;max-width:calc(100vw - 32px);background:var(--bbg);color:var(--bfg);border:1px solid var(--bbd);white-space:nowrap}
 .items{grid-area:1/1/4/2;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:1px;min-width:0}
 .items .sep{display:none}
 .bi{display:grid;grid-template-columns:minmax(0,1fr) auto 58px;gap:0 8px;align-items:center;padding:3px 6px;text-align:left;line-height:14px}
@@ -366,7 +377,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,.row:focus-visible
 .go{display:grid;place-items:center;padding:0;color:var(--bnm)}
 .go.open{transform:rotate(180deg)}
 
-.panel{position:fixed;right:16px;display:flex;gap:16px;width:340px;top:var(--pt,62px);max-height:calc(100vh - var(--pt,62px) - 16px);background:var(--bg);color:var(--fg);border:1px solid var(--line);box-shadow:0 14px 44px rgba(0,0,0,.28);font-size:11px}
+.panel{position:fixed;right:16px;display:flex;gap:16px;width:326px;top:var(--pt,62px);max-height:calc(100vh - var(--pt,62px) - 16px);background:var(--bg);color:var(--fg);border:1px solid var(--line);box-shadow:0 14px 44px rgba(0,0,0,.28);font-size:11px}
 .panel.anim{box-shadow:none;border-color:transparent}
 .panel.anim .rz{display:none}
 .pshade{position:fixed;border:1px solid var(--line);box-shadow:0 14px 44px rgba(0,0,0,.28);pointer-events:none}
@@ -471,9 +482,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,.row:focus-visible
 .pfs3 b{flex:none;line-height:15px;color:var(--fg);font-variant-numeric:tabular-nums}
 .pfsd{display:grid;grid-template-columns:auto auto auto;column-gap:6px;row-gap:2px;align-items:center;justify-content:start;min-width:0;font-size:11px;line-height:13px;color:var(--mut);white-space:nowrap}
 .pfsd i{font-style:normal;font-variant-numeric:tabular-nums;color:var(--fg);overflow:hidden;text-overflow:ellipsis}
-.pfsd i.pfp{justify-self:start;padding:0 5px;border-radius:5px;font-weight:600;color:var(--mut);background:color-mix(in srgb,var(--mut) 16%,var(--solid))}
+.pfsd i.pfp{justify-self:start;padding:0 5px;overflow:visible;border-radius:5px;font-weight:600;color:var(--mut);background:color-mix(in srgb,var(--mut) 16%,var(--solid))}
 .pfsd i.pfp.up{color:var(--upt);background:color-mix(in srgb,var(--up) 17%,var(--solid))}.pfsd i.pfp.dn{color:var(--dnt);background:color-mix(in srgb,var(--dn) 17%,var(--solid))}
-.pfsd i.pfa{color:var(--mut)}
+.pfsd i.pfa{color:var(--mut)}.pfsd i.pfa.up{color:var(--upt)}.pfsd i.pfa.dn{color:var(--dnt)}
 .pfsd i.pft{font-weight:700;padding:0 1px}.pfsd i.pft.up{color:var(--upt)}.pfsd i.pft.dn{color:var(--dnt)}
 .pfcurl{flex:1;min-width:0;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mut)}
 .pfcurl select{max-width:150px;color:var(--fg);background:var(--row)}
@@ -922,11 +933,11 @@ input[type=number]{width:44px;padding:2px 4px;font-size:11px}
 .brand .owl{display:block;flex:none;width:28px;height:28px}
 .brand .of{display:none}.brand .oi{fill:var(--acc)} /* solo i tratti viola: l'interno del volto lascia vedere lo sfondo */
 .brand .bwm{font-size:18px;font-weight:750;letter-spacing:-.03em;line-height:1}
-.icon,.rnd,.close{width:30px;height:30px;border:0;border-radius:50%;background:var(--row2);color:var(--fg)}
+.icon,.rnd,.close{width:28px;height:28px;border:0;border-radius:50%;background:var(--row2);color:var(--fg)}
 .icon:hover,.rnd:hover,.close:hover{background:color-mix(in srgb,var(--fg) 14%,transparent)}
-.icon.sm{width:30px;height:30px}.icon.rw{width:30px}
+.icon.sm{width:28px;height:28px}.icon.rw{width:28px}
 .rnd.on,.icon.calb.on,.icon.sett.on{background:var(--acc);color:var(--onacc)}
-.pill{height:30px;padding:0 14px;border:0;border-radius:999px;background:var(--row2);color:var(--fg);font-size:11px;font-weight:600}
+.pill{height:28px;padding:0 13px;border:0;border-radius:999px;background:var(--row2);color:var(--fg);font-size:11px;font-weight:600}
 .pill.pri{background:var(--acc);color:var(--onacc)}
 .pill:hover{background:color-mix(in srgb,var(--fg) 14%,transparent)}.pill.pri:hover{filter:brightness(1.08);background:var(--acc)}
 
@@ -937,13 +948,13 @@ input[type=number]{width:44px;padding:2px 4px;font-size:11px}
 
 /* controllo a segmenti come iOS: binario grigio, cursore chiaro in rilievo */
 .tabs,.seg{display:inline-flex;gap:0;padding:2px;border:0;border-radius:10px;background:var(--seg);overflow:visible}
-.tab,.seg button{border:0;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:500;letter-spacing:0;text-transform:none;line-height:16px;color:var(--fg);background:transparent}
+.tab,.seg button{border:0;border-radius:8px;padding:4px 12px;font-size:11px;font-weight:500;letter-spacing:0;text-transform:none;line-height:16px;color:var(--fg);background:transparent}
 .seg button{border-right:0}
 .tab.on,.seg button.on{background:var(--thumb);color:var(--fg);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.18),0 0 0 .5px rgba(0,0,0,.04)}
 .card .seg button{width:auto;min-width:64px;padding:5px 12px}
 
 /* ricerca */
-.find{height:30px;border:0;border-radius:10px;background:var(--seg);padding:0 6px 0 10px}
+.find{height:28px;border:0;border-radius:10px;background:var(--seg);padding:0 6px 0 10px}
 .find:hover,.find:focus-within{border:0;box-shadow:0 0 0 2px var(--accbg)}
 .find input{font-size:11px}
 
@@ -1127,10 +1138,10 @@ select.pill,.txtsel{border:0;border-radius:10px;background:var(--seg)}
 @media (prefers-reduced-motion:reduce){.bar{transition:none}}
 
 /* colori principali scelti nelle impostazioni */
-.colrow{display:flex;align-items:center;gap:9px}
+.colrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 9px}
 .colit{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--fg);white-space:nowrap}
 .colit .sw{width:20px;height:20px;border-radius:6px;border:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 1px 3px rgba(0,0,0,.2);cursor:pointer}
-.colrow .rst{margin-left:auto;height:24px;padding:0 10px;font-size:11px}
+.colrow .rst{margin-left:auto;height:24px;padding:0 10px;font-size:11px}.colrow .rst2{margin-left:0}.colrow .crb{display:flex;gap:6px;margin-left:auto}.colrow .crb .rst{margin-left:0}
 .field>.hint{display:block;margin-top:6px;font-size:11px;color:var(--mut)}
 .lp>small.ch.up{color:var(--onup)}.lp>small.ch.dn{color:var(--ondn)}
 .esur.up{color:var(--onup)}.esur.dn{color:var(--ondn)}
@@ -1192,7 +1203,7 @@ select.pill,.txtsel{border:0;border-radius:10px;background:var(--seg)}
 .tplr .x{display:grid;place-items:center;width:22px;height:22px;margin-right:4px;border-radius:50%;color:var(--mut)}
 .tplr .x:hover{background:var(--row2);color:var(--fg)}
 .tpls{display:flex;gap:6px;margin-top:6px}
-.tpls input{flex:1;min-width:0;height:30px;padding:0 10px;border-radius:999px}
+.tpls input{flex:1;min-width:0;height:28px;padding:0 10px;border-radius:999px}
 .tple{margin:2px 4px;font-size:11px;line-height:1.4;color:var(--mut)}
 
 /* andamento storico: valori della giornata in pila */
@@ -1205,7 +1216,7 @@ select.pill,.txtsel{border:0;border-radius:10px;background:var(--seg)}
 
 /* portafoglio: titolo · rendimento · prezzo e variazione come nella lista (riga compatta) */
 .thead.pthead,.row.prow{column-gap:12px}.thead.pthead:not(.ed),.row.prow:not(.ed){column-gap:7px}
-.row.prow{padding:7px 8px}
+.row.prow{padding:2px 8px}
 .prow>.prd{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;min-width:0;font-variant-numeric:tabular-nums;white-space:nowrap}
 .prow>.prd>b{font-size:11px;font-weight:600;line-height:15px}
 .prow>.prd>small{line-height:13px}
@@ -1219,7 +1230,7 @@ select.pill,.txtsel{border:0;border-radius:10px;background:var(--seg)}
 
 .lchip.led.on{color:var(--acc);border-color:var(--acc);background:var(--accbg)}
 
-.panel select{-webkit-appearance:none;appearance:none;height:30px;padding:0 28px 0 11px;border:0;border-radius:10px;background:var(--row2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;color:var(--fg);font-size:11px;font-weight:600;color-scheme:light}
+.panel select{-webkit-appearance:none;appearance:none;height:28px;padding:0 28px 0 11px;border:0;border-radius:10px;background:var(--row2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;color:var(--fg);font-size:11px;font-weight:600;color-scheme:light}
 :host([data-theme=dark]) .panel select{color-scheme:dark}
 .panel select:focus-visible{outline:none;box-shadow:0 0 0 2px var(--accbg)}
 .panel select option{background:var(--solid);color:var(--fg);font-weight:500}
@@ -1242,7 +1253,7 @@ select.pill,.txtsel{border:0;border-radius:10px;background:var(--seg)}
 .bar .bi [data-f=c]{font-size:11px;font-weight:500;line-height:14px;padding:0 5px;min-width:46px;border-radius:7px}
 .bar.two .bi [data-f=c]{line-height:13px;min-width:44px}
 /* portafoglio: prezzo e variazione in un riquadro leggero, per far capire che si può cliccare */
-.pbx{padding:4px 6px;background:var(--row);border-radius:10px}
+.pbx{padding:2px 6px;background:var(--row);border-radius:9px}
 .pbx:hover{background:var(--row2)}
 .pbx:hover .bm{opacity:1}
 /* led verde: pulsa mentre arrivano i prezzi in tempo reale */
@@ -1322,7 +1333,7 @@ input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 
 /* menu a tendina del widget */
 .cshid{display:none!important}
-.csel{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;height:30px;min-width:0;max-width:100%;padding:0 10px 0 12px;border:0;border-radius:10px;background:var(--row2);color:var(--fg);font-size:11px;font-weight:600;text-align:left}
+.csel{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;height:28px;min-width:0;max-width:100%;padding:0 10px 0 12px;border:0;border-radius:10px;background:var(--row2);color:var(--fg);font-size:11px;font-weight:600;text-align:left}
 .csel>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .csel>svg{flex:none;color:var(--fg);opacity:.75}
 .csel:hover{background:color-mix(in srgb,var(--fg) 13%,transparent)}
@@ -1352,7 +1363,7 @@ input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 .pbx .bm-d .pbl b{font-size:11px;font-weight:650}
 .prow .lp>small.ch{display:inline-block;max-width:none;line-height:14px;font-size:11px;font-weight:500}
 /* portafoglio: rendimento e guadagno di oggi in grassetto come il prezzo, % del rendimento in capsula come nella lista */
-.prow>.prd{gap:3px}
+.prow>.prd{gap:2px}
 .prow>.prd>b,.pbx .bm-d .lpr>b{font-size:12px;font-weight:600;line-height:15px;letter-spacing:-.01em}
 .prow>.prd>small.ch{display:inline-block;min-width:46px;padding:2px 5px;border-radius:7px;font-size:11px;font-weight:500;line-height:14px;text-align:right;color:#fff;background:var(--mut)}
 .prow>.prd>small.ch.up{background:var(--up);color:var(--onup)}.prow>.prd>small.ch.dn{background:var(--dn);color:var(--ondn)}
@@ -1434,7 +1445,16 @@ input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 .chart>.ctop>.cid{display:flex;align-items:center;gap:10px;align-self:center}
 .cidt{min-width:0;flex:1;overflow:hidden} /* testi lunghi (es. "nel periodo visibile") si tagliano invece di finire sotto ai periodi */
 .cidt .cpc{min-width:0;overflow:hidden}
-.cidt .cpc>*{overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cidt .cpc>*{overflow:hidden;text-overflow:ellipsis;max-width:100%;padding-right:2px} /* il simbolo % non si taglia */
+/* intestazione del grafico: variazione % più grande e centrata sul prezzo */
+.chart>.ctop .cquote{display:flex;align-items:center}
+.chart>.ctop .cquote .cpc{display:flex;align-items:center;gap:6px;margin-left:8px;padding-right:2px}
+.chart>.ctop .cquote .cpc>*{margin-left:0}
+.chart>.ctop .cquote:not(.hl) .ch{font-size:14px}
+.chart>.ctop .cquote.hl .cpc{flex-direction:column;align-items:flex-start;gap:0;margin-left:8px}
+.chart>.ctop .cquote.hl #c-chg,.chart>.ctop .cquote.hl .cper{font-size:12px;line-height:15px} /* storico: due righe alte quanto il prezzo, così l'intestazione è identica alle candele */
+.chart>.ctop .cquote .cper:empty{display:none}
+.chart>.ctop .cquote .cpc:has(.cper:empty) #c-chg{font-size:14px}
 .clg:empty{display:none}
 .clg>.lg{flex:none;display:grid;place-items:center;width:44px;height:44px;overflow:hidden;background:hsl(var(--lgh) 45% 42%);color:#fff;font-size:17px;font-weight:700;line-height:1}
 .clg>.lg img{width:100%;height:100%;object-fit:cover}
@@ -1443,7 +1463,7 @@ input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 /* riga in alto del pannello: Lista/Portafoglio, ricerca, +, modifica, aggiorna; sotto le liste (o il patrimonio) */
 #lists{margin:10px 0 10px}
 .sub.first{margin-top:2px}
-.tabs.ticons .tab.ti{display:grid;place-items:center;padding:0 12px;height:30px}
+.tabs.ticons .tab.ti{display:grid;place-items:center;padding:0 11px;height:24px}
 .tabs.ticons .tab.ti svg{display:block}
 #tbt{display:flex;gap:6px;flex:none}
 
@@ -1472,7 +1492,7 @@ input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 /* pannelli stretti: niente si deforma o esce dal suo riquadro */
 .cal,.chart{min-width:0}
 .cal{container-type:inline-size}
-.cal>.ctop{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto auto auto auto;grid-template-areas:"cid cid ewk ecv ref max close" "evw fil fil fil fil fil fil";align-items:center;gap:8px 6px}
+.cal>.ctop{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto auto auto auto;grid-template-areas:"cid cid ewk ecv ref max close" "fil fil fil fil fil fil fil";align-items:center;gap:8px 6px}
 .cal>.ctop>.cid{grid-area:cid;min-width:0}.cal>.ctop>.evwb{grid-area:evw}.cal>.ctop>.ewk{grid-area:ewk}.cal>.ctop>.ecv{grid-area:ecv}
 .cal>.ctop{align-items:start}.cal>.ctop .ctitle{display:flex;align-items:center;min-height:30px}.cal>.ctop>.cid .ctsub{margin-top:-4px}.cal>.ctop>[data-a=calrefresh],.cal>.ctop>.maxb,.cal>.ctop>.close{margin-top:2px;align-self:start}.cal>.ctop>.evwb{align-self:center}
 .cal>.ctop>[data-a=calrefresh]{grid-area:ref}.cal>.ctop>.maxb{grid-area:max}.cal>.ctop>.close{grid-area:close}
@@ -1593,13 +1613,24 @@ input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 .bar.row1>.go{order:5;margin:0}
 /* intestazione del pannello: "Nascondi" più corto, così col tasto di ripristino della posizione ci sta tutto */
 .panel.pmove{transition:top .38s cubic-bezier(.2,.8,.2,1),height .38s cubic-bezier(.2,.8,.2,1),max-height .38s cubic-bezier(.2,.8,.2,1)}
-.side>.hd .pill[data-a=hide]{padding:0 7px}
 .side>.hd>span:last-child{flex:none;gap:5px}
 /* variazioni in capsule morbide: fondo tenue (pieno, non trasparente: uguale nella lista e nel riquadro dei titoli in evidenza) e testo colorato */
 :host{--upt:color-mix(in srgb,var(--up) 70%,#000);--dnt:color-mix(in srgb,var(--dn) 78%,#000)}
 :host([data-theme=dark]){--upt:var(--up);--dnt:var(--dn)}
 .lp>small.ch,.prow>.prd>small.ch,.bar .bi [data-f=c],.esur{background:color-mix(in srgb,var(--mut) 16%,var(--solid));color:var(--mut);font-weight:600;border-radius:6px}
 .lp>small.ch.up,.prow>.prd>small.ch.up,.bar .bi [data-f=c].up,.esur.up{background:color-mix(in srgb,var(--up) 17%,var(--solid));color:var(--upt)}
+:host([data-fs=l]) .panel,:host([data-fs=l]) .bar:not(.row1){width:340px}
+.pbx .bm-d .lpr>b{font-weight:400} /* guadagno di oggi in valuta: colorato, non in grassetto */
+/* impostazioni: i tasti a destra della voce, riquadri più bassi */
+#settings .field{background:none;border-radius:0;padding:9px 2px;border-bottom:1px solid var(--line)}
+#settings .field+.field{margin-top:0}
+#settings .field:last-child{border-bottom:0}
+#settings .seg button,#settings .card .seg button{min-width:0;padding:3px 8px}
+.field:has(>.seg){flex-direction:row;flex-wrap:wrap;align-items:center;column-gap:10px;row-gap:6px}
+.field:has(>.seg)>span:first-child{flex:1 0 auto;max-width:100%}
+.field:has(>.seg)>.seg{margin:0 auto;flex:none;align-self:center} /* accanto alla voce: a destra; se va a capo: al centro */
+.field:has(>.seg)>:not(span:first-child):not(.seg){flex-basis:100%}
+.field:has(>.seg)>.hint{margin-top:0}
 .lp>small.ch.dn,.prow>.prd>small.ch.dn,.bar .bi [data-f=c].dn,.esur.dn{background:color-mix(in srgb,var(--dn) 17%,var(--solid));color:var(--dnt)}
 /* arrotondamenti e spessore delle icone uniformi */
 .bar{border-radius:24px}.row{border-radius:10px}.tabs.ticons,.tabs.ticons .tab{border-radius:12px}
@@ -1644,7 +1675,7 @@ input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 :host([data-zen]) .side .sub.first,:host([data-zen]) #lists,:host([data-zen]) #thead,:host([data-zen]) #pform,:host([data-zen]) #fres,:host([data-zen]) #slotsfold,:host([data-zen]) #slots,:host([data-zen]) #slotsearch,:host([data-zen]) .side .note{display:none!important}
 :host([data-zen]) .side>.hd{margin-bottom:10px}
 :host([data-zen]) .panel:not(.wide){height:auto}
-:host([data-zen]) #list .row{padding-top:12px;padding-bottom:12px}
+/* zen: righe alte come in modalità normale */
 :host([data-zen]) .chart .clock,:host([data-zen]) .chart #legend,:host([data-zen]) .chart #plegs,:host([data-zen]) .chart #htt{display:none!important} /* zen: niente scritte a sinistra né riquadro dei valori accanto al mouse */
 @media (prefers-reduced-motion:reduce){.brand .owl,.brand .oe,.brand .zc,.brand .bwm,.brand .zent,.brand .oi{transition:none!important;animation:none!important}}
 /* le capsule del riquadro dei titoli in evidenza sopra il riflesso, come nel pannello */
@@ -1658,6 +1689,63 @@ background:radial-gradient(circle,color-mix(in srgb,var(--acc) 45%,transparent) 
 /* schermo intero: niente vetro sfocato (ridisegnarlo a ogni movimento del mouse rallenta tutto) */
 .panel.maxed{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--bsolid)!important}
 :host([data-noglass]) *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+/* 1.86: tema scuro tutto nero, senza la sfumatura chiara in alto */
+:host([data-theme=dark]) .panel::before,:host([data-theme=dark]) .bar::before{display:none}
+/* titoli in evidenza più bassi */
+.bar{padding-top:4px;padding-bottom:4px}
+.bar .bi{height:22px;padding-top:0;padding-bottom:0} /* testi centrati nella riga evidenziata al passaggio del mouse */
+.bar>.items{max-height:68px}
+.bar>.go.brow,.bar>.go{width:22px;height:22px}
+/* intestazione e spazi più compatti: più titoli in vista */
+.panel{padding:10px 12px 12px}
+.brand .owl{width:24px;height:24px}
+.brand .bwm{font-size:16px}
+.side>.hd{padding-bottom:7px}
+.sub.first{margin-top:0}
+#lists{margin:6px 0 6px}
+.sub{margin:10px 0 5px}
+.thead{padding-bottom:4px}
+#tbt{gap:5px}
+.panel,.bar{border-radius:20px}
+.efr .efind{flex:0 1 190px;min-width:100px;height:28px}
+.efr .efind input{min-width:0}
+.evw .tab.ti{display:grid;place-items:center;padding:0 10px;height:24px}
+.chart>.ctop,.chart>.ctop:has(#ranges){row-gap:4px}
+#settings #langseg button{padding:4px 14px;font-size:12px}
+#settings .sects .tab.on{background:var(--acc);color:var(--onacc)}
+.nmset{flex-direction:row;align-items:center;gap:10px}
+.nmset>.nmpv{flex:1;min-width:0}
+.nmset>.nmgrid{display:flex;flex:none}
+.card .nmset .seg button{width:auto;padding:4px 10px}
+.upd{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:8px 0 2px;padding:8px 8px 8px 10px;border-radius:12px;background:var(--accbg);font-size:11px;color:var(--fg)}
+.upd>span{flex:1 1 140px;min-width:0;line-height:1.35}
+.upd .pill{display:inline-grid;place-items:center;text-decoration:none;height:26px;padding:0 11px}
+.upd .icon.sm{width:24px;height:24px;background:transparent}
+.nmsw{display:flex;align-items:center;gap:8px;cursor:pointer}
+.nmsw>span{font-size:11px;font-weight:600;color:var(--fg)}
+/* interruttore acceso/spento: pallino bianco, acceso col colore del tema */
+.tgl{position:relative;flex:none;width:38px;height:22px;padding:0;border:0;border-radius:11px;background:color-mix(in srgb,var(--fg) 22%,transparent);transition:background .2s ease}
+.tgl::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+.tgl.on{background:var(--acc)}
+.tgl.on::after{transform:translateX(16px)}
+@media (prefers-reduced-motion:reduce){.tgl,.tgl::after{transition:none}}
+/* impostazioni: il riquadro resta fermo e uguale in Generali e Aspetto; scorre solo il contenuto, con la barra a destra come nella lista */
+#settings{overflow:hidden}
+#settings .card{display:flex;flex-direction:column;height:min(520px,100%);max-height:100%}
+#settings .card>.hd{flex:none}
+#settings .sectp{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin-right:-13px;padding-right:7px;scrollbar-width:auto;scrollbar-color:auto}
+#settings .sectp::-webkit-scrollbar{width:10px}
+#settings .sectp::-webkit-scrollbar-button{display:none;width:0;height:0}
+#settings .sectp::-webkit-scrollbar-track{background:transparent}
+#settings .sectp::-webkit-scrollbar-thumb{background:var(--sb);border-radius:10px;border:3px solid transparent;background-clip:padding-box;min-height:28px}
+#settings .sectp::-webkit-scrollbar-thumb:hover{background-color:color-mix(in srgb,var(--fg) 35%,transparent)}
+.pfsd i.pftp{justify-self:start;padding:0 5px;border-radius:5px;overflow:visible;font-weight:600;background:color-mix(in srgb,var(--mut) 16%,var(--solid))} /* totale %: in una capsula come oggi */
+.pfsd i.pftp.up{background:color-mix(in srgb,var(--up) 17%,var(--solid))}.pfsd i.pftp.dn{background:color-mix(in srgb,var(--dn) 17%,var(--solid))}
+.chart #ranges>button{height:28px}
+.cal>.ctop>.evwb{display:none!important}
+.cal>.ctop .ecaps .tab{padding:5px 11px}
+.efr .ecaps{margin-right:auto}
+.efs{display:flex;align-items:center;gap:6px} /* periodi dello storico alti come i tasti delle candele: intestazione e grafico partono allo stesso punto */
 </style>
 <div class="htip" id="htip" role="tooltip" hidden></div>
 <div class="bar" id="bar"><i class="dot"></i><span id="items" class="items"></span><i class="sep"></i><button class="go brow" id="barrow" data-a="barrow" hidden></button><button class="go" id="go" data-a="toggle" aria-label="Apri o chiudi il pannello">${ARROW}</button></div>
@@ -1758,9 +1846,9 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
 -1378 44 -90 58 -108 90 -124 55 -28 106 -12 146 46 107 156 455 1108 561
 1537 12 47 37 137 55 200 19 63 48 178 65 254 17 77 46 199 65 272 19 73 46
 197 60 276 14 79 41 213 60 298 43 199 105 609 105 699 0 109 -48 149 -128
-110z"/></g></g><path class="zc" d="M705 1400Q875 1545 1045 1400"/><path class="zc" d="M1485 1400Q1655 1545 1825 1400"/></svg><b class="bwm">owlook</b><i class="zent" aria-hidden="true">zen</i></button><span><button class="icon" id="layreset" data-a="layreset" aria-label="Ripristina posizione e dimensioni" title="Ripristina posizione e dimensioni del pannello" hidden><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 15v5h-5M4 4l6 6M20 20l-6-6"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg></button><button class="icon calb" id="calbtn" data-a="cal" aria-label="Calendario economico USA" title="Calendario economico USA">${CALICON}<span class="leds" aria-hidden="true"><i class="led g"></i><i class="led r"></i></span></button><button class="icon" id="barbtn" data-a="bartog"></button><button class="icon sett" data-a="settings" aria-label="Impostazioni" title="Impostazioni">${GEAR}</button><button class="pill" data-a="hide" title="Nascondi il widget (lo riporti con la scorciatoia o cliccando l'icona dell'estensione)">Nascondi</button></span></div>
+110z"/></g></g><path class="zc" d="M705 1400Q875 1545 1045 1400"/><path class="zc" d="M1485 1400Q1655 1545 1825 1400"/></svg><b class="bwm">owlook</b><i class="zent" aria-hidden="true">zen</i></button><span><button class="icon" id="layreset" data-a="layreset" aria-label="Ripristina posizione e dimensioni" title="Ripristina posizione e dimensioni del pannello" hidden><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 15v5h-5M4 4l6 6M20 20l-6-6"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg></button><button class="icon" id="barbtn" data-a="bartog"></button><button class="icon sett" data-a="settings" aria-label="Impostazioni" title="Impostazioni">${GEAR}</button><button class="icon" data-a="hide" aria-label="Chiudi" title="Chiudi (lo riporti con la scorciatoia o cliccando l'icona dell'estensione)"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button></span></div>
     <div class="sbody" id="sbody">
-    <div class="sub first"><span class="tabs ticons" role="tablist"><button class="tab ti" data-a="tab" data-t="list" role="tab" aria-label="Lista" title="Lista">${LISTTAB}</button><button class="tab ti" data-a="tab" data-t="pf" role="tab" aria-label="Portafoglio" title="Portafoglio">${PFTAB}</button></span>
+    <div class="sub first"><span class="tabs ticons" role="tablist"><button class="tab ti" data-a="tab" data-t="list" role="tab" aria-label="Lista" title="Lista">${LISTTAB}</button><button class="tab ti" data-a="tab" data-t="pf" role="tab" aria-label="Portafoglio" title="Portafoglio">${PFTAB}</button></span><button class="icon calb" id="calbtn" data-a="cal" aria-label="Calendario economico USA" title="Calendario economico USA">${CALICON}<span class="leds" aria-hidden="true"><i class="led g"></i><i class="led r"></i></span></button>
       <span><label class="find" id="find" title="Cerca nella lista o aggiungi un ticker">${SEARCH}<input id="fq" placeholder="Cerca…" autocomplete="off" spellcheck="false" aria-label="Cerca nella lista o aggiungi un ticker"><button data-a="findclose" aria-label="Cancella la ricerca" title="Cancella">${XSM}</button></label>
       <span class="pfbt" id="tbt"></span>
       <button class="icon sm rw" data-a="resort" aria-label="Riordina la lista" title="Riordina la lista e aggiorna i prezzi">${RELOAD}</button></span></div>
@@ -1775,6 +1863,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       <input id="q2" autocomplete="off" spellcheck="false">
       <div id="res2"></div>
     </div>
+    <div class="upd" id="upd" hidden></div>
     <div class="note"><span class="nt1">Dati non ufficiali, possibili ritardi.</span><button class="ninfo" data-a="noteinfo" aria-expanded="false" aria-label="Informazioni sui dati" data-tt="Informazioni sui dati">i</button><div class="nfull" id="nfull" hidden>Dati da Yahoo Finance (non ufficiali), possibili ritardi o errori. Solo a scopo informativo, non è un consiglio di investimento. Grafici: <a class="tvl" href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView Lightweight Charts™</a> © TradingView, Inc.</div></div>
     </div>
   </section>
@@ -1811,6 +1900,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       </div>
       </div>
       <div class="sectp" data-sp="a" hidden>
+      <div class="field"><span>Dimensione testo</span><div class="seg" id="fsseg"></div></div>
       <div class="field"><span>Effetto trasparenza</span><div class="glr"><svg class="gi" viewBox="0 0 16 16" width="16" height="16" role="img" aria-label="Nessuna"><title>Nessuna</title><rect x="1.5" y="1.5" width="8.5" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="5.5" y="5.5" width="9" height="9" rx="2.2" fill="currentColor"/></svg><input type="range" id="glassr" min="0" max="100" step="1" aria-label="Effetto trasparenza"><svg class="gi" viewBox="0 0 16 16" width="16" height="16" role="img" aria-label="Tanta"><title>Tanta</title><rect x="1.5" y="1.5" width="8.5" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="5.5" y="5.5" width="9" height="9" rx="2.2" fill="currentColor" fill-opacity=".28" stroke="currentColor" stroke-width="1.3"/></svg></div></div>
       <div class="field"><span>Tema</span><div class="seg" id="themes"></div></div>
       <div class="field"><span>Colori di rialzo e ribasso</span><div class="colrow" id="colrow"></div></div>
@@ -2130,8 +2220,16 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
 
   // il pannello parte subito sotto la barra dei ticker (che ora è in colonna)
   function placePanel() {
-    const b = $("#bar"), top = b.hidden || st.barOff ? 12 : 12 + b.offsetHeight + 8;
-    $("#panel").style.setProperty("--pt", `${top}px`);
+    const b = $("#bar"), top = b.hidden || st.barOff ? 12 : 12 + b.offsetHeight + 8, pn = $("#panel");
+    const old = parseFloat(pn.style.getPropertyValue("--pt"));
+    pn.style.setProperty("--pt", `${top}px`);
+    // spostato o ridimensionato ma ancora attaccato sotto i titoli in evidenza: la cima li segue e il fondo resta dov'è
+    if (!PANEL && old && old !== top && st.lay && st.lay.y != null && Math.abs(st.lay.y - old) <= 8) {
+      const L = { ...st.lay }, d = L.y - top;
+      L.y = top;
+      for (const k of ["h", "wh"]) if (L[k]) L[k] = Math.max(LAY_MIN[k], Math.round(L[k] + d));
+      st.lay = L; persist();
+    }
     applyLay();
   }
   // Posizione e dimensioni scelte col mouse: { r: distanza dal bordo destro, y: dall'alto,
@@ -2157,7 +2255,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     // muove), oppure quella scelta trascinando la barra fra grafico e lista
     // margini interni e bordi veri del pannello (cambiano con lo stile): la colonna resta larga al pixel come nel pannello stretto
     const pcs = getComputedStyle(pn), pad = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"].reduce((t, k) => t + (parseFloat(pcs[k]) || 0), 0);
-    const swList = PANEL ? Math.max(260, vw - 16 - 28) : Math.min(420, (L.w ? Math.min(L.w, vw - 16) : 340) - pad); // 340: larghezza predefinita della lista
+    const swList = PANEL ? Math.max(260, vw - 16 - 28) : Math.min(420, (L.w ? Math.min(L.w, vw - 16) : st.fs === "l" ? 340 : 326) - pad); // 326 (340 col testo grande): larghezza predefinita della lista
     pn.style.setProperty("--sw", `${wide && L.sw ? Math.round(Math.max(220, Math.min(L.sw, (w || pn.offsetWidth) - CMIN))) : swList}px`);
     const width = w || pn.offsetWidth;
     if (L.r != null) pn.style.right = `${Math.max(0, Math.min(L.r, vw - width - 4))}px`; else pn.style.right = "";
@@ -2246,9 +2344,9 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     $("[data-a=resort]").dataset.tt = st.tab === "pf" ? "Riordina il portafoglio e aggiorna i prezzi" : "Riordina la lista e aggiorna i prezzi";
     if (st.tab === "pf") {
       const left = pfEdit
-        ? `<div class="pfcurl" title="${L("Valuta in cui vedi patrimonio, valori, investito e rendimenti: il valore al cambio di oggi, il costo al cambio del giorno di ogni acquisto. I prezzi restano quelli della borsa del titolo.", "Currency for holdings, values, invested amounts and returns: value at today's rate, cost at the rate of each purchase date. Prices stay in the currency of each ticker's exchange.")}"><span>${L("Valuta del portafoglio", "Portfolio currency")}</span><select class="pill" id="pfcursel" aria-label="${L("Valuta del portafoglio", "Portfolio currency")}">${PFCURS.map(([c, it, en]) => `<option value="${c}"${st.pfcur === c ? " selected" : ""}>${L(it, en)}</option>`).join("")}</select></div>`
-        : `<div class="pfsum" id="pfsum" title="${L("Patrimonio: valore al cambio di oggi, costo al cambio del giorno di ogni acquisto (il risultato comprende l'effetto del cambio).", "Total holdings: value at today's rate, cost at the rate of each purchase date (the result includes currency effects).")}"></div>`;
-      $("#lists").innerHTML = `<div class="pfhd" style="height:${listsH}px">${left}</div>`;
+        ? `<div class="pfcurl" title="${L("Valuta in cui vedi patrimonio, valori, investito e rendimenti: valore e costo al cambio di oggi. I prezzi restano quelli della borsa del titolo.", "Currency for holdings, values, invested amounts and returns: value and cost at today's rate. Prices stay in the currency of each ticker's exchange.")}"><span>${L("Valuta del portafoglio", "Portfolio currency")}</span><select class="pill" id="pfcursel" aria-label="${L("Valuta del portafoglio", "Portfolio currency")}">${PFCURS.map(([c, it, en]) => `<option value="${c}"${st.pfcur === c ? " selected" : ""}>${L(it, en)}</option>`).join("")}</select></div>`
+        : `<div class="pfsum" id="pfsum" title="${L("Patrimonio: valore e costo al cambio di oggi (il rendimento è quello dei titoli, senza l'effetto del cambio).", "Total holdings: value and cost at today's rate (the return is the stocks' own, without currency effects).")}"></div>`;
+      $("#lists").innerHTML = `<div class="pfhd" style="min-height:${listsH}px">${left}</div>`;
       $("#tbt").innerHTML = `<button class="rnd${pfForm && pfForm.mode === "add" ? " on" : ""}" data-a="pfadd" aria-label="Aggiungi un titolo al portafoglio" title="Aggiungi un titolo: quantità e prezzo di acquisto">${PLUSICON}</button>
         <button class="rnd${pfEdit ? " on" : ""}" data-a="pfedit" aria-label="${pfEdit ? "Fine modifica" : "Modifica il portafoglio"}" title="${pfEdit ? "Fine modifica" : L("Modifica il portafoglio: sposta, modifica o rimuovi i titoli e scegli le colonne", "Edit the portfolio: move, edit or remove holdings and choose the columns")}">${pfEdit ? CHECKICON : PENICON}</button>`;
       ensureFx();
@@ -2581,10 +2679,10 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (kb != null) { r.mval = r.val * kb; r.mprice = r.price * kb; if (r.prevP != null && kp != null) r.mda = r.mval - it.q * r.prevP * kp; }
     const kg = fx(pc, B);
     if (r.ta != null && kg != null) r.mpl = r.ta * kg; // risultato nella valuta del patrimonio (per ordinare)
-    let mc = 0;
-    for (const l of lotsOf(it)) { const kh = fxOn(pc, B, l.d); if (kh == null) { mc = null; break; } mc += l.q * l.p * kh; }
+    // costo nella valuta del portafoglio al cambio di oggi (ricalcolato ogni giorno): il rendimento è quello del titolo
+    const kc = fx(pc, B), mc = kc == null ? null : r.cost * kc;
     r.mcost = mc;
-    // rendimento nella valuta del portafoglio: valore al cambio di oggi meno costo al cambio del giorno di acquisto
+    // rendimento nella valuta del portafoglio: valore e costo allo stesso cambio, quello di oggi
     if (r.mval != null && mc != null) { r.mta = r.mval - mc; r.mtp = mc ? (r.mta / mc) * 100 : null; }
     return r;
   }
@@ -2596,7 +2694,6 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     for (const it of st.pf) {
       const ci = pfCur(it), pc = pfPc(it), P = baseCur(pc) + baseCur(B);
       add(ci, pc); add(ci, B); add(pc, B);
-      if (baseCur(pc) !== baseCur(B)) for (const l of lotsOf(it)) if (l.d && l.d < today) (hist[P] = hist[P] || new Set()).add(l.d);
     }
     if (pfForm && pfForm.s && pfForm.pcx) add(pfForm.pcx, B); // controvalore del titolo che stai aggiungendo
     return { cur: [...cur], hist };
@@ -2738,8 +2835,8 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const dp = dOk && PV ? (DA / PV) * 100 : null, tp = C ? ((V - C) / C) * 100 : null;
     return `<div class="pfs3"><b>${money(V, B)}</b><div class="pfsd">`
       // oggi: la % in una capsula come nelle righe, l'importo tenue; totale: tutto in grassetto, senza capsula
-      + (dp != null ? `<span>${L("Oggi", "Today")}</span><i class="pfp ${cl(dp)}">${pctTxt(dp)}</i><i class="pfa">${smoney(DA, B)}</i>` : "")
-      + (tp != null ? `<span>${L("Totale", "Total")}</span><i class="pft ${cl(tp)}">${pctTxt(tp)}</i><i class="pft ${cl(tp)}">${smoney(V - C, B)}</i>` : "") + "</div></div>";
+      + (dp != null ? `<span>${L("Oggi", "Today")}</span><i class="pfp ${cl(dp)}">${pctTxt(dp)}</i><i class="pfa ${cl(DA)}">${smoney(DA, B)}</i>` : "")
+      + (tp != null ? `<span>${L("Totale", "Total")}</span><i class="pft pftp ${cl(tp)}">${pctTxt(tp)}</i><i class="pft ${cl(tp)}">${smoney(V - C, B)}</i>` : "") + "</div></div>";
   }
   // peso di ogni titolo sul patrimonio (nella valuta del patrimonio; con un cambio mancante niente pesi)
   function pfWeights() {
@@ -2844,10 +2941,10 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const lots = f.mode === "edit" ? lotsOf(st.pf.find((x) => x.s === f.s) || {}) : [];
     const today = dayKey(), d0 = f.mode === "edit" ? f.d0 || "" : today;
     const note = o ? L(`Hai già ${fqty(o.q)} a ${fmt(o.p)} ${esc(curSym(pc))}: è un nuovo acquisto, la quantità si somma e il prezzo diventa la media ponderata.`, `You already hold ${fqty(o.q)} at ${fmt(o.p)} ${esc(curSym(pc))}: this is a new purchase, quantities add up and the price becomes the weighted average.`)
-      : lots.length > 1 ? L(`${lots.length} acquisti: salvando diventano uno solo, al prezzo medio e alla data indicata.`, `${lots.length} purchases: saving merges them into one, at the average price and the date shown.`) : "";
+      : lots.length > 1 ? L(`${lots.length} acquisti: salvando diventano uno solo, al prezzo medio.`, `${lots.length} purchases: saving merges them into one, at the average price.`) : "";
     el.innerHTML = `${head}<div class="pft"><b>${esc(f.n)}</b><span>${esc(f.t && f.t !== f.n ? f.t + " · " : "")}${esc(f.s)}</span>${f.mode === "add" ? `<button class="pill pri pfchg" data-a="pfchg">${L("Cambia", "Change")}</button>` : ""}</div>
       <div class="pfr"><div class="pfl"><span>${L("Quantità", "Quantity")}</span><input id="pfqty" inputmode="decimal" autocomplete="off" placeholder="${L("es. 10", "e.g. 10")}" value="${f.q0 != null ? esc(f.q0.toLocaleString(NLOC, { useGrouping: false, maximumFractionDigits: 6 })) : ""}"></div>
-      <div class="pfl"><span>${L("Data di acquisto", "Purchase date")}</span><span class="dpk"><input id="pfdate" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="${dPh()}" aria-label="${L("Data di acquisto", "Purchase date")}" value="${esc(d0 ? dShow(d0) : "")}"><button class="dpb" data-a="dpk" aria-label="${L("Scegli il giorno", "Pick the day")}" title="${L("Scegli il giorno", "Pick the day")}">${CALSM}</button></span></div></div>
+      <div class="pfl" hidden><span>${L("Data di acquisto", "Purchase date")}</span><span class="dpk"><input id="pfdate" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="${dPh()}" aria-label="${L("Data di acquisto", "Purchase date")}" value="${esc(d0 ? dShow(d0) : "")}"><button class="dpb" data-a="dpk" aria-label="${L("Scegli il giorno", "Pick the day")}" title="${L("Scegli il giorno", "Pick the day")}">${CALSM}</button></span></div></div>
       <div class="dpop" id="dpop" hidden></div>
       <div class="pfpl"><span>${L("Prezzo di acquisto", "Purchase price")}</span><span class="pfin"><input id="pfpx" inputmode="decimal" autocomplete="off" value="${f.p0 != null ? esc(f.p0.toLocaleString(NLOC, { useGrouping: false, maximumFractionDigits: 6 })) : ""}"><em id="pfcy">${esc(curSym(pc))}</em></span></div>
       <div class="pfcv" id="pfcv" hidden></div><p class="pfnote">${note}</p><p class="pfnote err" id="pfmsg"></p>${btns(true)}`;
@@ -2864,8 +2961,8 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const px = p > 0 ? p : live;
     el.hidden = !(q > 0 && px > 0);
     if (el.hidden) return;
-    // controvalore nella valuta del portafoglio (al cambio del giorno di acquisto, se lo conosco, altrimenti di oggi)
-    const B = st.pfcur || "EUR", d = parseDay(($("#pfdate") || {}).value || ""), k = baseCur(c) === baseCur(B) ? unitK(c) / unitK(B) : fxOn(c, B, d) ?? fx(c, B);
+    // controvalore nella valuta del portafoglio, al cambio di oggi
+    const B = st.pfcur || "EUR", k = baseCur(c) === baseCur(B) ? unitK(c) / unitK(B) : fx(c, B);
     const tot = k != null ? money(q * px * k, B) : `${fmt(q * px)} ${esc(curSym(c))}`;
     const h = `<span>${L("Controvalore", "Total value")}</span><b>${tot}</b><em>${fqty(q)} × ${fmt(px)} ${esc(curSym(c))}${p > 0 ? "" : ` · ${L("al prezzo attuale", "at the current price")}`}</em>`;
     if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; }
@@ -3024,7 +3121,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const c = nmCfg(), ex = { s: "AAPL", n: "AAPL", t: "Apple Inc." }; // esempio fisso: Apple
     const seg = (k, opts) => `<div class="seg">${opts.map(([v, l]) => `<button data-a="nmset" data-nk="${k}" data-v="${v}" class="${String(c[k]) === String(v) ? "on" : ""}">${l}</button>`).join("")}</div>`;
     $("#nmset").innerHTML = `<div class="nmpv" aria-hidden="true">${nameCell(ex.s, ex.n, ex.t, "")}</div>`
-      + `<div class="nmgrid"><span>${L("Logo", "Logo")}</span>${seg("lg", [["l", L("Sì", "Yes")], ["off", "No"]])}</div>`;
+      + `<label class="nmgrid nmsw"><span>${L("Logo", "Logo")}</span><button class="tgl${c.lg !== "off" ? " on" : ""}" role="switch" aria-checked="${c.lg !== "off"}" aria-label="${L("Logo", "Logo")}" data-a="nmset" data-nk="lg" data-v="${c.lg !== "off" ? "off" : "l"}"></button></label>`;
   }
   function drawSettings() {
     drawExcl();
@@ -3039,14 +3136,15 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     $("#futseg").innerHTML = [[true, "Sì"], [false, "No"]].map(([v, l]) => `<button data-a="futmode" data-v="${v}" class="${futOn() === v ? "on" : ""}">${l}</button>`).join("");
     $("#langlbl").textContent = L("Lingua", "Language");
     $("#nflbl").textContent = L("Formato dei numeri", "Number format");
+    $("#fsseg").innerHTML = [["s", "Compatto"], ["m", "Medio"], ["l", "Grande"]].map(([v, l]) => `<button data-a="fsset" data-v="${v}" class="${(st.fs || "m") === v ? "on" : ""}">${l}</button>`).join("");
     $("#nfseg").innerHTML = [["it", "1.234,56"], ["en", "1,234.56"]].map(([v, l]) => `<button data-a="nfset" data-v="${v}" class="${NLOC.startsWith(v) ? "on" : ""}">${l}</button>`).join("");
-    $("#langseg").innerHTML = [["it", "Italiano"], ["en", "English"]].map(([v, l]) => `<button data-a="lang" data-v="${v}" class="${st.lang === v ? "on" : ""}" lang="${v}">${l}</button>`).join("");
+    $("#langseg").innerHTML = [["it", "IT", "Italiano"], ["en", "EN", "English"]].map(([v, l, t]) => `<button data-a="lang" data-v="${v}" class="${st.lang === v ? "on" : ""}" lang="${v}" title="${t}" aria-label="${t}">${l}</button>`).join("");
     drawNmSet();
     applyGlass();
     $("#rowcseg").innerHTML = [["c", L("Grafico a candele", "Candlestick chart")], ["l", L("Andamento storico", "Price history")]].map(([v, l]) => `<button data-a="rowc" data-v="${v}" class="${rowM() === v ? "on" : ""}">${l}</button>`).join("");
     $("#colrow").innerHTML = [["up", L("Rialzo", "Up")], ["dn", L("Ribasso", "Down")]]
       .map(([k, l]) => `<span class="colit">${sw(k, getColor(k), `${L("Colore", "Color")}: ${l}`)}${l}</span>`).join("")
-      + `<button class="pill rst" data-a="creset" title="${L("Rimetti i colori predefiniti di rialzo e ribasso", "Restore the default up and down colors")}">Reset</button>`;
+      + `<span class="crb"><button class="pill rst" data-a="ctv" title="${L("Verde e rosso di TradingView", "TradingView green and red")}">TradingView</button><button class="pill rst rst2" data-a="creset" title="${L("Rimetti i colori predefiniti di rialzo e ribasso", "Restore the default up and down colors")}">Reset</button></span>`;
     $("#themes").innerHTML = THEMES.map(([k, l]) => `<button data-a="theme" data-t="${k}" class="${st.theme === k ? "on" : ""}">${l}</button>`).join("");
     const kb = $("#kbtn");
     kb.textContent = rec ? "Premi i tasti…" : comboLabel(st.key);
@@ -3429,7 +3527,21 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       if (k === "acc") { if (own) host.style.setProperty("--accbg", `color-mix(in srgb,${c} ${dark ? 15 : 12}%,transparent)`); else host.style.removeProperty("--accbg"); }
     }
   }
+  // dimensione del testo (Impostazioni › Generali): Compatto −1 px, Medio come sempre, Grande +1 px su tutti i caratteri del widget
+  let fsCur = "m", cssBase = null;
+  function applyFs() {
+    const want = st.fs === "s" || st.fs === "l" ? st.fs : "m";
+    if (want === fsCur) return;
+    const el = root.querySelector("style");
+    if (cssBase == null) cssBase = el.textContent;
+    const d = want === "s" ? -1 : want === "l" ? 1 : 0;
+    el.textContent = d ? cssBase.replace(/font-size:(\d+(?:\.\d+)?)px/g, (_, n) => `font-size:${+n + d}px`) : cssBase;
+    host.dataset.fs = want;
+    fsCur = want; lwKey = ""; pwKey = ""; ewtW = null;
+    requestAnimationFrame(() => { draw(); paint(); if (calOpen) drawCal(false); });
+  }
   function apply() {
+    applyFs();
     applyGlass();
     syncY();
     const dark = st.theme === "dark" || (st.theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
@@ -3711,7 +3823,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   }
   const userCloseCal = () => { setView(null); closeCal(); };
   // ---------- Notizie del titolo aperto (feed RSS di Yahoo Finance, vedi background.js) ----------
-  let newsOn = false, newsItems = null, newsSym = null, newsReq = 0, NNEW = {};
+  let newsBack = null, newsOn = false, newsItems = null, newsSym = null, newsReq = 0, NNEW = {};
   chrome.storage.local.get("nnew").then((o) => { NNEW = (o && o.nnew) || {}; if (Object.keys(NNEW).length) draw(); }, () => {});
   const newsBadge = (s) => !!(st.nsub && st.nsub[s] && NNEW[s]);
   function ago(t) {
@@ -3832,6 +3944,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   };
   calFmts();
   const dkey = (t) => { const d = new Date(t); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
+  let calAnch = true;
   async function loadCal(force) {
     if (calLoading) return;
     calLoading = true;
@@ -3894,12 +4007,25 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     hideTip();
     const y = body.scrollTop;
     body.innerHTML = h;
-    if (scroll) {
+    if (scroll) calAnch = true;
+    // il prossimo dato resta in cima anche quando arrivano attese e valori (le righe sopra si allungano), finché non scorri tu
+    if (!body.dataset.anch) {
+      body.dataset.anch = 1;
+      const off = () => { calAnch = false; };
+      body.addEventListener("wheel", off, { passive: true });
+      body.addEventListener("touchmove", off, { passive: true });
+      body.addEventListener("keydown", (e) => { if (/^(Arrow(Up|Down)|Page(Up|Down)|Home|End| )$/.test(e.key)) off(); });
+      body.addEventListener("pointerdown", (e) => { if (e.offsetX > body.clientWidth) off(); });
+    }
+    if (calAnch) {
       // in cima l'intestazione del giorno: quello di oggi se oggi è uscito qualcosa, altrimenti quello
       // del prossimo dato (così la riga non finisce sotto l'intestazione fissa)
-      const day = body.querySelector(`.cday[data-day="${today}"]`) || (next && body.querySelector(`.cday[data-day="${dkey(next.t)}"]`));
+      // in cima il prossimo dato in uscita (con l'intestazione del suo giorno sopra); senza prossimi: oggi
+      const nx = body.querySelector(".cev.next"), nd = next && body.querySelector(`.cday[data-day="${dkey(next.t)}"]`);
+      const day = body.querySelector(`.cday[data-day="${today}"]`);
       body.scrollTop = 0; // le intestazioni fisse (sticky) danno la posizione giusta solo a lista in cima
-      body.scrollTop = day ? Math.max(0, day.offsetTop - body.offsetTop) : 0;
+      const top0 = body.getBoundingClientRect().top - body.scrollTop, at = (el) => el.getBoundingClientRect().top - top0;
+      body.scrollTop = nx ? Math.max(0, nd && nd.nextElementSibling === nx ? at(nd) : at(nx) - (nd ? nd.offsetHeight : 0)) : day ? Math.max(0, at(day)) : 0;
     } else body.scrollTop = y;
     if (cvI != null) { const r = body.querySelector(`.cev.old[data-i="${cvI}"]`); if (r && r.matches(":hover")) cvShow(r); else hideTip(); } // arrivati i valori: aggiorno il riquadro aperto
     const fail = calData.fail || [], upd = calData.at ? L(`Aggiornato alle ${LTIME.format(new Date(calData.at))}`, `Updated at ${LTIME.format(new Date(calData.at))}`) : "";
@@ -3918,7 +4044,11 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   // ---------- Calendario degli utili (dati: Nasdaq, vedi calendar.js) ----------
   let eMon = null, eData = null, eOpen = null, eSort = null, eGoToday = false, eDf = "all", eAll = false, eLoad = null, eT = null, backCal = false;
   const ECAPS = [0, 5e8, 1e10, 5e10, 1e11];
-  const eCapV = () => (ECAPS.includes(st.ecap) ? st.ecap : 1e10);
+  const eCapV = () => (ECAPS.includes(st.ecap) && st.ecap ? st.ecap : 1e10); // "Tutte" non c'è più: per i titoli piccoli c'è la ricerca
+  // ricerca negli utili (calendario e risultati): simbolo o nome, a qualsiasi capitalizzazione
+  let eFind = false, eQ = "", eFocus = false;
+  const ERESICON = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16v-4M12 16V7M17 16v-6"/></svg>';
+  const eMatch = (r) => { const q = eQ.trim().toLowerCase(); return !q || r.s.toLowerCase().includes(q) || String(r.n || "").toLowerCase().includes(q); };
   const eSessV = () => (st.esess === "b" || st.esess === "a" ? st.esess : "all");
   const NYD = new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" });
   const EYP = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", hourCycle: "h23" });
@@ -3960,7 +4090,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (!e) return null;
     const c = eCapV();
     return e.rows.map((r) => ({ s: r[0], n: r[1], cap: r[2] || 0, t: r[3], est: r[4], act: r[5], sur: r[6], ly: r[7], ne: r[8], tm: r[9] || null, me: mine.has(r[0]) }))
-      .filter((r) => (st.emine ? r.me : r.me || r.cap >= c))
+      .filter((r) => (eQ.trim() ? eMatch(r) && (!st.emine || r.me) : st.emine ? r.me : r.me || r.cap >= c))
       .sort((a, b) => b.me - a.me || b.cap - a.cap);
   }
   // Stato del report. Il calendario dice solo "prima dell'apertura" o "dopo la chiusura": la fascia
@@ -4004,11 +4134,17 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const capL = [L("Tutte", "All"), "0,5", "10", "50", L("100 mld", "100 $B")].map((x, i) => (i === 1 && NLOC.startsWith("en") ? "0.5" : x));
     const capT = [L("Tutte le capitalizzazioni", "Any market cap"), ...["0,5", "10", "50", "100"].map((x) => L(`Capitalizzazione da ${x} mld $`, `Market cap from $${x.replace(",", ".")}B`))];
     const ev = st.eview === "r" ? "r" : "w";
-    const evw = `<span class="tabs evw">${[["w", L("Calendario", "Calendar"), ""], ["r", L("Risultati", "Results"), L("Stime e risultati", "Estimates and results")]].map(([v, l, t]) => `<button class="tab${ev === v ? " on" : ""}" data-a="eview" data-v="${v}"${t ? ` title="${t}"` : ""}>${l}</button>`).join("")}</span>`;
-    if ($("#evwb").dataset.h !== evw) { $("#evwb").dataset.h = evw; $("#evwb").innerHTML = evw; } // ridisegno solo se cambia (il cursore scorre)
-    $("#efil").innerHTML = `<div class="efr"><span class="tabs ecaps" title="${L("Capitalizzazione minima", "Minimum market cap")}">${ECAPS.map((v, i) => `<button class="tab${cv === v && !st.emine ? " on" : ""}" data-a="ecap" data-v="${v}" title="${capT[i]}">${capL[i]}</button>`).join("")}</span>`
-      + `<span class="efs"><span class="tabs esv">${[["all", L("Tutti", "All"), ""], ["b", ESUN, L("Prima dell'apertura", "Before the open")], ["a", EMOON, L("Dopo la chiusura", "After the close")]].map(([v, l, t]) => `<button class="tab${sv === v ? " on" : ""}" data-a="esess" data-v="${v}"${t ? ` title="${t}" aria-label="${t}"` : ""}>${l}</button>`).join("")}</span>`
+    const evw = `<span class="tabs evw">${[["w", CALSM, L("Calendario degli utili", "Earnings calendar")], ["r", ERESICON, L("Stime e risultati", "Estimates and results")]].map(([v, l, t]) => `<button class="tab ti${ev === v ? " on" : ""}" data-a="eview" data-v="${v}" title="${t}" aria-label="${t}">${l}</button>`).join("")}</span>`;
+    // Calendario / Stime: a destra, prima di Tutti / sole / luna (nel riquadro dei filtri)
+    const efh = `<div class="efr"><span class="tabs ecaps" title="${L("Capitalizzazione minima", "Minimum market cap")}">${ECAPS.map((v, i) => (i ? `<button class="tab${cv === v && !st.emine ? " on" : ""}" data-a="ecap" data-v="${v}" title="${capT[i]}">${capL[i]}</button>` : "")).join("")}</span>`
+      + (false ? `<label class="find efind">${SEARCH}<input id="eq" placeholder="${L("Titolo o azienda", "Ticker or company")}" autocomplete="off" spellcheck="false" aria-label="${L("Cerca un titolo negli utili", "Search earnings for a ticker")}"><button data-a="efindx" aria-label="${L("Chiudi la ricerca", "Close search")}">${XSM}</button></label>`
+        : "")
+      + `<span class="efs">${evw}<span class="tabs esv">${[["all", L("Tutti", "All"), ""], ["b", ESUN, L("Prima dell'apertura", "Before the open")], ["a", EMOON, L("Dopo la chiusura", "After the close")]].map(([v, l, t]) => `<button class="tab${sv === v ? " on" : ""}" data-a="esess" data-v="${v}"${t ? ` title="${t}" aria-label="${t}"` : ""}>${l}</button>`).join("")}</span>`
       + `<button class="tb emine${st.emine ? " on" : ""}" data-a="emine" aria-pressed="${!!st.emine}" title="${L("Solo i titoli delle tue liste e del portafoglio", "Only tickers in your lists and portfolio")}">${ESTAR} ${L("I miei", "Mine")}</button></span></div>`;
+    if ($("#efil").dataset.h !== efh) { // ridisegno solo se cambia: la casella di ricerca non perde quello che scrivi
+      $("#efil").dataset.h = efh; $("#efil").innerHTML = efh;
+      const q = $("#eq"); if (q) { q.value = eQ; if (eFocus) { eFocus = false; q.focus(); } }
+    }
     const body = $("#ebody");
     if (!eData || eData.mon !== eMon) { body.innerHTML = `<div class="empty">${L("Carico gli utili…", "Loading earnings…")}</div>`; eNote(); return; }
     const n = eCols(), today = nyDay(), mine = mineSet();
@@ -5061,7 +5197,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   // nel grafico a candele resta accanto al prezzo
   function chgPlace() {
     const q = $(".chart .cquote"); if (q) q.classList.add("hl");
-    if (mode !== "l") { const p = $("#c-per"); if (p) { p.textContent = "\u00a0"; p.className = "cper"; } } // riga vuota: prezzo e % restano dove sono nello storico
+    if (mode !== "l") { const p = $("#c-per"); if (p) { p.textContent = ""; p.className = "cper"; } } // candele: solo la % del giorno, centrata sul prezzo
   }
   function perHeader() {
     chgPlace();
@@ -5307,6 +5443,9 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       : cp.key === "cup" || cp.key === "cdn"
       ? `<div class="tvrow"><span>Colori TradingView</span><button class="pill rst" data-a="creset" title="${L("Le candele tornano ai colori di rialzo e ribasso delle impostazioni", "Candles go back to the up and down colors of the settings")}">Reset</button>${[["#089981", "Verde TradingView"], ["#f23645", "Rosso TradingView"]].map(([x, l]) =>
           `<button data-a="cpick" data-c="${x}" class="${x === c ? "on" : ""}" style="background:${x}" aria-label="${l}" title="${l} ${x.toUpperCase()}"></button>`).join("")}</div>`
+      : cp.key === "up" || cp.key === "dn"
+      ? `<div class="tvrow"><span>Colori TradingView</span>${[["#089981", "Verde TradingView"], ["#f23645", "Rosso TradingView"]].map(([x, l]) =>
+          `<button data-a="cpick" data-c="${x}" class="${x === c ? "on" : ""}" style="background:${x}" aria-label="${l}" title="${l} ${x.toUpperCase()}"></button>`).join("")}<button class="pill rst" data-a="creset" title="${L("Rimetti i colori predefiniti di rialzo, ribasso e tema", "Restore the default up, down and theme colors")}">Reset</button></div>`
       : flatColor(cp.key) ? `<div class="tvrow"><span>Colore predefinito</span><button class="pill rst" data-a="creset" title="${cp.key === "lc" ? L("Rimetti colore e spessore predefiniti della linea", "Restore the default line color and width") : L("Rimetti i colori predefiniti di rialzo, ribasso e tema", "Restore the default up, down and theme colors")}">Reset</button></div>` : "";
     let h = tv + `<div class="grid">${SWATCHES.map((x) => `<button data-a="cpick" data-c="${x}" class="${x === c ? "on" : ""}" style="background:${x}" aria-label="${x}"></button>`).join("")}</div>`;
     if (cp.custom) {
@@ -5632,6 +5771,11 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       if (cp) Object.assign(cp, hex2hsv(getColor(cp.key)));
       syncSeries(); persist(); return drawColor();
     }
+    if (a === "ctv") { // rialzo e ribasso coi colori di TradingView
+      st.ind.up = "#089981"; st.ind.dn = "#f23645";
+      for (const k of ["up", "dn"]) root.querySelectorAll(`.sw[data-ic="${k}"]`).forEach((x) => (x.style.background = getColor(k)));
+      applyCols(); syncSeries(); persist(); return;
+    }
     if (a === "ccustom") { cp.custom = !cp.custom; drawColor(); return placeColor(); }
     if (a === "cdrop") return pickScreen();
     if (a === "cdone") return closeColor();
@@ -5719,7 +5863,13 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (a === "news") { // icona delle notizie nella riga: apre (o richiude) le notizie del titolo
       e.stopPropagation();
       const sm = b.dataset.s;
-      if (newsOn && cur === sm) return setNews(false);
+      if (newsOn && cur === sm) { // richiudendo torna quello che c'era prima di aprirle (niente, se non c'era niente)
+        const p = newsBack; newsBack = null;
+        if (!p) return userCloseChart();
+        if (p.s === cur) return setNews(false);
+        setNews(false); return openChart(p.s, p.m);
+      }
+      if (!newsOn) newsBack = cur ? { s: cur, m: mode } : null;
       if (cur !== sm) openChart(sm, cur ? mode : rowM(), true);
       return setNews(true);
     }
@@ -5784,6 +5934,8 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     }
     if (a === "cal") return calOpen && !cur ? userCloseCal() : openCal();
     if (a === "calclose") return userCloseCal();
+    if (a === "efind") { eFind = true; eFocus = true; return drawEarn(); }
+    if (a === "efindx") { eFind = false; eQ = ""; return drawEarn(); }
     if (a === "calrefresh") {
       eAnch = true;
       if (st.calv !== "e") return loadCal(true);
@@ -5822,6 +5974,9 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (a === "calmore") { calDays = Math.min(400, calDays + 60); return drawCal(false); }
     if (a === "slotrm") { const i = +b.dataset.i; st.bar[i] = null; if (slot === i) { slot = null; slotRes = []; } return save(); }
     if (a === "lang") { if (st.lang !== b.dataset.v) setLang(b.dataset.v); return; }
+    if (a === "updnow") { chrome.runtime.sendMessage({ type: "updnow" }).catch(() => {}); return; }
+    if (a === "updx") { UPDX = UPD ? UPD.v : ""; chrome.storage.local.set({ updx: UPDX }).catch(() => {}); return drawUpd(); }
+    if (a === "fsset") { st.fs = b.dataset.v; persist(); apply(); drawSettings(); return; }
     if (a === "nfset") { st.nf = b.dataset.v === "en" ? "en" : "it"; setLang(st.lang); return; } // formato dei numeri, indipendente dalla lingua
     if (a === "settings") { // si apre sempre su "Generali", dalla cima
       drawSettings(); showSect("g"); $("#settings").hidden = false;
@@ -6043,6 +6198,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const t = e.target;
     if (t.id === "pfpx" && pfForm) pfForm.pxSet = !!t.value;
     if ((t.id === "pfqty" || t.id === "pfpx" || t.id === "pfdate") && $("#pfmsg")) $("#pfmsg").textContent = "";
+    if (t.id === "eq") { eQ = t.value; drawEarn(); return; }
     if (t.id === "pfdate") { if (dpk) { const k = parseDay(t.value); if (k) dpk = { y: +k.slice(0, 4), m: +k.slice(5, 7) - 1 }; drawDpk(); } pfCv(); }
     if (t.id === "pfqty" || t.id === "pfpx") pfCv();
     if (t.id !== "pfq" || !pfForm) return;
@@ -6070,7 +6226,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   });
 
   // ---------- Esporta / importa liste e impostazioni ----------
-  const EXP = ["lists", "cl", "bar", "barRow", "sort", "theme", "ind", "key", "excl", "ci", "lr", "fut", "lay", "tz", "pf", "psort", "pfcur", "lang", "nm", "rowc", "glass", "tpl", "rcol", "nf"];
+  const EXP = ["lists", "cl", "bar", "barRow", "sort", "theme", "ind", "key", "excl", "ci", "lr", "fut", "lay", "tz", "pf", "psort", "pfcur", "lang", "nm", "rowc", "glass", "tpl", "rcol", "nf", "fs"];
   function exportData() {
     const data = Object.fromEntries(EXP.map((k) => [k, st[k]]));
     const json = JSON.stringify({ app: "Owlook", version: chrome.runtime.getManifest().version, exported: new Date().toISOString(), data }, null, 2);
@@ -6161,6 +6317,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   // Sincronizza le impostazioni tra le schede aperte
   chrome.storage.onChanged.addListener((ch, area) => {
     if (area !== "local") return;
+    if (ch.upd || ch.updx) { if (ch.upd) UPD = ch.upd.newValue || null; if (ch.updx) UPDX = ch.updx.newValue || ""; drawUpd(); }
     if (ch.every) { EVERY = ch.every.newValue === true; evAsk = false; drawSettings(); }
     if (ch.nnew) { // notizie nuove trovate dal controllo periodico (o lette in un'altra scheda)
       NNEW = ch.nnew.newValue || {}; draw();
@@ -6182,7 +6339,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (diff.cols) { lwKey = ""; pwKey = ""; }
     if (diff.lang) setLang(st.lang, true);
     if (diff.tab) { pfEdit = false; pfForm = null; renderPform(); }
-    if (diff.theme || diff.excl) drawSettings();
+    if (diff.theme || diff.excl || diff.fs) drawSettings();
     if (diff.nm) chartLogo();
     if (diff.nsub) { draw(); drawNews(); }
     apply(); loop();
@@ -6210,7 +6367,6 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (v.sort === "manual") v.sort = "az";
     const keep = Object.fromEntries(KEYS.filter((k) => k in v).map((k) => [k, v[k]]));
     st = { ...st, ...keep, ind: mergeInd(v.ind) };
-    if (st.ind.up === "#089981" && st.ind.dn === "#f23645") { st.ind.up = "#2bd97c"; st.ind.dn = "#ff6b3d"; }
     if (st.ind.lc === "#38bdf8") st.ind.lc = "#2bd97c";
     if (!v.ind || !v.ind.tv1 || !Array.isArray(v.ind.fx)) persist(); // salvo subito colori e indicatori nel formato nuovo
     if (!Array.isArray(st.lists) || !st.lists.length) st.lists = [{ id: "l1", name: "La mia lista", items: DEFAULTS }];
@@ -6230,6 +6386,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     st.bar = st.bar.map((it) => (it ? { ...fixName(it), n: (all.find((y) => y.s === it.s) || fixName(it)).n } : it));
     if (JSON.stringify([st.lists, st.bar]) !== before) persist();
     EVERY = v.every === true;
+    UPD = v.upd || null; UPDX = v.updx || ""; drawUpd();
     wasVis = !isHidden() && isOpen(); // pagina appena caricata: nessun ripristino automatico
     setLang(st.lang === "en" || st.lang === "it" ? st.lang : /^it\b/i.test(navigator.language || "") ? "it" : "en", true);
     // Mostro subito l'ultimo valore registrato (anche da altre schede), poi aggiorno

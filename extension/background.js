@@ -666,7 +666,31 @@ async function newsCheck() {
 }
 const NEWS_EVERY = 2; // minuti tra un controllo e l'altro (il feed RSS non avvisa da solo: va richiesto)
 chrome.alarms.get("news").then((a) => { if (!a || a.periodInMinutes !== NEWS_EVERY) chrome.alarms.create("news", { periodInMinutes: NEWS_EVERY, delayInMinutes: 1 }); }, () => {});
-chrome.alarms.onAlarm.addListener((a) => { if (a.name === "news") newsCheck().catch(() => {}); });
+chrome.alarms.onAlarm.addListener((a) => { if (a.name === "news") { newsCheck().catch(() => {}); updCheck().catch(() => {}); } });
+
+// ---------- Nuove versioni ----------
+// Dal Chrome Web Store Owlook si aggiorna da solo: avviso quando la nuova versione è scaricata e aspetta il riavvio.
+// Installato a mano (file zip): una volta al giorno guardo l'ultima release su GitHub e avviso con il link al sito.
+const vNum = (v) => String(v || "").replace(/^v/i, "").split(".").map((n) => parseInt(n, 10) || 0);
+const vNewer = (a, b) => { const x = vNum(a), y = vNum(b); for (let i = 0; i < 4; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); return false; };
+const instType = async () => { try { return (await chrome.management.getSelf()).installType; } catch (_) { return "unknown"; } };
+chrome.runtime.onUpdateAvailable.addListener((d) => { chrome.storage.local.set({ upd: { v: d.version, k: "cws" } }).catch(() => {}); });
+async function updCheck(force) {
+  if ((await instType()) === "normal") return; // dallo store: ci pensa Chrome
+  const { updAt = 0 } = await chrome.storage.local.get("updAt");
+  if (!force && Date.now() - updAt < 20 * 3600000) return;
+  await chrome.storage.local.set({ updAt: Date.now() });
+  const r = await fetch("https://api.github.com/repos/Owlook-quotes/owlook/releases/latest", { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
+  if (!r.ok) return;
+  const v = String((await r.json()).tag_name || "").replace(/^v/i, "");
+  if (v && vNewer(v, chrome.runtime.getManifest().version)) await chrome.storage.local.set({ upd: { v, k: "zip" } });
+}
+// all'avvio: l'avviso di una versione già installata non serve più
+chrome.storage.local.get("upd").then(({ upd }) => {
+  if (upd && !vNewer(upd.v, chrome.runtime.getManifest().version)) chrome.storage.local.remove("upd");
+  updCheck().catch(() => {});
+}, () => {});
+chrome.runtime.onMessage.addListener((msg) => { if (msg && msg.type === "updnow") chrome.runtime.reload(); });
 // clic sull'avviso: apre l'articolo e segna come lette le notizie di quel titolo
 chrome.notifications.onClicked.addListener(async (id) => {
   const [p, sym] = id.split("|");
