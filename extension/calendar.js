@@ -458,9 +458,36 @@ async function computeActual(k, t, prev) {
 }
 const ACT_WAIT = { cpi: 120000, ppi: 120000, nfp: 120000 }; // BLS: senza registrazione 25 richieste al giorno
 const actJob = {};
+// Valori precedenti che il comunicato non riporta (variazioni su 12 mesi, occupazione): li calcolo dalle serie
+// BLS fino al mese dell'uscita. Servono quando le attese di Forex Factory non ci sono più (settimane passate).
+async function blsPrevs(k, t) {
+  const defs = BLS_SER[k], exp = expected(k, t), y = nyParts(t).y, prevs = {};
+  const ser = await blsSeries([...new Set(Object.values(defs).map((d) => d[1]))], y);
+  for (const [key, [kind, id]] of Object.entries(defs)) {
+    const sr = ser[id] || [], i = sr.findIndex((x) => same(x, exp));
+    const v = i > 0 ? metric(kind, sr.slice(0, i)) : null;
+    if (v) prevs[key] = v;
+  }
+  return prevs;
+}
 async function actual(k, t, prev) {
   const key = `${k}:${t}`, { act = {} } = await chrome.storage.local.get("act").catch(() => ({}));
   const c = act[key];
+  // letto dal comunicato: a uscita passata (fuori dai minuti in cui l'API serve per il dato) completo i precedenti, una volta
+  if (c && c.fresh && BLS_SER[k] && c.src === "rel" && !c.pv && Date.now() - t > 15 * 60000 && (!c.pvAt || Date.now() - c.pvAt > 3600000)
+    && Object.keys(BLS_SER[k]).some((x) => !(c.prevs || {})[x]) && (await blsCount(false)) < 20) {
+    if (!actJob[key + ":p"]) actJob[key + ":p"] = (async () => {
+      let pv = null;
+      try { pv = await blsPrevs(k, t); } catch (_) {}
+      const { act: a2 = {} } = await chrome.storage.local.get("act").catch(() => ({}));
+      const base = a2[key] && a2[key].fresh ? a2[key] : c;
+      const out = { ...base, prevs: { ...(pv || {}), ...(base.prevs || {}) }, pv: pv && Object.keys(pv).length ? 1 : 0, pvAt: Date.now() };
+      a2[key] = out;
+      await chrome.storage.local.set({ act: a2 }).catch(() => {});
+      return out;
+    })().finally(() => { delete actJob[key + ":p"]; });
+    return actJob[key + ":p"];
+  }
   if (c && c.fresh) return c;
   if (Date.now() < t) return { fresh: false, vals: {} };
   // nei 10 minuti dopo l'uscita chiedo il dato ogni pochi secondi (BLS: finché resta margine sul limite giornaliero)

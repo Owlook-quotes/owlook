@@ -1,5 +1,58 @@
 # Changelog
 
+## 1.87.0 beta
+
+- **Sections bar** under the header: Lists, Portfolio, US macro calendar, Earnings and News, as icons. Lists and Portfolio are filled when selected; Macro, Earnings and News show a violet line when open. The Macro / Earnings switch inside the calendar is gone.
+- **News section**: the latest stories for every ticker in your lists and portfolio, with logo and ticker. Filters: All, importance (drop-down with one, two or three dots) and category (Results, M&A, Management, Risks, Other), combinable. Sort by ticker or importance; search a ticker or company name; a bell on each row to follow that ticker; tickers with no recent news are listed at the bottom.
+- **Notifications** (bell in the header): stories from the tickers you follow, with an unread counter. "x tickers followed" opens the list of followed tickers, each with a bell to turn alerts on or off. Opening the notifications clears the violet dot on the news buttons.
+- News for a ticker: "Notify me" in light violet, switching to "Alerts on" with an animation; "Importance" / "Tag" headers; no counts in the filters.
+- **Volume profile** on candlestick charts: how much traded at each price in the visible candles. Its button (last on the right) opens a menu with On/Off, Coloured bars, Most traded price and its colour; the most traded price is outlined and shown as a capsule on the price scale.
+- **Search**: a magnifier next to the pencil; the box opens only when you click it and closes when you click outside it.
+- The lists row and the portfolio total stay in view while the list scrolls; magnifier, pencil and refresh are in the same place in Lists and Portfolio.
+- **Portfolio**: Today and Total in two columns next to the total; quantity × average cost under each ticker; the box on the right starts with the price; the + button is gone (add tickers from the search).
+- List: chart and news buttons on each row always in the same place, with or without logos and "% Last close".
+- Featured tickers with more than three: no fade at the bottom; the line on the right becomes a small violet scroll bar.
+- Macro calendar: the next release is highlighted with a countdown; previous and forecast values of past releases are kept (forecasts are saved in the background, previous values come from BLS data).
+- Live prices: streaming could stop after an HTTP refresh, so charts and the list moved only every few seconds. Fixed.
+
+## 1.86.0 beta
+
+- New setting "Text size" (Settings › General): Compact, Medium (as before) or Large.
+- Panel and featured tickers box slightly narrower; buttons slightly smaller; the "Hide" button is now a minimize icon, so the header fits even on a narrow panel.
+- Portfolio: the cost of each holding is converted at today's exchange rate, so the return reflects the stock's performance; the purchase date is no longer needed and has been removed from the form. Today's gain in currency is no longer bold.
+- News: clicking the news button again returns to what was open before (or to nothing).
+- Candlestick chart: larger % change, centred on the price; the % sign is no longer cut off.
+- Zen mode: rows only slightly taller than in normal mode.
+- Settings: the choices sit to the right of each setting, in shorter boxes.
+- Dark theme: panel and featured tickers box are plain black, without the lighter sheen at the top.
+- Featured tickers box a few pixels lower; smaller logo and header, tighter spacing everywhere, so more rows fit.
+- Portfolio summary: today's capsule no longer cut off; today's gain in currency is coloured.
+- Settings: one compact list without boxes; smaller choice buttons, centred when they don't fit next to their label; language as IT / EN; "Text size" moved to Appearance.
+- Charts: logo, ticker, price and % sit in the same place in candlestick, news and price history; the history periods are as tall as the candlestick buttons, so the chart starts at the same height.
+- Calendar button moved next to List / Portfolio. Earnings: market-cap filters wider and on the left, Calendar / Estimates icons next to the session filters; "All" removed.
+- The header's last button is now a close (×) button. Slightly smaller panel corners. Featured tickers text centred in the row highlight.
+- Portfolio rows more compact; total % in a capsule like today's. Zen rows as tall as in normal mode.
+- Up/down colours: TradingView green and red are back, as a one-click button and in the colour picker.
+- Macro calendar: the next release stays at the top, even when values and forecasts arrive.
+- Settings: the box stays in the same place and size in General and Appearance, only the content scrolls (with the same scrollbar as the list); bigger IT / EN buttons; Text size above Transparency; logo on/off switch next to the example; the selected section is purple.
+- Update notice: from the Chrome Web Store, a note when the new version is ready (with "Update now"); installed from the zip file, a daily check with a link to download the new version from the site.
+- Hiding the featured tickers (or putting them in one row) now extends the panel upwards even if you moved or resized it, as long as it sits right under the box.
+
+## 1.85.2 beta
+
+- US economic calendar: CPI, PPI and jobs report values now appear as soon as the BLS release is online (8:30 ET), read directly from the release page every few seconds. The BLS data API, which updates a few minutes later, is used only if the page can't be read.
+
+## 1.85.1 beta
+
+- Renaming a list: when the buttons don't fit on one line, "Cancel" wraps below and the column headings and the list move down instead of being covered.
+
+## 1.85.0 beta
+
+- Owlook no longer asks for access to every website when you install it. After installing, a short guide explains the permission and lets you choose: the widget on every page (Chrome then asks for access to all sites) or only when you click the Owlook icon or use the shortcut.
+- New setting "Where the widget appears" (Settings › General): On every page / Only on click. You can switch at any time.
+- Choosing "On every page" adds the widget to the tabs that are already open, without reloading them.
+- Data access is limited to the market data sources (Yahoo Finance, Nasdaq, SEC, US statistics agencies, Federal Reserve, Forex Factory, Google News, logo services).
+
 ## 1.84.2 beta
 
 - Featured tickers box: the change pills now have exactly the same colours as in the lists and the portfolio (their background no longer mixes with the lighter sheen of the box).

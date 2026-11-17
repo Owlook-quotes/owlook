@@ -51,6 +51,8 @@ function setLast(sym, q, isLive) {
     if (q.qs) r.qs = q.qs;
     if (q.cur) r.cur = q.cur;
     if (!stale && q.rp != null) { r.rp = q.rp; r.rc = q.rc; } // ultima seduta regolare (anche durante lo streaming)
+    if (q.nm) r.nm = q.nm;
+    if (q.op !== undefined && !stale) r.op = q.op; // prezzo di apertura della seduta di oggi (colonna "% Apert.")
     if (q.qt) r.qt = q.qt; // tipo (INDEX, EQUITY, ETF…): gli indici non hanno valuta
   }
   last[sym] = r;
@@ -108,7 +110,9 @@ async function fetchV7(symbols) {
         : xs === "post" && pc > 0 ? ((price - pc) / pc) * 100 : (x.regularMarketChangePercent ?? null);
       // dl: minuti di ritardo con cui Yahoo riceve i dati di quella borsa (0 = tempo reale)
       out[x.symbol] = { price, change, time: t * 1000, tt: t * 1000, off, xs, ms: st || null, dl: x.exchangeDataDelayedBy ?? null, ex: x.fullExchangeName || x.exchange || null, qs: x.quoteSourceName || null, cur: x.currency || null, qt: x.quoteType || null, vol: x.regularMarketVolume ?? null,
-        rp: x.regularMarketPrice ?? null, rc: x.regularMarketChangePercent ?? null }; // ultima seduta regolare: chiusura e variazione // ms: stato del mercato (REGULAR = seduta aperta)
+        rp: x.regularMarketPrice ?? null, rc: x.regularMarketChangePercent ?? null,
+        nm: x.longName || x.shortName || null,
+        op: x.regularMarketTime && dayOf(x.regularMarketTime, off) === today && x.regularMarketOpen > 0 ? x.regularMarketOpen : null }; // apertura di oggi (null prima dell'apertura) // ultima seduta regolare: chiusura e variazione // ms: stato del mercato (REGULAR = seduta aperta)
     }
     return out;
   }
@@ -639,7 +643,10 @@ let newsBusy = false;
 async function newsCheck() {
   if (newsBusy) return; newsBusy = true;
   try {
-    const o = await chrome.storage.local.get(["nsub", "nseen", "nnew", "lang", "lists", "pf"]);
+    const o = await chrome.storage.local.get(["nsub", "nseen", "nnew", "lang", "lists", "pf", "nlog"]);
+    // registro delle notifiche (campanella nel pannello): le notizie uscite dopo che hai iniziato a seguire l'azienda
+    let log = Array.isArray(o.nlog) ? o.nlog : [];
+    const inLog = new Set(log.map((x) => x.link));
     const sub = o.nsub || {}, seen = o.nseen || {}, nw = o.nnew || {}, it = navigator.language.startsWith("it") ? o.lang !== "en" : o.lang === "it";
     const names = {};
     for (const l of o.lists || []) for (const x of l.items || []) names[x.s] = x.t || x.n;
@@ -647,7 +654,12 @@ async function newsCheck() {
     for (const k of Object.keys(nw)) if (!sub[k]) delete nw[k];
     for (const sym of Object.keys(sub)) {
       const from = Math.max(seen[sym] || 0, sub[sym] || 0);
-      const items = ((await newsFor(sym, true, names[sym])) || []).filter((n) => n.t > from);
+      const all = (await newsFor(sym, true, names[sym])) || [];
+      for (const n of all) if (n.t > (sub[sym] || 0) && n.link && !inLog.has(n.link)) {
+        inLog.add(n.link);
+        log.push({ s: sym, t: n.t, at: Date.now(), title: n.title, titleIt: n.titleIt, link: n.link, tag: n.tag, lvl: n.lvl, k: n.k, src: n.src });
+      }
+      const items = all.filter((n) => n.t > from);
       if (!items.length) continue;
       const top = items[0], prev = nw[sym];
       nw[sym] = { n: items.length, t: top.t, title: top.title, link: top.link };
@@ -661,12 +673,19 @@ async function newsCheck() {
         });
       } catch (_) {}
     }
-    await chrome.storage.local.set({ nnew: nw });
+    log = log.filter((x) => sub[x.s]).sort((a, b) => b.t - a.t).slice(0, 60);
+    await chrome.storage.local.set({ nnew: nw, nlog: log });
   } finally { newsBusy = false; }
 }
 const NEWS_EVERY = 2; // minuti tra un controllo e l'altro (il feed RSS non avvisa da solo: va richiesto)
 chrome.alarms.get("news").then((a) => { if (!a || a.periodInMinutes !== NEWS_EVERY) chrome.alarms.create("news", { periodInMinutes: NEWS_EVERY, delayInMinutes: 1 }); }, () => {});
-chrome.alarms.onAlarm.addListener((a) => { if (a.name === "news") { newsCheck().catch(() => {}); updCheck().catch(() => {}); } });
+chrome.alarms.onAlarm.addListener((a) => { if (a.name === "news") { newsCheck().catch(() => {}); updCheck().catch(() => {}); ffKeep().catch(() => {}); } });
+// valori attesi e precedenti: il file di Forex Factory copre solo la settimana in corso. Lo scarico anche
+// a calendario chiuso (al massimo ogni 6 ore), così a settimana finita le uscite passate li hanno ancora.
+async function ffKeep() {
+  const { ff } = await chrome.storage.local.get("ff").catch(() => ({}));
+  if (!ff || Date.now() - ff.at > 6 * 3600000) await forecasts(false);
+}
 
 // ---------- Nuove versioni ----------
 // Dal Chrome Web Store Owlook si aggiorna da solo: avviso quando la nuova versione è scaricata e aspetta il riavvio.
@@ -744,6 +763,9 @@ chrome.runtime.onMessage.addListener((msg, sender, send) => {
     newsFor(String(msg.s || ""), !!msg.fresh, String(msg.n || "").slice(0, 80)).then(async (items) => { if (msg.read) await newsRead(msg.s).catch(() => {}); send(items); }, () => send(null));
     return true;
   }
+  if (msg.type === "newsreadall") { // notifiche aperte: tutte le notizie nuove dei titoli seguiti sono lette
+    chrome.storage.local.get("nnew").then(async (o) => { for (const k of Object.keys(o.nnew || {})) await newsRead(k); send(true); }, () => send(false)); return true;
+  }
   if (msg.type === "newsread") { newsRead(String(msg.s || "")).then(() => send(true), () => send(false)); return true; }
   if (msg.type === "newscheck") { newsCheck().then(() => send(true), () => send(false)); return true; }
   if (msg.type === "lib") {
@@ -816,7 +838,10 @@ function onPricing(b64) {
   // Prezzo ripetuto dal flusso (succede a mercato chiuso, a ogni nuova iscrizione): se è più vecchio
   // dell'ultimo valore che conosco lo ignoro. Prima diventava "adesso" e copriva l'after market
   // (variazione tornata a 0,00%), bloccando anche gli aggiornamenti successivi.
-  if (rt && (now - rt > 45 * 60000 || (o && o.price > 0 && rt < (o.tt || 0) - 1000))) return;
+  // Tolleranza di 65 s: Yahoo può mandare l'orario arrotondato al minuto, mentre la quotazione via HTTP ha l'orario
+  // esatto dello scambio. Con 1 s di margine, appena l'HTTP aggiornava l'orario tutti i tick dello stream venivano
+  // scartati e lo stream non ripartiva più: grafico e lista si muovevano solo ogni qualche secondo (dati HTTP).
+  if (rt && (now - rt > 45 * 60000 || (o && o.price > 0 && rt < (o.tt || 0) - 65000))) return;
   // mercato chiuso: per le azioni la seduta regolare è finita, resta l'ultimo prezzo dell'after market
   if (eq && d.mh === 1 && o && o.rp > 0 && o.ms && o.ms !== "REGULAR" && o.msAt && now - o.msAt < 120000) return;
   let tt = rt || now;
