@@ -34,8 +34,8 @@
 ## Features
 
 - **Watchlists**: several lists with ticker and logo, live prices, change since the last close and today's change (after-hours included when the market is closed), sorting, drag to reorder.
-- **Portfolio**: quantity, average cost, return, value and share of the total, with currency conversion; total, today's and overall change always in view.
-- **Charts**: candlesticks with indicators (EMA, RSI and more), several chart types, a volume profile (how much traded at each price, with the most traded price highlighted), and a long-term price-history chart. Zoom and position are remembered, and you can save chart setups (indicators, colors, interval) under a name.
+- **Portfolio**: quantity, average cost, return (on the bid price, what you would get selling now), value and share of the total, with currency conversion; total, today's and overall change always in view.
+- **Charts**: candlesticks with indicators (EMA, RSI and more), several chart types and a long-term price-history chart. Zoom and position are remembered, and you can save chart setups (indicators, colors, interval) under a name.
 - **US economic calendar**: payrolls, CPI, GDP, Fed decisions… with analysts' forecasts.
 - **US earnings calendar**: the week at a glance with the logos of the companies reporting before the open and after the close, market-cap filters, and for each company the EPS estimate, actual EPS and surprise, with a results view and a live marker for companies reporting now.
 - **News (important only)**: in every row of the list (on mouse over), next to the price-history button, a newspaper button shows the important stories about that ticker: major agencies and outlets (Reuters, AP, Bloomberg, WSJ, CNBC…), official company press releases (Business Wire, GlobeNewswire, PR Newswire…) and Form 8-K filings with the SEC for US companies. Rankings, buy tips and opinion pieces are filtered out. Each story has a tag (results, outlook, deal, management…) and an importance grade from 1 to 3. Turn on **Notify me** to get a notification when a new story comes out (checked every 2 minutes); tickers with unread stories keep the newspaper button visible with a violet dot. The **News section** gathers the stories of every ticker in your lists and portfolio, with filters by importance and category, search and a bell to follow a ticker; the **notifications** bell in the header lists new stories and the tickers you follow.
@@ -144,22 +144,11 @@ To try changes, load the `extension` folder with **Load unpacked**.
 
 **Quotazioni sempre visibili mentre navighi.** Owlook è un'estensione gratuita che mostra, sopra qualsiasi pagina, un piccolo pannello di vetro con liste di titoli, portafoglio, grafici a candele e andamento storico, calendario economico e calendario degli utili delle società USA.
 
-<p align="center">
-  <img src="store/screenshots-it/1-watchlist.png" width="100%" alt="Owlook: la borsa, su ogni pagina">
-</p>
-<p align="center">
-  <img src="store/screenshots-it/2-chart.png" width="49%" alt="Grafici a candele con indicatori">
-  <img src="store/screenshots-it/3-news.png" width="49%" alt="Solo le notizie che contano">
-</p>
-<p align="center">
-  <img src="store/screenshots-it/4-portfolio.png" width="49%" alt="Portafoglio">
-  <img src="store/screenshots-it/5-calendar.png" width="49%" alt="Calendario utili e macro USA">
-</p>
-<p align="center"><sub>▶ Guarda i video sul <a href="https://owlook-quotes.github.io/owlook/">sito</a>. Immagini con titoli, loghi e dati dimostrativi.</sub></p>
+<p align="center"><sub>Le immagini sono in cima a questa pagina. ▶ Guarda i video sul <a href="https://owlook-quotes.github.io/owlook/">sito</a>. Titoli, loghi e dati dimostrativi.</sub></p>
 
 > **Versione beta.** Owlook è nuova e ancora in fase di test: possono esserci errori, le fonti dei dati possono cambiare e alcune funzioni possono cambiare da una versione all'altra. Le segnalazioni sono benvenute (vedi sotto).
 
-**Funzioni:** liste con prezzi in tempo reale, variazione dall'ultima chiusura e di oggi, loghi e ordinamento; fino a sei titoli in evidenza in alto su ogni pagina (si possono nascondere); portafoglio con quantità, prezzo medio di carico, rendimento, valore e peso sul totale, con conversione di valuta; grafici a candele con indicatori e profilo dei volumi, andamento storico, con zoom ricordato e impostazioni salvabili; calendario economico USA con le attese degli analisti; calendario degli utili con la settimana a colpo d'occhio, filtri per capitalizzazione, stime, EPS effettivo e sorpresa; solo notizie importanti di ogni titolo (tasto col giornale nella riga della lista: agenzie e testate principali, comunicati ufficiali delle aziende e moduli 8-K della SEC, con tag e grado da 1 a 3) con avvisi quando esce una notizia (controllo ogni 2 minuti) e un pallino viola sul tasto quando ce ne sono di nuove; sezione Notizie con le notizie di tutti i titoli di liste e portafoglio (filtri per grado e categoria, ricerca, campanella per seguire un titolo) e campanella delle notifiche in alto; tema chiaro e scuro, effetto vetro regolabile, colori di rialzo e ribasso personalizzabili, italiano e inglese.
+**Funzioni:** liste con prezzi in tempo reale, variazione dall'ultima chiusura e di oggi, loghi e ordinamento; fino a sei titoli in evidenza in alto su ogni pagina (si possono nascondere); portafoglio con quantità, prezzo medio di carico, rendimento (sul prezzo bid), valore e peso sul totale, con conversione di valuta; grafici a candele con indicatori, andamento storico, con zoom ricordato e impostazioni salvabili; calendario economico USA con le attese degli analisti; calendario degli utili con la settimana a colpo d'occhio, filtri per capitalizzazione, stime, EPS effettivo e sorpresa; solo notizie importanti di ogni titolo (tasto col giornale nella riga della lista: agenzie e testate principali, comunicati ufficiali delle aziende e moduli 8-K della SEC, con tag e grado da 1 a 3) con avvisi quando esce una notizia (controllo ogni 2 minuti) e un pallino viola sul tasto quando ce ne sono di nuove; sezione Notizie con le notizie di tutti i titoli di liste e portafoglio (filtri per grado e categoria, ricerca, campanella per seguire un titolo) e campanella delle notifiche in alto; tema chiaro e scuro, effetto vetro regolabile, colori di rialzo e ribasso personalizzabili, italiano e inglese.
 
 **Installazione dal Chrome Web Store (consigliata):** apri [Owlook sul Chrome Web Store](https://chromewebstore.google.com/detail/eejkikdiikidddfdpeejelhfcfhieelp) e premi **Aggiungi a Chrome**. Si apre una breve guida: scegli se vedere Owlook su ogni pagina o solo quando clicchi la sua icona. Si aggiorna da solo.
 

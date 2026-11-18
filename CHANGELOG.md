@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.88.0 beta
+
+- Candlestick chart: volume profile and its button removed.
+- Portfolio: quantity × average cost under each ticker removed.
+- Earnings button: new icon (rising bars with an arrow), so it no longer looks like News.
+- Earnings calendar: today's day has the same violet gradient as the next macro release.
+- Lists row: a small + right after the last list (scroll to the end to reach it); the names scroll smoothly (wheel or drag) and fade only on the side with hidden lists.
+- All lists can be deleted. "Create a list" from the search asks for the list name; larger arrow on "Add ▾".
+- Sections bar: a violet dot on Macro when a release comes out today (until an hour after it), on Earnings when companies in your lists or portfolio report today; thin grey separators between Macro, Earnings and News.
+- Macro calendar: legend and time-zone line 1 px larger and no longer affected by the text size setting.
+- News section: an "i" next to "Tickers in lists and portfolio" explains which news Owlook shows.
+- Featured tickers box: the price-history button sits at the same spot in every row.
+- News: more room for the headline (bell column further left, Grade and Tag further right).
+- Fixed: two section buttons could look pressed at the same time.
+- Fixed: after creating the first list the column labels (% Last close, Trend) were misaligned.
+- Fixed: the + at the end of the lists row was cut on the right; the grey separators between sections now look identical.
+- Featured tickers: opening the section scrolls the panel smoothly to show all six boxes.
+- Search in lists: with more than one list "Add ▾" opens a menu to choose the list (✓ where it is already, "Create a list +" at the bottom); with one list it stays "+ Add".
+- Portfolio form: purchase price as wide as quantity, "Add" on the same row.
+- Portfolio: returns calculated on the bid price (requested only while the portfolio is open; the last bid is remembered when the market is closed). Hover "Return" to see it. The bid is used only when fresh and plausible (at most 3% below the price, taken together with the price in the regular session); what is remembered is the bid-to-price gap, not an old bid, so returns no longer come out too low.
+
 ## 1.87.0 beta
 
 - **Sections bar** under the header: Lists, Portfolio, US macro calendar, Earnings and News, as icons. Lists and Portfolio are filled when selected; Macro, Earnings and News show a violet line when open. The Macro / Earnings switch inside the calendar is gone.

@@ -52,6 +52,8 @@ function setLast(sym, q, isLive) {
     if (q.cur) r.cur = q.cur;
     if (!stale && q.rp != null) { r.rp = q.rp; r.rc = q.rc; } // ultima seduta regolare (anche durante lo streaming)
     if (q.nm) r.nm = q.nm;
+    // bid solo se arriva adesso, insieme al prezzo: uno vecchio di ore o giorni, accanto al prezzo nuovo, falsava il rendimento
+    r.bid = q.bid > 0 && !stale ? q.bid : null; r.bidAt = r.bid ? now : 0;
     if (q.op !== undefined && !stale) r.op = q.op; // prezzo di apertura della seduta di oggi (colonna "% Apert.")
     if (q.qt) r.qt = q.qt; // tipo (INDEX, EQUITY, ETF…): gli indici non hanno valuta
   }
@@ -112,6 +114,7 @@ async function fetchV7(symbols) {
       out[x.symbol] = { price, change, time: t * 1000, tt: t * 1000, off, xs, ms: st || null, dl: x.exchangeDataDelayedBy ?? null, ex: x.fullExchangeName || x.exchange || null, qs: x.quoteSourceName || null, cur: x.currency || null, qt: x.quoteType || null, vol: x.regularMarketVolume ?? null,
         rp: x.regularMarketPrice ?? null, rc: x.regularMarketChangePercent ?? null,
         nm: x.longName || x.shortName || null,
+        bid: x.bid > 0 ? x.bid : null, // miglior prezzo in acquisto: il rendimento del portafoglio si calcola su questo
         op: x.regularMarketTime && dayOf(x.regularMarketTime, off) === today && x.regularMarketOpen > 0 ? x.regularMarketOpen : null }; // apertura di oggi (null prima dell'apertura) // ultima seduta regolare: chiusura e variazione // ms: stato del mercato (REGULAR = seduta aperta)
     }
     return out;

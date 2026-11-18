@@ -8,7 +8,7 @@ Tutto quello che serve per compilare la scheda di Owlook nella [Developer Dashbo
 |---|---|
 | Pacchetto | `Owlook-ChromeWebStore.zip` dell'ultima [release](https://github.com/Owlook-quotes/owlook/releases/latest): gli stessi file di `Owlook-Chrome.zip`, ma con `manifest.json` nella radice dello zip, come chiede lo store |
 | Icona 128×128 | già nel pacchetto (`icons/128.png`) |
-| Screenshot 1280×800 | `screenshots/1-watchlist.png` … `5-calendar.png` (inglese): «Screenshot globali» e «Screenshot localizzati» della scheda English · `screenshots-it/…` (italiano): «Screenshot localizzati» della scheda Italiano. Dati e loghi dimostrativi |
+| Screenshot 1280×800 | `screenshots/1-watchlist.png` … `5-calendar.png` (solo in inglese): «Screenshot globali», valgono anche per la scheda Italiano (togliere gli screenshot localizzati italiani). Dati e loghi dimostrativi |
 | Riquadro promozionale piccolo 440×280 | `promo-small-440x280.png` |
 | Riquadro promozionale grande 1400×560 (facoltativo) | `promo-marquee-1400x560.png` |
 

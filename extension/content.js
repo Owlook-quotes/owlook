@@ -85,7 +85,7 @@
     line: svg('<path d="M1.5 12l4-5 3 3 6-7"/>'),
     area: svg('<path d="M1.5 12l4-5 3 3 6-7v11h-13z" fill="currentColor" fill-opacity=".3"/>')
   };
-  const flatColor = (k) => k === "up" || k === "dn" || k === "lc" || k === "acc" || k === "cup" || k === "cdn" || k === "cln" || k === "vpc"; // colori salvati come stringa semplice
+  const flatColor = (k) => k === "up" || k === "dn" || k === "lc" || k === "acc" || k === "cup" || k === "cdn" || k === "cln"; // colori salvati come stringa semplice
   // fuso orario dell'orologio e dell'asse dei tempi del grafico (principali borse europee e americane)
   const TZS = [
     ["America/New_York", "New York (NYSE, Nasdaq)", "NY"], ["America/Chicago", "Chicago (CME)", "CHI"], ["America/Toronto", "Toronto (TSX)", "TOR"],
@@ -161,7 +161,7 @@
       ? `<span>${L(`Owlook ${esc(u.v)} è pronta: si installa al prossimo avvio di Chrome.`, `Owlook ${esc(u.v)} is ready: it installs the next time Chrome starts.`)}</span><button class="pill pri" data-a="updnow">${L("Aggiorna ora", "Update now")}</button><button class="icon sm" data-a="updx" aria-label="${L("Chiudi", "Close")}">${XSM}</button>`
       : `<span>${L(`È uscita Owlook ${esc(u.v)}.`, `Owlook ${esc(u.v)} is out.`)}</span><a class="pill pri" href="https://owlook-quotes.github.io/owlook/#install" target="_blank" rel="noopener noreferrer">${L("Scarica dal sito", "Download from the site")}</a><button class="icon sm" data-a="updx" aria-label="${L("Chiudi", "Close")}">${XSM}</button>`;
   }
-  const KEYS = ["lists", "cl", "theme", "hidden", "open", "bar", "sort", "cr", "ci", "lr", "ind", "key", "excl", "fut", "lay", "tz", "view", "pf", "tab", "psort", "pfcur", "fxr", "fxh", "lang", "nm", "rowc", "slotsOpen", "pfb", "glass", "calv", "ecap", "esess", "emine", "barOff", "tpl", "eview", "rcol", "nsub", "barRow", "zen", "nf", "fs", "colO", "vp", "vpRG", "vpPoc"];
+  const KEYS = ["lists", "cl", "theme", "hidden", "open", "bar", "sort", "cr", "ci", "lr", "ind", "key", "excl", "fut", "lay", "tz", "view", "pf", "tab", "psort", "pfcur", "fxr", "fxh", "lang", "nm", "rowc", "slotsOpen", "pfb", "glass", "calv", "ecap", "esess", "emine", "barOff", "tpl", "eview", "rcol", "nsub", "barRow", "zen", "nf", "fs"];
   let rec = false; // registrazione della scorciatoia in corso
   let delArm = false, findQ = "", impData = null;
   // Siti esclusi: un dominio vale anche per i suoi sottodomini (es. "example.com" → "news.example.com")
@@ -214,9 +214,10 @@
     for (const k of ["e1", "e2", "rsi", "vw"]) delete out[k];
     return out;
   };
-  const curList = () => st.lists.find((l) => l.id === st.cl) || st.lists[0];
+  const NOLIST = { id: "", name: "", items: [] }; // nessuna lista (le hai eliminate tutte)
+  const curList = () => st.lists.find((l) => l.id === st.cl) || st.lists[0] || NOLIST;
   const items = () => curList().items;
-  const setItems = (a) => { curList().items = a; st.lists = [...st.lists]; };
+  const setItems = (a) => { const l = curList(); if (l === NOLIST) return; l.items = a; st.lists = [...st.lists]; };
 
   // ---------- Lingua (italiano / inglese) ----------
   // Il codice scrive in italiano. In inglese un traduttore sul DOM del widget sostituisce testi e attributi
@@ -350,7 +351,7 @@
   const SB_LIST = sbI('<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2" fill="currentColor"/><circle cx="4.5" cy="12" r="1.2" fill="currentColor"/><circle cx="4.5" cy="18" r="1.2" fill="currentColor"/>');
   const SB_PF = sbI('<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 12.5h2M3 9h15a3 3 0 0 0-3-3"/>');
   const SB_MAC = sbI('<path d="M3 9.5L12 4l9 5.5"/><path d="M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20h18"/>'); // banca centrale: dati macro
-  const SB_ERN = sbI('<path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10A.5.5 0 0 1 7 20z"/><path d="M14 3.5V8h4"/><path d="M10 17v-2.5M12.5 17v-4.5M15 17v-3"/>'); // report: utili
+  const SB_ERN = sbI('<path d="M4 20h16"/><path d="M6.5 20v-4M11 20v-7M15.5 20v-5"/><path d="M5 11l5-5 3 3 6-6"/><path d="M15 3h4v4"/>'); // barre in crescita: utili
   const SB_NEWS = sbI('<path d="M5 5h11v14H6a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1zM16 9h3v8a2 2 0 0 1-2 2"/><path d="M8 9h5M8 13h5"/>');
   const BELLOFF = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 5.6A6 6 0 0 1 18 11v4M6 11v5l-1.5 2H17"/><path d="M10 20.5a2 2 0 0 0 4 0"/><path d="M3.5 3.5l17 17"/></svg>';
   const BELLHD = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>';
@@ -471,6 +472,10 @@ button:focus-visible,input:focus-visible,select:focus-visible,.row:focus-visible
 .radd{flex:none;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;color:var(--acc);background:var(--accbg);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent)}
 .radd:hover:not([disabled]){background:var(--acc);color:#fff}
 .radd[disabled]{opacity:.45;cursor:default}
+.radd .rdd{font-style:normal;margin-left:4px;font-size:13px;line-height:1;position:relative;top:1px}
+.adm .admn{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);margin-top:3px;padding-top:8px;color:var(--acc);font-weight:600}
+.adm .adp{font-size:15px;line-height:1}
+.adm button[disabled]{opacity:.5;cursor:default}
 .pill{white-space:nowrap}
 .pill.pri{border-color:var(--acc)}
 .pill.warn{color:var(--dn)}
@@ -572,6 +577,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,.row:focus-visible
 .pfnote:empty{display:none}
 .pfnote.err{color:var(--dn)}
 .pfbtn{display:flex;justify-content:flex-end;gap:6px}
+.pfrp{align-items:end}.pfrp .pfbtn{align-self:end} /* prezzo largo come la quantità, "Aggiungi" alla sua altezza */
+.pform .pfnote:empty,.pform .pfcv[hidden]{display:none}
 #pfres:empty{display:none}
 #pfres{max-height:180px;overflow:auto}
 select.pill{padding:3px 6px}
@@ -900,8 +907,8 @@ input[type=number]{width:44px;padding:2px 4px;font-size:11px}
 #calnote .err{color:var(--dn)}
 .cal>.cfoot{display:block;line-height:1.45}
 #calnote{display:inline}
-#calnote .cln{display:block;font-size:9.5px}#calnote .enote{font-size:10px}#calnote .cln .ar{color:var(--fg)}
-.ctsub{margin-top:2px;font-size:10px;line-height:1.35;color:var(--mut)}.ctsub .err{color:var(--dn)}
+#calnote .cln{display:block;font-size:calc(10.5px)}#calnote .enote{font-size:calc(11px)} /* fissi: non seguono "Dimensione testo" */#calnote .cln .ar{color:var(--fg)}
+.ctsub{margin-top:2px;font-size:calc(11px);line-height:1.35;color:var(--mut)}.ctsub .err{color:var(--dn)}
 /* barre di scorrimento del calendario e del pannello: sottili, arrotondate, dentro il riquadro (niente frecce) */
 .calbody,.sbody,.nvl{scrollbar-width:auto;scrollbar-color:auto}
 .calbody::-webkit-scrollbar,.sbody::-webkit-scrollbar,.nvl::-webkit-scrollbar{width:10px}
@@ -1363,7 +1370,10 @@ input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 .csl .ck{width:12px;color:var(--acc);font-size:11px}
 
 /* liste: una riga sola (le altre scorrono sotto ai tasti); in modifica tutte, da trascinare per riordinarle */
-.lhd>.lists{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 22px),transparent);padding:1px 0}
+.lhd>.lists{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-mask:var(--lm,none);mask:var(--lm,none);padding:1px 0;cursor:grab}
+.lhd>.lists.mr{--lm:linear-gradient(to right,#000 calc(100% - 26px),transparent)}
+.lhd>.lists.ml{--lm:linear-gradient(to right,transparent,#000 26px)}
+.lhd>.lists.ml.mr{--lm:linear-gradient(to right,transparent,#000 26px,#000 calc(100% - 26px),transparent)}
 .lhd>.lists::-webkit-scrollbar{display:none}
 .lhd>.lists>.lchip{flex:none}
 .lhd.led>.lists{flex-wrap:wrap;overflow:visible;-webkit-mask-image:none;mask-image:none}
@@ -1398,6 +1408,13 @@ input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 .bi{cursor:pointer;height:26px}
 .bi .bnm{display:flex;align-items:center;gap:4px;min-width:0}
 .bi .bnm>b{min-width:0;font-size:12px;font-weight:650;letter-spacing:-.01em}
+/* in colonna: le righe condividono le colonne (sottogriglia), così il tasto storico sta alla stessa altezza in tutte, dopo il nome più lungo */
+.bar:not(.row1):not(.two)>.items{display:grid;grid-template-columns:minmax(0,max-content) auto minmax(max-content,1fr) 58px;align-content:center;gap:1px 8px}
+.bar:not(.row1):not(.two) .bi{grid-column:1/-1;grid-template-columns:subgrid;column-gap:8px}
+.bar:not(.row1):not(.two) .bi .bnm{display:contents}
+.bar:not(.row1):not(.two) .bi .bnm>b{justify-self:start;max-width:100%}
+.bar:not(.row1):not(.two) .bi .blc{margin-left:-4px}
+.bar:not(.row1):not(.two) .bi .bpx{justify-self:end}
 .bi [data-f=p]{font-size:12px;font-weight:600;letter-spacing:-.01em}
 .bar .bi [data-f=c],.bar.two .bi [data-f=c]{font-size:11px;font-weight:500;line-height:14px;padding:2px 5px;min-width:46px;border-radius:7px}
 .bi .blc{display:grid;visibility:hidden;width:20px;height:20px}
@@ -1762,6 +1779,9 @@ background:radial-gradient(circle,color-mix(in srgb,var(--acc) 45%,transparent) 
 .efs{display:flex;align-items:center;gap:6px}
 /* macro: prossimo dato in evidenza, conto alla rovescia in una capsula sotto il nome (i valori restano liberi) */
 .cev.next{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 24%,transparent),color-mix(in srgb,var(--acc) 7%,transparent));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 55%,transparent)}
+/* utili: il giorno di oggi come la prossima uscita macro (viola che sfuma) */
+.ewd.today,.ersec.today,.ewd.today.ego:hover{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 24%,transparent),color-mix(in srgb,var(--acc) 7%,transparent));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 55%,transparent)}
+.ewd.today.ego:hover{filter:brightness(1.08)}
 .cname .ccd{display:inline-flex;align-items:center;gap:4px;align-self:flex-start;margin-top:4px;padding:2px 8px;border-radius:999px;font-style:normal;font-size:11px;font-weight:700;color:#fff;background:var(--acc)}
 .cname{display:flex;flex-direction:column;align-items:flex-start}
 /* notizie: filtri per tipo e ultima notizia in evidenza */
@@ -1787,6 +1807,11 @@ background:radial-gradient(circle,color-mix(in srgb,var(--acc) 45%,transparent) 
 .secbar .sbp .sb.on{background:color-mix(in srgb,var(--acc) 14%,transparent);color:var(--fg)}
 .secbar .sbp .sb.on::after{content:"";position:absolute;left:30%;right:30%;bottom:2px;height:2.5px;border-radius:2px;background:var(--acc)}
 .secbar .sb .leds{position:absolute;top:2px;right:calc(50% - 16px)}
+.secbar .sbdot{position:absolute;top:3px;right:calc(50% - 15px);width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 1.5px var(--seg);pointer-events:none}
+.secbar .sbdot[hidden]{display:none}
+.side.nolists:has(.lrow:not(.pfm)) #thead{display:none}
+.secbar .sbsep{flex:none;align-self:center;width:1px;height:13px;color:color-mix(in srgb,var(--fg) 22%,transparent)}
+.secbar .sbsep>svg{display:block;width:100%;height:100%} /* bordi netti: i due trattini escono identici a qualsiasi ridimensionamento dello schermo */
 .secbar .sbcnt{position:absolute;top:1px;right:calc(50% - 19px);min-width:14px;height:14px;padding:0 4px;border-radius:7px;background:var(--acc);color:#fff;font-size:9.5px;font-weight:700;font-style:normal;display:grid;place-items:center}
 /* riga delle liste: le liste a sinistra (con + per crearne una), matita e aggiorna a destra */
 .lrow{display:flex;align-items:center;gap:6px;margin:0 0 6px}
@@ -1836,8 +1861,11 @@ background:radial-gradient(circle,color-mix(in srgb,var(--acc) 45%,transparent) 
 .hs>.lg i{font-style:normal}
 .hn .hs .lg{width:28px;height:28px}
 #cal.hubon .ctsub{display:none}
-.lchip.ladd{display:grid;place-items:center;width:20px;height:20px!important;align-self:center;padding:0!important;color:var(--mut)}
+.lhd{display:flex;align-items:center;gap:6px;min-width:0}
+.lchip.ladd{flex:none;display:grid;place-items:center;width:20px;height:20px!important;align-self:center;padding:0!important;color:var(--fg);background:color-mix(in srgb,var(--fg) 12%,transparent)}
+.lchip.ladd:hover{background:var(--acc);color:var(--onacc)}
 .lchip.ladd svg{width:10px;height:10px}
+.lhd>.lists>.lchip.ladd{margin-right:4px} /* in fondo alla riga il + non resta tagliato */
 /* ricerca in fondo al pannello, in evidenza */
 .sfoot{flex:none;padding:8px 0 0}
 .sfoot:has(>.upd[hidden]){display:none}
@@ -1926,18 +1954,9 @@ background:radial-gradient(circle,color-mix(in srgb,var(--acc) 45%,transparent) 
 .bar.bscr:not(.row1)>.sep::before{content:"";position:absolute;inset:0 -6px}
 /* macro e utili hanno i loro tasti nella barra delle sezioni: niente scelta Macro/Utili nel calendario */
 .cal>.ctop>.ecv{display:none!important}
-/* profilo dei volumi */
-.vpc{position:absolute;pointer-events:none;z-index:1}
-.vpc[hidden]{display:none}
-.tb.vpb:not(.on) svg{opacity:.5}
-.tb.vpb.on svg{color:var(--acc)}
-.ptag.vpt{background:#000!important;border:1.5px solid;box-sizing:border-box;line-height:15px;padding:0 2px}
 .tgl.sm{width:30px;height:18px;border-radius:9px}
 .tgl.sm::after{top:2px;left:2px;width:14px;height:14px}
 .tgl.sm.on::after{transform:translateX(12px)}
-.vpm{display:flex;flex-direction:column;gap:2px;padding:4px 2px;min-width:200px}
-.vpr{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:6px 10px;font-size:12.5px}
-.vpr.dis{opacity:.45;pointer-events:none}
 .oc{align-self:center;justify-self:end;font-size:11.5px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--mut)}
 .oc.up{color:var(--up)}.oc.dn{color:var(--dn)}
 /* grado delle notizie: un solo tasto con la freccetta, la scelta si apre sotto */
@@ -1955,7 +1974,8 @@ background:radial-gradient(circle,color-mix(in srgb,var(--acc) 45%,transparent) 
 .hgm button.on{background:color-mix(in srgb,var(--acc) 18%,transparent)}
 .hgm .nlv{width:30px;justify-content:flex-start;gap:3px}.hgm .nlv i{width:6px;height:6px}
 /* notizie: grado (Tutto, ●, ●●, ●●●), categorie che scorrono, ricerca, campanella sulla riga */
-.hn,.hnc{grid-template-columns:84px 24px minmax(0,1fr) 46px 96px} /* ticker | campanella | notizia | grado | tag */
+.hn,.hnc{grid-template-columns:70px 20px minmax(0,1fr) 38px 88px;column-gap:8px} /* ticker | campanella | notizia | grado | tag: più spazio al titolo */
+.hn .ntag{max-width:88px}
 .hbc{display:grid;place-items:center}
 .hnc>.th:nth-child(4),.hnc>.hnt{justify-self:center}
 #hubfil .efr{display:flex;align-items:center;gap:8px;min-width:0}
@@ -1968,6 +1988,11 @@ background:radial-gradient(circle,color-mix(in srgb,var(--acc) 45%,transparent) 
 #hubfil .hgb.on{background:color-mix(in srgb,#ff9f0a 20%,transparent)!important;box-shadow:inset 0 0 0 1.5px #ff9f0a}
 #cal .ctitle .hsub{margin-left:7px;font-weight:400;font-size:12px;color:var(--mut);white-space:nowrap}
 #cal .ctitle .hsub[hidden]{display:none}
+#cal .ctitle .hinfo{flex:none;display:grid;place-items:center;width:17px;height:17px;margin-left:7px;padding:0;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--fg);font:italic 600 10.5px/1 Georgia,serif;cursor:pointer}
+#cal .ctitle .hinfo:hover,#cal .ctitle .hinfo[aria-expanded=true]{border-color:var(--acc);color:var(--acc)}
+#cal .ctitle .hinfo[hidden]{display:none}
+.hubinfo{margin-top:6px;max-width:520px;padding:8px 11px;border-radius:10px;background:var(--row2);color:var(--mut);font-size:11px;line-height:1.45}
+.hubinfo[hidden]{display:none}
 
 .hgd{display:inline-flex;gap:2px;align-items:center}
 .hgd b{width:5px;height:5px;border-radius:50%;background:currentColor}
@@ -2003,7 +2028,7 @@ background:radial-gradient(circle,color-mix(in srgb,var(--acc) 45%,transparent) 
   <div class="rz rz-s" data-rz="s" title="Trascina per allargare la lista o il grafico"></div><div class="rz rz-t" data-rz="t" title="Trascina per allungare verso l'alto"></div><div class="rz rz-l" data-rz="l" title="Trascina per allargare"></div><div class="rz rz-r" data-rz="r" title="Trascina per allargare"></div><div class="rz rz-b" data-rz="b" title="Trascina per allungare"></div><div class="rz rz-c rz-tl" data-rz="tl"></div><div class="rz rz-c rz-tr" data-rz="tr"></div><div class="rz rz-c rz-bl" data-rz="bl"></div><div class="rz rz-c rz-br" data-rz="br"></div>
   <section class="cal" id="cal" hidden>
     <div class="ctop">
-      <div class="cid"><div class="ctitle"><b>Calendario USA</b></div><div class="ctsub" id="calsub" hidden></div></div>
+      <div class="cid"><div class="ctitle"><b>Calendario USA</b></div><div class="ctsub" id="calsub" hidden></div><div class="hubinfo" id="hubinfo" hidden></div></div>
       <span class="ewk" id="ewk" hidden><button class="icon sm" data-a="ewk" data-d="-1" aria-label="Settimana precedente" title="Settimana precedente">${CHEVL}</button><b id="ewt"></b><button class="icon sm" data-a="ewk" data-d="1" aria-label="Settimana successiva" title="Settimana successiva">${CHEVR}</button></span>
       <span class="tabs ecv" role="tablist"><button class="tab" data-a="calv" data-v="m" role="tab">Macro</button><button class="tab" data-a="calv" data-v="e" role="tab">Utili</button></span>
       <button class="icon sm" data-a="calrefresh" aria-label="Aggiorna" title="Aggiorna">${RELOAD}</button>
@@ -2033,7 +2058,7 @@ background:radial-gradient(circle,color-mix(in srgb,var(--acc) 45%,transparent) 
     </div>
     <div class="cwrap">
       <div id="cbox" tabindex="0" aria-label="Grafico"></div>
-      <canvas class="vpc" id="vpc" aria-hidden="true" hidden></canvas>
+      
       <div class="legend" id="legend"></div>
       <div id="plegs"></div><div id="ptags" aria-hidden="true"></div><div id="xtags" aria-hidden="true"></div>
       <div id="voltag" hidden></div>
@@ -2104,8 +2129,8 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       <span class="sbg sbt" role="tablist" aria-label="Cosa vedi nel pannello"><button class="sb" data-a="tab" data-t="list" role="tab" aria-label="Liste" title="Liste">${SB_LIST}</button>
 <button class="sb" data-a="tab" data-t="pf" role="tab" aria-label="Portafoglio" title="Portafoglio">${SB_PF}</button></span>
       <span class="sbg sbp">
-      <button class="sb calb" id="calbtn" data-a="cal" aria-label="Calendario macro USA" title="Calendario macro USA">${SB_MAC}<span class="leds" aria-hidden="true"><i class="led g"></i><i class="led r"></i></span></button>
-      <button class="sb" id="ernbtn" data-a="calE" aria-label="Utili" title="Utili: calendario, stime e risultati">${SB_ERN}</button>
+      <button class="sb calb" id="calbtn" data-a="cal" aria-label="Calendario macro USA" title="Calendario macro USA">${SB_MAC}<span class="leds" aria-hidden="true"><i class="led g"></i><i class="led r"></i></span><i class="sbdot" hidden></i></button><i class="sbsep" aria-hidden="true"><svg viewBox="0 0 1 13" preserveAspectRatio="none"><rect width="1" height="13" fill="currentColor" shape-rendering="crispEdges"/></svg></i>
+      <button class="sb" id="ernbtn" data-a="calE" aria-label="Utili" title="Utili: calendario, stime e risultati">${SB_ERN}<i class="sbdot" hidden></i></button><i class="sbsep" aria-hidden="true"><svg viewBox="0 0 1 13" preserveAspectRatio="none"><rect width="1" height="13" fill="currentColor" shape-rendering="crispEdges"/></svg></i>
       <button class="sb" id="hubbtn" data-a="hub" aria-label="Notizie" title="Notizie dei titoli delle tue liste e del portafoglio">${SB_NEWS}<i class="sbcnt" id="hubcnt" hidden></i></button></span>
     </nav>
     <div class="lrow"><div id="lists"></div><span class="pfwl2" id="pfwl"></span><span class="pfbt" id="tbt"></span><button class="icon sm rw" data-a="resort" aria-label="Riordina la lista" title="Riordina la lista e aggiorna i prezzi">${RELOAD}</button><label class="find" id="find" title="Cerca nella lista o aggiungi un ticker">${SEARCH}<input id="fq" placeholder="Cerca…" autocomplete="off" spellcheck="false" aria-label="Cerca nella lista o aggiungi un ticker"><button data-a="findclose" aria-label="Cancella la ricerca" title="Cancella">${XSM}</button></label></div>
@@ -2636,7 +2661,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       // stessa altezza della riga delle liste: sotto non si sposta nulla
       $("#lists").innerHTML = `<div class="ledit" style="min-height:${listsH}px"><input id="lname" maxlength="30" autocomplete="off" spellcheck="false" placeholder="Nome della lista" value="${isNew ? "" : esc(curList().name)}" aria-label="Nome della lista">
         <button class="pill pri" data-a="lsave">${isNew ? "Crea" : "Salva"}</button>
-        ${!isNew && st.lists.length > 1 ? `<button class="pill warn" data-a="ldel">${delArm ? "Conferma eliminazione" : "Elimina"}</button>` : ""}
+        ${!isNew && st.lists.length ? `<button class="pill warn" data-a="ldel">${delArm ? "Conferma eliminazione" : "Elimina"}</button>` : ""}
         <button class="pill" data-a="lcancel">Annulla</button></div>`;
       const i = $("#lname"); i.focus(); i.select();
       return;
@@ -2650,19 +2675,38 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (h > 0 && !lEdit) listsH = h; // il riepilogo del portafoglio occupa la stessa altezza: la riga sotto non si sposta
     // una riga sola: la lista attiva resta in vista (le altre scorrono sotto ai tasti + e matita)
     const lc = $("#lchips"), on = lc && lc.querySelector(".lchip.on");
-    if (lc && on && !lEdit) { const a = on.offsetLeft - lc.offsetLeft, b2 = a + on.offsetWidth; if (a < lc.scrollLeft) lc.scrollLeft = a - 4; else if (b2 > lc.scrollLeft + lc.clientWidth) lc.scrollLeft = b2 - lc.clientWidth + 18; }
+    if (lc && on && !lEdit) { const a = on.offsetLeft - lc.offsetLeft, b2 = a + on.offsetWidth; if (a < lc.scrollLeft) lc.scrollLeft = a - 4; else if (b2 > lc.scrollLeft + lc.clientWidth) lc.scrollLeft = on.nextElementSibling && on.nextElementSibling.classList.contains("ladd") ? lc.scrollWidth : b2 - lc.clientWidth + 18; } // l'ultima lista attiva: in vista anche il +
+    lcEdge();
   }
+  // nomi delle liste: sfumatura solo dal lato dove ce ne sono altre nascoste
+  function lcEdge() { const n = $("#lchips"); if (!n) return; const m = n.scrollWidth - n.clientWidth; n.classList.toggle("ml", n.scrollLeft > 2); n.classList.toggle("mr", m > 2 && n.scrollLeft < m - 2); }
+  // scorrimento morbido (rotella e trascinamento)
+  let lcT = null, lcRaf = 0;
+  function lcGo(n, to) {
+    lcT = Math.max(0, Math.min(n.scrollWidth - n.clientWidth, to));
+    if (lcRaf) return;
+    const step = () => { const d = lcT - n.scrollLeft; if (Math.abs(d) < 0.6) { n.scrollLeft = lcT; lcRaf = 0; lcEdge(); return; } n.scrollLeft += d * 0.22; lcEdge(); lcRaf = requestAnimationFrame(step); };
+    lcRaf = requestAnimationFrame(step);
+  }
+  root.addEventListener("pointerdown", (e) => {
+    const n = e.composedPath()[0].closest && e.composedPath()[0].closest("#lchips");
+    if (!n || lEdit || e.button !== 0 || n.scrollWidth <= n.clientWidth) return;
+    const x0 = e.clientX, l0 = n.scrollLeft; let moved = false;
+    const mv = (ev) => { const d = ev.clientX - x0; if (Math.abs(d) > 4) moved = true; if (moved) { lcT = null; n.scrollLeft = l0 - d; lcEdge(); } };
+    const up = () => { removeEventListener("pointermove", mv, true); removeEventListener("pointerup", up, true); if (moved) { const stop = (ev) => { ev.stopPropagation(); ev.preventDefault(); }; root.addEventListener("click", stop, { capture: true, once: true }); setTimeout(() => root.removeEventListener("click", stop, true), 50); } };
+    addEventListener("pointermove", mv, true); addEventListener("pointerup", up, true);
+  });
   // nomi delle liste: con la rotella scorrono di lato
   root.addEventListener("wheel", (e) => {
     const it = e.composedPath()[0].closest && e.composedPath()[0].closest("#bar.row1>#items");
     if (!it || it.scrollWidth <= it.clientWidth || !e.deltaY) return;
     it.scrollLeft += e.deltaY; e.preventDefault();
   }, { passive: false });
-  root.addEventListener("scroll", (e) => { if (e.target && e.target.id === "items") barFade(); }, true);
+  root.addEventListener("scroll", (e) => { if (e.target && e.target.id === "items") barFade(); if (e.target && e.target.id === "lchips") lcEdge(); }, true);
   root.addEventListener("wheel", (e) => {
     const lc = e.composedPath()[0].closest && e.composedPath()[0].closest("#lchips");
     if (!lc || lEdit || lc.scrollWidth <= lc.clientWidth) return;
-    lc.scrollLeft += e.deltaY || e.deltaX; e.preventDefault();
+    lcGo(lc, (lcRaf && lcT != null ? lcT : lc.scrollLeft) + (e.deltaY || e.deltaX)); e.preventDefault();
   }, { passive: false });
   // modifica: le liste si riordinano trascinandole davanti o dietro alle altre. Come i titoli: il nome
   // sollevato segue il mouse e gli altri scivolano per fargli posto (l'ordine si salva al rilascio)
@@ -2775,7 +2819,12 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   const NMW = 82; // larghezza fissa della colonna del nome nella lista
   function listWidths() {
     const side = $(".side"), el = $("#list .row:not(.prow) .pr");
-    if (!el) return;
+    if (!el) { // lista vuota (o appena creata): colonne di base, se no restano quelle della modifica e le etichette vanno a capo
+      const mid0 = colsOn("list").map((k) => (k === "r" ? "70px" : "54px")).join(" ");
+      const g0 = lEdit ? `9px minmax(0,1fr) ${mid0} 14px` : `minmax(0,${NMW}px) 22px 22px minmax(0,1fr) ${mid0}`;
+      if (g0 !== lwKey) { lwKey = g0; side.style.setProperty("--lgrid", g0); }
+      return;
+    }
     const F = fontOf(el), Hd = `600 9.5px ${getComputedStyle(el).fontFamily}`;
     let mp = 0, ms = 0;
     const cuEl = $("#list .row:not(.prow) .cu"), FC = cuEl && fontOf(cuEl);
@@ -2818,6 +2867,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     }
     const cols = colsOn("list");
     $(".side").classList.toggle("nmc", !nmCfg().sub);
+    root.querySelector(".side").classList.toggle("nolists", !st.lists.length); // senza liste niente intestazione delle colonne
     $("#list").innerHTML = L.length
       ? L.map((it) => {
           const ds = dsym(it.s), q = quotes[ds], [c, t] = pct(q), [yc, yt] = ypct(q), s = esc(ds), s0 = esc(it.s);
@@ -2830,7 +2880,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
             lEdit ? (findQ ? "<span></span>" : `<span class="ph" aria-label="${L_("Trascina per spostare", "Drag to move")} ${esc(it.n)}" title="${L_("Trascina per spostare", "Drag to move")}">${GRIP}</span>`) : ""}${nameCell(ds, it.n, ds !== it.s && FUT[it.s] ? FUT[it.s][1] : it.t, `${futTag(it.s)}${dlyTag(ds)}`)}${lEdit ? "" : modeBtn(ds, it.n) + newsBtn(ds, it.n)}${cols.map((k) => cell[k]).join("")}${
             lEdit ? `<button class="x" data-a="rm" data-s="${s0}" aria-label="${L_("Rimuovi", "Remove")} ${esc(it.n)}" title="${L_("Rimuovi dalla lista", "Remove from the list")}">${XSM}</button>` : ""}</div>`;
         }).join("")
-      : findQ ? `<div class="empty">Nessun ticker della lista corrisponde a “${esc(findQ)}”.</div>` : '<div class="empty">Lista vuota. Scrivi in “Cerca…” per aggiungere un ticker.</div>';
+      : findQ ? `<div class="empty">Nessun ticker della lista corrisponde a “${esc(findQ)}”.</div>` : !st.lists.length ? `<div class="empty">${L_("Nessuna lista. Premi <b>+</b> per crearne una.", "No lists. Press <b>+</b> to create one.")}</div>` : `<div class="empty">${L_("Lista vuota. Cerca un ticker con la lente per aggiungerlo.", "Empty list. Search for a ticker with the magnifier to add it.")}</div>`;
     listWidths();
   }
   const nmCfg = () => {
@@ -2954,7 +3004,10 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (dv != null) { r.dp = dv; r.prevP = r.price / (1 + dv / 100); r.da = it.q * (r.price - r.prevP); }
     // risultato nella valuta in cui hai pagato: il valore si converte al cambio di oggi
     const k = fx(ci, pc);
-    if (k != null) { r.tot = r.val * k; r.ta = r.tot - r.cost; r.tp = r.cost ? (r.ta / r.cost) * 100 : null; }
+    // rendimento sul prezzo bid (quanto incasseresti vendendo adesso; se manca, l'ultimo registrato o il prezzo)
+    r.bp = r.price != null ? bidOf(it.s, r.price) : null;
+    const vb = r.bp != null ? it.q * r.bp : r.val;
+    if (k != null) { r.tot = r.val * k; r.ta = vb * k - r.cost; r.tp = r.cost ? (r.ta / r.cost) * 100 : null; }
     // patrimonio, nella valuta scelta: oggi = valore adesso − valore alla chiusura di ieri (al cambio di ieri)
     const kb = fx(ci, B), kp = fx(ci, B, true);
     if (kb != null) { r.mval = r.val * kb; r.mprice = r.price * kb; if (r.prevP != null && kp != null) r.mda = r.mval - it.q * r.prevP * kp; }
@@ -2964,7 +3017,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const kc = fx(pc, B), mc = kc == null ? null : r.cost * kc;
     r.mcost = mc;
     // rendimento nella valuta del portafoglio: valore e costo allo stesso cambio, quello di oggi
-    if (r.mval != null && mc != null) { r.mta = r.mval - mc; r.mtp = mc ? (r.mta / mc) * 100 : null; }
+    if (r.mval != null && mc != null) { r.mta = r.mval * (r.bp && r.price ? r.bp / r.price : 1) - mc; r.mtp = mc ? (r.mta / mc) * 100 : null; }
     return r;
   }
   // cambi di oggi: una volta al giorno (e quando entra una valuta nuova); quelli storici: una volta sola
@@ -3067,7 +3120,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     th.classList.add("pthead"); th.classList.toggle("ed", ed);
     const sb = ([k, l, a, b]) => {
       const on = st.psort === a || st.psort === b, up = on && (st.psort === "az" || (st.psort !== "za" && st.psort[1] === "a"));
-      const tip = `${L("Ordina per", "Sort by")} ${T(l)}`;
+      const tip = k === "g" ? L("Calcolato su bid price", "Calculated on the bid price") : `${L("Ordina per", "Sort by")} ${T(l)}`;
       return `<button class="th th-${k}${on ? " on" : ""}" data-a="pcolsort" data-c="${k}" aria-label="${tip}" title="${tip}">${T(l)}<i>${on ? (up ? "▲" : "▼") : "↕"}</i></button>`;
     };
     // in modifica l'ordine è quello che trascini: etichette ferme
@@ -3092,11 +3145,11 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
             + `<span class="bm bm-v"><span class="pbl"><b data-ps="${s}" data-pf="v"></b></span><small data-ps="${s}" data-pf="w"></small></span></button>`;
           const tip = `${it.t && it.t !== it.n ? it.t + " · " : ""}${it.s} — ${L(`${fqty(it.q)} acquistati a ${fmt(it.p)} ${sym} (costo ${money(it.q * it.p, pc)})`, `${fqty(it.q)} bought at ${fmt(it.p)} ${sym} (cost ${money(it.q * it.p, pc)})`)}${n > 1 ? L(` · ${n} acquisti, prezzo medio`, ` · ${n} purchases, average price`) : ""}${pfEdit ? L(" · clic per modificare", " · click to edit") : ""}`;
           return `<div class="row prow${ed ? " ed" : ""}${it.s === cur && mode === rowM() ? " sel" : ""}" tabindex="0" role="button" data-a="${pfEdit ? "pfmod" : MA[rowM()]}" data-s="${s}" data-ps="${s}" title="${esc(tip)}">${
-            ed ? (grip ? `<span class="ph" aria-label="${L("Trascina per spostare", "Drag to move")} ${esc(it.n)}" title="${L("Trascina per spostare", "Drag to move")}">${GRIP}</span>` : "<span></span>") : ""}<span class="pn">${nameCell(it.s, it.n, it.t, dlyTag(it.s), ed ? "" : `<span class="cn pq" title="${L("Quantità × prezzo medio di carico", "Quantity × average cost")}">${fqty(it.q)} × ${pmc} ${sym}</span>`)}</span>${pfEdit ? "" : `<span class="pic">${modeBtn(it.s, it.n)}${newsBtn(it.s, it.n)}</span>`}${rend}${box}${
+            ed ? (grip ? `<span class="ph" aria-label="${L("Trascina per spostare", "Drag to move")} ${esc(it.n)}" title="${L("Trascina per spostare", "Drag to move")}">${GRIP}</span>` : "<span></span>") : ""}<span class="pn">${nameCell(it.s, it.n, it.t, dlyTag(it.s))}</span>${pfEdit ? "" : `<span class="pic">${modeBtn(it.s, it.n)}${newsBtn(it.s, it.n)}</span>`}${rend}${box}${
             pfEdit ? `<button class="x${pfArm === it.s ? " arm" : ""}" data-a="pfrm" data-s="${s}" aria-label="${L("Rimuovi", "Remove")} ${esc(it.n)}" title="${pfArm === it.s ? L("Clicca di nuovo per rimuovere", "Click again to remove") : L("Rimuovi dal portafoglio", "Remove from portfolio")}">${pfArm === it.s ? L("Rimuovi", "Remove") : XSM}</button>` : ""}</div>`;
         }).join("")
       : findQ ? `<div class="empty">${L(`Nessun titolo del portafoglio corrisponde a “${esc(findQ)}”.`, `No holding matches “${esc(findQ)}”.`)}</div>`
-        : `<div class="empty">${L("Portafoglio vuoto. Premi <b>+</b> per aggiungere un titolo con quantità e prezzo di acquisto.", "Your portfolio is empty. Press <b>+</b> to add a holding with quantity and purchase price.")}</div>`;
+        : `<div class="empty">${L("Portafoglio vuoto. Cerca un titolo con la lente in alto e premi «Aggiungi al portafoglio».", "Your portfolio is empty. Search for a ticker with the magnifier above and press “Add to portfolio”.")}</div>`;
     $("#list").dataset.pfb = pfb();
     pwKey = ""; paintPf();
   }
@@ -3107,22 +3160,22 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     pfCardsH = "";
     if (!st.pf.length) return `<span class="pfempty">${L("Il tuo patrimonio", "Your holdings")}</span>`;
     const B = st.pfcur || "EUR";
-    let V = 0, C = 0, DA = 0, PV = 0, miss = 0, dOk = true;
+    let V = 0, C = 0, DA = 0, PV = 0, G = 0, miss = 0, dOk = true;
     const parts = [];
     for (const it of st.pf) {
       const r = pfCalc(it);
       if (r.price == null) { miss++; continue; }
       if (r.mval == null || r.mcost == null) { miss++; continue; }
-      V += r.mval; C += r.mcost; parts.push([it.n || it.s, r.mval]);
+      V += r.mval; C += r.mcost; G += r.mta != null ? r.mta : r.mval - r.mcost; parts.push([it.n || it.s, r.mval]);
       if (r.mda != null) { DA += r.mda; PV += r.mval - r.mda; } else dOk = false;
     }
     if (miss) return `<div class="pfs"><b>…</b></div><div class="pfs2">${L("Prezzi e cambi in arrivo…", "Loading prices and exchange rates…")}</div>`;
     const cl = (v) => (v > 0.004 ? "up" : v < -0.004 ? "dn" : "");
-    const dp = dOk && PV ? (DA / PV) * 100 : null, tp = C ? ((V - C) / C) * 100 : null;
+    const dp = dOk && PV ? (DA / PV) * 100 : null, tp = C ? (G / C) * 100 : null; // rendimento totale sul prezzo bid
     pfCardsH = `<div class="pfmeta"><span>${L("Investito", "Invested")} <em>${money(C, B)}</em></span><span>${L(`${st.pf.length} ${st.pf.length === 1 ? "titolo" : "titoli"}`, `${st.pf.length} ${st.pf.length === 1 ? "holding" : "holdings"}`)} · ${L("aggiornato", "updated")} ${new Date().toLocaleTimeString(NLOC, { hour: "2-digit", minute: "2-digit" })}</span></div>`;
     // due colonne (Oggi, Totale): in alto la voce, sotto la % in capsula, sotto ancora l'importo
     const cols = [dp != null ? [L("Oggi", "Today"), `<i class="pfp ${cl(dp)}">${pctTxt(dp)}</i>`, `<i class="pfa ${cl(DA)}">${smoney(DA, B)}</i>`] : null,
-      tp != null ? [L("Totale", "Total"), `<i class="pfp pftp ${cl(tp)}">${pctTxt(tp)}</i>`, `<i class="pft ${cl(tp)}">${smoney(V - C, B)}</i>`] : null].filter(Boolean);
+      tp != null ? [L("Totale", "Total"), `<i class="pfp pftp ${cl(tp)}">${pctTxt(tp)}</i>`, `<i class="pft ${cl(tp)}">${smoney(G, B)}</i>`] : null].filter(Boolean);
     return `<div class="pfs3"><b>${money(V, B)}</b><div class="pfsd pfsv" style="grid-template-columns:repeat(${cols.length},auto)">`
       + [0, 1, 2].map((r) => cols.map((c) => (r === 0 ? `<span>${c[0]}</span>` : c[r])).join("")).join("") + "</div></div>";
   }
@@ -3244,8 +3297,8 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       <div class="pfr"><div class="pfl"><span>${L("Quantità", "Quantity")}</span><input id="pfqty" inputmode="decimal" autocomplete="off" placeholder="${L("es. 10", "e.g. 10")}" value="${f.q0 != null ? esc(f.q0.toLocaleString(NLOC, { useGrouping: false, maximumFractionDigits: 6 })) : ""}"></div>
       <div class="pfl" hidden><span>${L("Data di acquisto", "Purchase date")}</span><span class="dpk"><input id="pfdate" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="${dPh()}" aria-label="${L("Data di acquisto", "Purchase date")}" value="${esc(d0 ? dShow(d0) : "")}"><button class="dpb" data-a="dpk" aria-label="${L("Scegli il giorno", "Pick the day")}" title="${L("Scegli il giorno", "Pick the day")}">${CALSM}</button></span></div></div>
       <div class="dpop" id="dpop" hidden></div>
-      <div class="pfpl"><span>${L("Prezzo di acquisto", "Purchase price")}</span><span class="pfin"><input id="pfpx" inputmode="decimal" autocomplete="off" value="${f.p0 != null ? esc(f.p0.toLocaleString(NLOC, { useGrouping: false, maximumFractionDigits: 6 })) : ""}"><em id="pfcy">${esc(curSym(pc))}</em></span></div>
-      <div class="pfcv" id="pfcv" hidden></div><p class="pfnote">${note}</p><p class="pfnote err" id="pfmsg"></p>${btns(true)}`;
+      <div class="pfr pfrp"><div class="pfpl"><span>${L("Prezzo di acquisto", "Purchase price")}</span><span class="pfin"><input id="pfpx" inputmode="decimal" autocomplete="off" value="${f.p0 != null ? esc(f.p0.toLocaleString(NLOC, { useGrouping: false, maximumFractionDigits: 6 })) : ""}"><em id="pfcy">${esc(curSym(pc))}</em></span></div>${btns(true)}</div>
+      <div class="pfcv" id="pfcv" hidden></div><p class="pfnote">${note}</p><p class="pfnote err" id="pfmsg"></p>`;
     dpk = null;
     paintPf();
     if (focus !== false) { const q = $("#pfqty"); q.focus(); q.select(); }
@@ -3383,7 +3436,14 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   // risultati online della casella "Cerca…": clic sulla riga apre il grafico (come nella lista), accanto al
   // ticker il tasto dell'altro grafico, "+ Aggiungi" lo mette in lista; la × in alto chiude la ricerca
   const fhd = (t) => `<div class="fhd"><span>${t}</span><button class="fx" data-a="findclose" aria-label="${L("Chiudi la ricerca", "Close search")}" title="${L("Chiudi la ricerca", "Close search")}">${XSM}</button></div>`;
-  const resRow = (x, a, dis, tt) => `<div class="res" role="button" tabindex="0" data-a="${MA[rowM()]}" data-s="${esc(x.symbol)}" data-rn="${esc(x.name || "")}" title="${esc(x.name || x.symbol)}"><b>${esc(x.symbol)}</b><span>${esc(x.name)}</span>${modeBtn(x.symbol, x.symbol)}${newsBtn(x.symbol, x.name || x.symbol)}<em>${esc(x.exch)}</em><button class="radd" data-a="${a}" data-sym="${esc(x.symbol)}"${dis ? " disabled" : ""} title="${esc(tt)}">+ ${L("Aggiungi", "Add")}</button></div>`;
+  const resRow = (x, a, dis, tt) => `<div class="res" role="button" tabindex="0" data-a="${MA[rowM()]}" data-s="${esc(x.symbol)}" data-rn="${esc(x.name || "")}" title="${esc(x.name || x.symbol)}"><b>${esc(x.symbol)}</b><span>${esc(x.name)}</span>${modeBtn(x.symbol, x.symbol)}${newsBtn(x.symbol, x.name || x.symbol)}<em>${esc(x.exch)}</em><button class="radd" data-a="${a}" data-sym="${esc(x.symbol)}"${dis ? " disabled" : ""} title="${esc(tt)}">${a === "addmenu" ? `${L("Aggiungi", "Add")}<i class="rdd">▾</i>` : `+ ${L("Aggiungi", "Add")}`}</button></div>`;
+  // menu "Aggiungi ▾": le liste (✓ dove c'è già, piena se ha già il massimo) e "Crea una lista +"
+  function addMenu(sym) {
+    const ls = st.lists || [];
+    return `<div class="fxl adm">${ls.map((l) => { const inL = (l.items || []).some((y) => y.s === sym), full = (l.items || []).length >= MAX;
+      return `<button data-a="addto" data-id="${esc(l.id)}" data-sym="${esc(sym)}"${inL || full ? " disabled" : ""} title="${inL ? L("Già in questa lista", "Already in this list") : full ? L(`Lista piena (${MAX} ticker)`, `List full (${MAX} tickers)`) : L(`Aggiungi a «${l.name}»`, `Add to “${l.name}”`)}"><span class="ck">${inL ? "✓" : ""}</span>${esc(l.name)}</button>`; }).join("")}`
+      + `<button data-a="addnew" data-sym="${esc(sym)}" class="admn">${L("Crea una lista", "Create a list")}<span class="adp">+</span></button></div>`;
+  }
   function drawRes() {
     const el = $("#fres");
     if (!findQ || findQ.length < 2 || resQ !== findQ) { el.innerHTML = ""; return; }
@@ -3394,11 +3454,13 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
         : fhd("NESSUN TITOLO TROVATO ONLINE");
       return;
     }
-    const have = new Set(items().map((x) => x.s));
+    // una sola lista: "+ Aggiungi" la mette lì; più liste (o nessuna): "Aggiungi ▾" apre la scelta della lista
+    const one = st.lists.length === 1;
+    const have = new Set(one ? items().map((x) => x.s) : []);
     const R = results.filter((x) => !have.has(x.symbol)).slice(0, 6);
-    const full = items().length >= MAX;
+    const full = one && items().length >= MAX;
     el.innerHTML = R.length
-      ? fhd(full ? `LISTA PIENA (${MAX} TICKER)` : "AGGIUNGI ALLA LISTA") + R.map((x) => resRow(x, "add", full, L(`Aggiungi ${x.name}`, `Add ${x.name}`))).join("")
+      ? fhd(full ? `LISTA PIENA (${MAX} TICKER)` : one ? "AGGIUNGI ALLA LISTA" : "AGGIUNGI A UNA LISTA") + R.map((x) => resRow(x, one ? "add" : "addmenu", full, one ? L(`Aggiungi ${x.name}`, `Add ${x.name}`) : L(`Scegli la lista in cui aggiungere ${x.name}`, `Choose the list to add ${x.name} to`))).join("")
       : results.length ? "" : fhd("NESSUN TICKER TROVATO ONLINE");
   }
   const MAC = /Mac|iPhone|iPad/.test(navigator.platform);
@@ -3470,8 +3532,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       : `<button class="tb" data-a="ivmenu" aria-label="Intervallo delle candele" title="Intervallo delle candele">${(IVS.find((x) => x[0] === ivNow()) || IVS[1])[1]}<i>▼</i></button>
          <button class="tb" data-a="fxmenu" aria-label="Indicatori" title="Aggiungi indicatori">ƒx<i>▼</i></button>
          <button class="tb" data-a="ctmenu" aria-label="Tipo di grafico e colori" title="Tipo di grafico e colori">${CT_ICON[I.ct] || CT_ICON.candles}<i>▼</i></button>
-         <button class="tb" data-a="tplmenu" aria-label="${L("Impostazioni salvate del grafico", "Saved chart setups")}" title="${L("Salva o riapri un'impostazione del grafico (indicatori, colori, tipo e intervallo)", "Save or reopen a chart setup (indicators, colors, type and interval)")}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg><i>▼</i></button>
-         <button class="tb vpb${st.vp !== false ? " on" : ""}" data-a="vpmenu" aria-label="${L("Profilo dei volumi", "Volume profile")}" title="${L("Profilo dei volumi: quanto si è scambiato a ogni prezzo nelle candele visibili", "Volume profile: how much traded at each price in the visible candles")}"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><rect x="13" y="3" width="8" height="3" rx="1"/><rect x="7" y="7.5" width="14" height="3" rx="1"/><rect x="4" y="12" width="17" height="3" rx="1"/><rect x="10" y="16.5" width="11" height="3" rx="1"/><rect x="15" y="21" width="6" height="2" rx="1"/></svg><i>▼</i></button>`;
+         <button class="tb" data-a="tplmenu" aria-label="${L("Impostazioni salvate del grafico", "Saved chart setups")}" title="${L("Salva o riapri un'impostazione del grafico (indicatori, colori, tipo e intervallo)", "Save or reopen a chart setup (indicators, colors, type and interval)")}"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg><i>▼</i></button>`;
   }
   const sw = (k, c, label) => `<button class="sw" data-a="color" data-ic="${k}" style="background:${c}" aria-label="${label}" title="${label}"></button>`;
   // ---------- Indicatori (catalogo e formule in indicators.js) ----------
@@ -3563,12 +3624,6 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (t && t.closest && (t.closest("#menu") || t.closest("#cpop") || (menuAnchor && menuAnchor.contains(t)))) return;
     closeMenu();
   }, true);
-  function vpMenu() {
-    const on = st.vp !== false, rg = st.vpRG !== false, pc = st.vpPoc !== false;
-    const row = (l, a, v, dis) => `<div class="vpr${dis ? " dis" : ""}"><span>${l}</span><button class="tgl sm${v ? " on" : ""}" role="switch" aria-checked="${v}" aria-label="${l}" data-a="${a}"${dis ? " disabled" : ""}></button></div>`;
-    return `<div class="vpm">${row("On/Off", "vptog", on)}${row(L("Barre colorate", "Coloured bars"), "vprg", rg, !on)}${row(L("Prezzo più scambiato", "Most traded price"), "vppoc", pc, !on)}`
-      + `<div class="vpr${on && pc ? "" : " dis"}"><span>${L("Colore", "Colour")}</span>${sw("vpc", cVp(), L("Colore della barra con più volumi e del suo prezzo", "Colour of the busiest bar and its price"))}</div></div>`;
-  }
   function ctMenu() {
     const I = st.ind;
     return `<div class="fxl">${CT.map(([k, l]) => `<button data-a="ctype" data-t="${k}"><span class="ck">${I.ct === k ? "✓" : ""}</span>${CT_ICON[k]}${l}</button>`).join("")}</div>
@@ -3870,7 +3925,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
         if (anim) wideAnimate(true, r0, cur ? $("#chart") : $("#cal"), null);
       }
     }
-    $("#calbtn").classList.toggle("on", calOpen && !cur);
+    syncSec(); // un solo tasto acceso per volta
     checkHtip();
     $("#go").classList.toggle("open", isOpen());
     const vis = !isHidden() && isOpen();
@@ -3894,22 +3949,38 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   const isLive = (s) => quotes[s] && quotes[s].live && Date.now() - quotes[s].live < LIVE_MS;
   // Lo streaming aggiorna all'istante; via HTTP interrogo solo i simboli che non ricevono tick
   // (ogni 3 s) e, una volta al minuto, tutti, per aggiornare le chiusure precedenti.
+  // ultimo prezzo bid di ogni titolo: a mercato chiuso Yahoo spesso non lo dà, resta quello registrato
+  let BIDS = {}, bidsDirty = false, bidsAt = 0;
+  chrome.storage.local.get("bids").then((v) => { const o = (v && v.bids) || {}; for (const k in o) if (o[k] && o[k].r != null && !BIDS[k]) BIDS[k] = o[k]; }).catch(() => {});
+  // Ricordo lo scarto tra bid e prezzo misurati nello stesso momento (non il bid da solo): un bid di ieri accanto al
+  // prezzo di oggi dava rendimenti sballati. Valido solo se plausibile: bid fino al 3% sotto il prezzo, non sopra.
+  const BID_OK = (r) => r > 0.97 && r <= 1.0005, BID_TTL = 5 * 864e5;
+  const bidOf = (s, price) => { const x = BIDS[s]; return x && BID_OK(x.r) && Date.now() - x.t < BID_TTL && price > 0 ? price * Math.min(1, x.r) : price; };
   async function refresh() {
     if (viewHidden()) return;
     const all = subsList();
     const full = Date.now() - fullAt > 60000;
-    const syms = full ? all : all.filter((s) => !isLive(s));
+    // portafoglio aperto: i suoi titoli anche via HTTP ogni 3 s, per avere il prezzo bid (lo streaming non lo manda)
+    const pfOn = st.tab === "pf" && !isHidden(), pfS = pfOn ? new Set(st.pf.map((x) => x.s)) : null;
+    const syms = full ? all : all.filter((s) => !isLive(s) || (pfS && pfS.has(s)));
     if (!syms.length) return;
     if (full) fullAt = Date.now();
     try {
       const fresh = (await chrome.runtime.sendMessage({ type: "quotes", symbols: syms })) || {};
       for (const k in fresh) {
         const was = quotes[k];
+        const fq = fresh[k];
+        if (fq && fq.bid > 0 && fq.price > 0 && !fq.xs) { // bid e prezzo della stessa risposta, in seduta regolare
+          const r = fq.bid / fq.price;
+          if (BID_OK(r)) { if (!BIDS[k] || BIDS[k].r !== r) bidsDirty = true; BIDS[k] = { r, t: Date.now() }; }
+          else if (BIDS[k]) { delete BIDS[k]; bidsDirty = true; } // bid fuori misura (libro vuoto, dato vecchio): uso il prezzo
+        }
         if (put(k, fresh[k], !!was) && k === cur && fresh[k] && !fresh[k].live && !fresh[k].xs) {
           live({ price: fresh[k].price, tt: fresh[k].tt || fresh[k].time, vol: fresh[k].vol }); // il grafico segue anche i dati HTTP
         }
       }
       paint();
+      if (bidsDirty && Date.now() - bidsAt > 30000) { bidsDirty = false; bidsAt = Date.now(); chrome.storage.local.set({ bids: BIDS }).catch(() => {}); } // ultimo bid ricordato (mercato chiuso)
       syncMkt(); // lo stato di Wall Street arriva con le quotazioni degli indici
     } catch (_) { /* estensione ricaricata: ricarica la pagina */ }
   }
@@ -4651,7 +4722,12 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const tt = root.querySelector("#cal .ctitle b"); if (tt) tt.textContent = n ? L("Notizie dei tuoi titoli", "News for your tickers") : L("Calendario USA", "US calendar");
     { const ct = root.querySelector("#cal .ctitle"); let sb = ct && ct.querySelector(".hsub"); // sottotitolo accanto, non in grassetto
       if (ct && n && !sb) { sb = document.createElement("span"); sb.className = "hsub"; tt.after(sb); }
-      if (sb) { sb.hidden = !n; sb.textContent = `• ${L("Titoli in liste e portafoglio", "Tickers in lists and portfolio")}`; } }
+      if (sb) { sb.hidden = !n; sb.textContent = `• ${L("Titoli in liste e portafoglio", "Tickers in lists and portfolio")}`; }
+      // "i": quali notizie mostra Owlook
+      let ib = ct && ct.querySelector(".hinfo");
+      if (ct && n && !ib) { ib = document.createElement("button"); ib.className = "hinfo"; ib.dataset.a = "hubinfo"; ib.textContent = "i"; sb.after(ib); }
+      if (ib) { ib.hidden = !n; ib.setAttribute("aria-label", L("Quali notizie", "Which news")); ib.setAttribute("aria-expanded", String(hubInfo)); }
+      const ibox = $("#hubinfo"); if (ibox) { ibox.hidden = !n || !hubInfo; ibox.textContent = HUBINFO(); } }
     syncSec();
     root.querySelectorAll("#cal [data-cv]").forEach((x) => { x.hidden = x.dataset.cv !== (e ? "e" : "m"); });
     root.querySelectorAll('#cal [data-a="calv"]').forEach((x) => { x.classList.toggle("on", x.dataset.v === (e ? "e" : "m")); x.setAttribute("aria-selected", x.dataset.v === (e ? "e" : "m")); });
@@ -4664,7 +4740,8 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   }
   // ---------- Barra delle sezioni ----------
   // Liste e Portafoglio: cosa vedi nel pannello. Macro, Utili e Notizie: il riquadro che si apre accanto.
-  let hub = false, hubTag = "", hubLvl = 0, HUB = {}, hubBusy = 0, hubAt = 0, hubSort = null, hubSrch = false, hubSym = "", hubGx = false; // hubLvl: 0 tutte, 1-3 solo quel grado
+  let hub = false, hubTag = "", hubLvl = 0, HUB = {}, hubBusy = 0, hubAt = 0, hubSort = null, hubSrch = false, hubSym = "", hubGx = false, hubInfo = false;
+  const HUBINFO = () => L("Owlook mostra solo le notizie rilevanti: agenzie e testate principali (Reuters, AP, Bloomberg, Wall Street Journal, CNBC…), comunicati ufficiali delle aziende e moduli 8-K depositati alla SEC (solo società USA). Classifiche, consigli d'acquisto e articoli d'opinione sono esclusi. Grado e tag sono assegnati automaticamente.", "Owlook shows only relevant news: major agencies and outlets (Reuters, AP, Bloomberg, Wall Street Journal, CNBC…), official company press releases and Form 8-K filings with the SEC (US companies only). Rankings, buy tips and opinion pieces are left out. Importance and tag are assigned automatically."); // hubLvl: 0 tutte, 1-3 solo quel grado
   function syncSec() {
     const sb = $("#secbar"); if (!sb) return;
     const view = calOpen && !cur ? (hub ? "n" : st.calv === "e" ? "e" : "m") : "";
@@ -4672,7 +4749,15 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       const a = b.dataset.a, on = a === "tab" ? b.dataset.t === (st.tab === "pf" ? "pf" : "list") : a === "cal" ? view === "m" : a === "calE" ? view === "e" : view === "n";
       b.classList.toggle("on", on); b.setAttribute("aria-selected", String(on));
     });
+    requestAnimationFrame(snapSep); sepLater();
   }
+  // trattini tra i tasti: allineati ai pixel dello schermo, così sono nitidi e uguali tra loro
+  function snapSep() {
+    const d = devicePixelRatio || 1, w = `${Math.max(1, Math.round(d)) / d}px`;
+    root.querySelectorAll(".secbar .sbsep").forEach((x) => { if (x.style.width !== w) x.style.width = w; });
+  }
+  var sepT = 0; function sepLater() { clearTimeout(sepT); sepT = setTimeout(() => requestAnimationFrame(snapSep), 60); }
+  addEventListener("resize", sepLater);
   function openSec(v) {
     const open = calOpen && !cur;
     if (open && (v === "n" ? hub : !hub && st.calv === v)) return userCloseCal(); // ricliccando si chiude
@@ -5009,10 +5094,21 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     b.classList.toggle("alert", !!e);
     b.classList.toggle("elv", lv.length > 0);
     const ut = root.querySelector('.ecv .tab[data-v="e"]'); if (ut) ut.classList.toggle("elv", lv.length > 0); // lo stesso bollino sul tasto Utili
+    // pallini viola nella barra delle sezioni: Macro se oggi esce un dato (fino a un'ora dopo l'uscita),
+    // Utili se oggi pubblicano aziende delle tue liste o del portafoglio (fino a fine giornata)
+    const today = dkey(now), mt = calData && calData.ev.filter((x) => x.imp >= 3 && dkey(x.t) === today && now < x.t + 3600000);
+    const md = $("#calbtn .sbdot"); if (md) md.hidden = !(mt && mt.length);
+    b.dataset.ttd = mt && mt.length ? L(`Oggi: ${mt.map((x) => `${T(x.n)} ${LTIME.format(new Date(x.t))}`).join(", ")}`, `Today: ${mt.map((x) => `${T(x.n)} ${LTIME.format(new Date(x.t))}`).join(", ")}`) : "";
+    const td = nyDay(), src = eData && eData.days && eData.days[td] ? eData : eBadge, ed = src && src.days && src.days[td], mine = mineSet();
+    const em = ed ? ed.rows.filter((r) => mine.has(r[0])).map((r) => r[0]) : [];
+    const eb = $("#ernbtn"), edot = eb && eb.querySelector(".sbdot");
+    if (edot) edot.hidden = !em.length;
+    if (eb) eb.dataset.tt = em.length ? L(`Utili oggi: ${em.join(", ")}`, `Earnings today: ${em.join(", ")}`) : L("Utili: calendario della settimana", "Earnings: this week's calendar");
     const tt = [];
     if (lv.length) tt.push(L(`Utili in uscita adesso: ${lv.map((x) => x.s).join(", ")}`, `Earnings due now: ${lv.map((x) => x.s).join(", ")}`));
     if (e) tt.push(e.t > now ? `${T(e.n)}: ${until(e.t - now)} (${LTIME.format(new Date(e.t))})` : `${T(e.n)}: ${L("appena pubblicato", "just released")} (${LTIME.format(new Date(e.t))})`);
-    b.dataset.tt = tt.length ? tt.join(" · ") : L("Calendario USA: macro e utili", "US calendar: macro and earnings");
+    if (b.dataset.ttd) tt.push(b.dataset.ttd);
+    b.dataset.tt = tt.length ? tt.join(" · ") : L("Calendario macro USA", "US macro calendar");
   }
   function closeChart() {
     if (newsOn) { newsOn = false; $("#chart").classList.remove("nmode"); $("#nview").hidden = true; $("#nbellbox").hidden = true; root.querySelectorAll(".row .nwc.on").forEach((x) => x.classList.remove("on")); }
@@ -5652,59 +5748,8 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     }
     if (box.innerHTML !== h) box.innerHTML = h;
   }
-  // ---------- Profilo dei volumi: quanto si è scambiato a ogni prezzo nelle candele visibili ----------
-  // il volume di ogni candela si divide in parti uguali tra le fasce di prezzo che tocca (dal minimo al massimo);
-  // verde il volume delle candele in rialzo, rosso di quelle in ribasso; più marcata la zona con il 70% dei volumi,
-  // bordo giallo e linea tratteggiata sul prezzo più scambiato
-  function drawVP() {
-    const cv = $("#vpc"); if (!cv) return;
-    const on = st.vp !== false && mode !== "l" && chart && S.c && bars.length > 2;
-    vpPoc = null; // prezzo più scambiato per la capsula sulla scala (la mette placeTags insieme alle altre)
-    if (!on) { if (!cv.hidden) cv.hidden = true; return; }
-    let lr, psw, ph;
-    try { lr = chart.timeScale().getVisibleLogicalRange(); psw = chart.priceScale("right").width(); ph = chart.panes()[0].getHeight(); } catch (_) { return; }
-    if (!lr) return;
-    const a = Math.max(0, Math.ceil(lr.from)), b = Math.min(bars.length - 1, Math.floor(lr.to));
-    if (b - a < 2) { cv.hidden = true; return; }
-    let lo = Infinity, hi = -Infinity;
-    for (let i = a; i <= b; i++) { const x = bars[i]; if (x.low < lo) lo = x.low; if (x.high > hi) hi = x.high; }
-    if (!(hi > lo)) { cv.hidden = true; return; }
-    const N = 32, step = (hi - lo) / N, up = new Float64Array(N), dn = new Float64Array(N);
-    for (let i = a; i <= b; i++) {
-      const x = bars[i], v = x.volume || 0; if (!v) continue;
-      const k0 = Math.max(0, Math.min(N - 1, Math.floor((x.low - lo) / step))), k1 = Math.max(0, Math.min(N - 1, Math.floor((x.high - lo) / step)));
-      const part = v / (k1 - k0 + 1), A = x.close >= x.open ? up : dn;
-      for (let k = k0; k <= k1; k++) A[k] += part;
-    }
-    const tot = Array.from(up, (u, k) => u + dn[k]), mx = Math.max(...tot);
-    if (!(mx > 0)) { cv.hidden = true; return; }
-    const poc = tot.indexOf(mx), all = tot.reduce((x, y) => x + y, 0);
-    let va0 = poc, va1 = poc, acc = tot[poc];
-    while (acc < all * 0.7 && (va0 > 0 || va1 < N - 1)) { const l = va0 > 0 ? tot[va0 - 1] : -1, h = va1 < N - 1 ? tot[va1 + 1] : -1; if (l >= h) acc += tot[--va0]; else acc += tot[++va1]; }
-    const box = $("#cbox"), W = box.clientWidth - psw, H = ph, dpr = devicePixelRatio || 1;
-    cv.hidden = false;
-    cv.style.left = box.offsetLeft + "px"; cv.style.top = box.offsetTop + "px"; cv.style.width = W + "px"; cv.style.height = H + "px";
-    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
-    const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
-    const maxW = Math.min(105, W * 0.14), Y = (p) => S.c.priceToCoordinate(p), rg = st.vpRG !== false, U = rg ? cUp() : "#8e9099", D = rg ? cDn() : "#8e9099", PC = cVp();
-    const hx = (c, al) => { const m = /^#?([0-9a-f]{6})$/i.exec(c || ""); if (!m) return `rgba(128,128,128,${al})`; const n = parseInt(m[1], 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${al})`; };
-    for (let k = 0; k < N; k++) {
-      if (!tot[k]) continue;
-      const y0 = Y(lo + (k + 1) * step), y1 = Y(lo + k * step); if (y0 == null || y1 == null) continue;
-      const fh = Math.abs(y1 - y0), h = Math.max(1, fh - 1.5), y = Math.min(y0, y1) + 0.5, w = (tot[k] / mx) * maxW, wu = w * (up[k] / tot[k]), va = k >= va0 && k <= va1, al = va ? 0.36 : 0.15;
-      g.fillStyle = hx(U, al); g.fillRect(W - w, y, wu, h);
-      g.fillStyle = hx(D, al); g.fillRect(W - w + wu, y, w - wu, h);
-      if (k === poc && st.vpPoc !== false) {
-        g.strokeStyle = hx(PC, 0.95); g.lineWidth = 1.2; g.strokeRect(W - w + 0.6, y + 0.6, w - 1.2, h - 1.2);
-        g.setLineDash([4, 4]); g.strokeStyle = hx(PC, 0.6); g.beginPath(); g.moveTo(0, y + h / 2); g.lineTo(W - w, y + h / 2); g.stroke(); g.setLineDash([]);
-        vpPoc = { p: lo + (k + 0.5) * step, c: PC };
-      }
-    }
-  }
-  let vpPoc = null;
   function placeTags() {
     tagRaf = 0;
-    drawVP();
     const box = $("#ptags");
     if (!box) return;
     if (!chart || !S.c || !bars.length) { box.innerHTML = ""; return; }
@@ -5724,11 +5769,6 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const lb = bars[bars.length - 1], I = st.ind;
     const mainCol = mode === "l" ? histCol() : lineish() ? cLn() : lb.close >= lb.open ? cUp() : cDn();
     put(S.c, lb.close, mainCol, 0);
-    // profilo dei volumi: il prezzo più scambiato, capsula nera col bordo del colore scelto (si impila con le altre)
-    if (vpPoc) {
-      const c = S.c.priceToCoordinate(vpPoc.p);
-      if (c != null && c >= 0 && c <= hs[0]) tags.push({ pi: 0, y: tops[0] + c, h: 19, html: `<span class="ptag vpt" style="top:@Y@px;width:${w - 4}px;border-color:${vpPoc.c};color:${vpPoc.c}">${esc(fmt(vpPoc.p))}</span>` });
-    }
     for (const x of fxList()) {
       const sr = S.fx && S.fx[x.id];
       if (!sr || x.nt) continue;
@@ -5956,8 +5996,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   };
   // chiavi dei colori: "up", "dn", "lc" (candele e linea) oppure "fx:<id>:<linea>" (indicatori)
   const fxKey = (k) => { const [, id, j] = k.split(":"); return [fxFind(id), +j]; };
-  const cVp = () => (isHex(st.ind.vpc) ? st.ind.vpc : effCol("acc")); // profilo dei volumi: il prezzo più scambiato (predefinito il colore del tema)
-  const getColor = (k) => { if (k === "vpc") return cVp(); if (k === "up" || k === "dn" || k === "acc") return effCol(k); if (k === "cup") return cUp(); if (k === "cdn") return cDn(); if (k === "cln") return cLn(); if (k === "lc") return lineCol(); if (flatColor(k)) return st.ind[k]; const [x, j] = fxKey(k); return x && fxDef(x) ? fxColor(x, j) : "#2962ff"; };
+  const getColor = (k) => { if (k === "up" || k === "dn" || k === "acc") return effCol(k); if (k === "cup") return cUp(); if (k === "cdn") return cDn(); if (k === "cln") return cLn(); if (k === "lc") return lineCol(); if (flatColor(k)) return st.ind[k]; const [x, j] = fxKey(k); return x && fxDef(x) ? fxColor(x, j) : "#2962ff"; };
   const getWidth = (k) => { const [x, j] = fxKey(k); return x && fxDef(x) ? fxWidth(x, j) : 2; };
   function putFx(k, field, v) {
     const [x, j] = fxKey(k), d = fxDef(x);
@@ -6214,7 +6253,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     const name = ($("#lname").value || "").trim().slice(0, 30);
     if (edit.mode === "new") {
       const id = "l" + Date.now().toString(36);
-      st.lists = [...st.lists, { id, name: name || `Lista ${st.lists.length + 1}`, items: [] }];
+      st.lists = [...st.lists, { id, name: name || `Lista ${st.lists.length + 1}`, items: edit.add ? [edit.add] : [] }]; // da "Crea una lista" nella ricerca: il ticker entra subito
       st.cl = id;
     } else if (name) {
       curList().name = name;
@@ -6348,11 +6387,6 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
         Object.assign(cp, hex2hsv(cLn()));
         syncSeries(); persist(); return drawColor();
       }
-      if (cp && cp.key === "vpc") { // profilo dei volumi: torna al colore del tema
-        delete st.ind.vpc;
-        root.querySelectorAll('.sw[data-ic="vpc"]').forEach((x) => (x.style.background = cVp()));
-        Object.assign(cp, hex2hsv(cVp())); tagSoon(); persist(); return drawColor();
-      }
       if (cp && (cp.key === "cup" || cp.key === "cdn")) { // candele: tornano a seguire rialzo e ribasso
         delete st.ind.cup; delete st.ind.cdn;
         root.querySelectorAll('.sw[data-ic="cup"]').forEach((x) => (x.style.background = cUp()));
@@ -6440,11 +6474,14 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     if (a === "chart") return cur === b.dataset.s && mode === "c" && !newsOn ? userCloseChart() : openChart(b.dataset.s, "c");
     if (a === "close-chart") return userCloseChart();
     if (a === "slotsfold") { // la sezione si apre e si chiude scorrendo in altezza
+      // aperta: il pannello scorre con morbidezza fino a mostrare tutte e sei le caselle
+      const slotsShow = (h) => { const sb = $("#sbody"), r = el.getBoundingClientRect(), R0 = sb.getBoundingClientRect(), d = r.top + h + 10 - R0.bottom;
+        if (d > 0) sb.scrollTo({ top: sb.scrollTop + d, behavior: motionOK() ? "smooth" : "auto" }); };
       const el = $("#slots"), op = !st.slotsOpen;
       st.slotsOpen = op; if (!op) { slot = null; slotRes = []; } persist();
       if (!motionOK()) return drawSlots();
       (el._an || []).forEach((x) => x.cancel());
-      if (op) { drawSlots(); const h = el.scrollHeight; el.style.overflow = "hidden"; const x = el.animate([{ height: "0px", opacity: 0 }, { height: `${h}px`, opacity: 1 }], { duration: 300, easing: EASE }); el._an = [x]; x.onfinish = () => { el.style.overflow = ""; }; }
+      if (op) { drawSlots(); const h = el.scrollHeight; el.style.overflow = "hidden"; slotsShow(h); const x = el.animate([{ height: "0px", opacity: 0 }, { height: `${h}px`, opacity: 1 }], { duration: 300, easing: EASE }); el._an = [x]; x.onfinish = () => { el.style.overflow = ""; }; }
       else {
         $("#slotsfold").classList.remove("open"); $("#slotsfold").setAttribute("aria-expanded", "false"); const ss = $("#slotsearch"); if (ss) ss.hidden = true;
         const h = el.offsetHeight; el.style.overflow = "hidden";
@@ -6478,7 +6515,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       else st.nsub[cur] = Date.now();
       persist(); nbellFlip(b, on); drawNews(); draw(); if (npop) drawNpop(); return;
     }
-    if (a !== "csel" && a !== "ivmenu" && a !== "rgmenu" && a !== "fxmenu" && a !== "ctmenu" && a !== "vpmenu" && !b.closest("#menu")) closeMenu();
+    if (a !== "csel" && a !== "ivmenu" && a !== "rgmenu" && a !== "fxmenu" && a !== "ctmenu" && a !== "addmenu" && !b.closest("#menu")) closeMenu();
     // ricliccando lo stesso ticker (o il pulsante dell'analisi storica) il grafico si richiude
     if (a === "line") return cur === b.dataset.s && mode === "l" && !newsOn ? userCloseChart() : openChart(b.dataset.s, "l");
     if (a === "rgmenu") { // grafico stretto: i periodi in un menu
@@ -6532,13 +6569,6 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     }
     if (a === "cal" || a === "calE" || a === "hub") { if (npop) toggleNpop(false); return openSec(a === "cal" ? "m" : a === "calE" ? "e" : "n"); }
     if (a === "nbell") return toggleNpop();
-    if (a === "vpmenu") { if (!$("#menu").hidden) return closeMenu(); return openMenu(b, vpMenu()); }
-    if (a === "vptog" || a === "vprg" || a === "vppoc") {
-      if (a === "vptog") st.vp = st.vp === false; else if (a === "vprg") st.vpRG = st.vpRG === false; else st.vpPoc = st.vpPoc === false;
-      persist(); placeTags(); $("#menu").innerHTML = vpMenu();
-      const vb = root.querySelector(".tb.vpb"); if (vb) vb.classList.toggle("on", st.vp !== false);
-      return;
-    }
     if (a === "barpg") { // titoli in evidenza: clic sulla barra di scorrimento, i successivi (in fondo si torna in cima)
       const it = $("#items"), end = it.scrollTop + it.clientHeight >= it.scrollHeight - 2;
       it.scrollTo({ top: end ? 0 : it.scrollTop + it.clientHeight, behavior: "smooth" }); return;
@@ -6567,6 +6597,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     }
     if (a === "hublvl") { hubLvl = +b.dataset.v || 0; hubGx = false; return drawHub(); }
     if (a === "hubgx") { hubGx = !hubGx; return drawHub(); }
+    if (a === "hubinfo") { hubInfo = !hubInfo; b.setAttribute("aria-expanded", String(hubInfo)); const x = $("#hubinfo"); if (x) { x.textContent = HUBINFO(); x.hidden = !hubInfo; } return; }
     if (a === "huball") { hubGx = false; hubLvl = 0; hubTag = ""; hubSym = ""; hubSrch = false; $("#hubbody").scrollTop = 0; return drawHub(); }
     if (a === "hubsrch") { if (hubSrch) return hubX(); hubSrch = true; return drawHub(); }
     if (a === "hubx") return hubX();
@@ -6687,7 +6718,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       if (!delArm) { delArm = true; return drawLists(); }
       delArm = false;
       st.lists = st.lists.filter((l) => l.id !== st.cl);
-      st.cl = st.lists[0].id; edit = null;
+      st.cl = st.lists[0] ? st.lists[0].id : ""; edit = null; if (!st.lists.length) lEdit = false;
     }
     else if (a === "rowc") { st.rowc = b.dataset.v === "l" ? "l" : "c"; drawSettings(); }
     else if (a === "nmset") {
@@ -6717,6 +6748,14 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       return;
     }
     else if (a === "rm") { setItems(items().filter((x) => x.s !== b.dataset.s)); }
+    else if (a === "addmenu") { e.stopPropagation(); if (!$("#menu").hidden && menuAnchor === b) return closeMenu(); return openMenu(b, addMenu(b.dataset.sym)); }
+    else if (a === "addto" || a === "addnew") {
+      const x = results.find((y) => y.symbol === b.dataset.sym); if (!x) return;
+      const it = { s: x.symbol, n: niceName(x.symbol, x.name, x.type), t: x.name };
+      if (a === "addnew") { closeMenu(); shutFind(); lEdit = false; edit = { mode: "new", add: it }; drawLists(); setTimeout(() => { const n = $("#lname"); if (n) n.focus(); }, 30); return; }
+      else { const l = st.lists.find((y) => y.id === b.dataset.id); if (!l || (l.items || []).length >= MAX || (l.items || []).some((y) => y.s === x.symbol)) return; l.items = [...(l.items || []), it]; st.lists = [...st.lists]; st.cl = l.id; }
+      closeMenu(); shutFind(); listOrder = null; drawLists();
+    }
     else if (a === "add") {
       const x = results.find((y) => y.symbol === b.dataset.sym);
       if (!x || items().length >= MAX || items().some((y) => y.s === x.symbol)) return;
@@ -6842,7 +6881,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   root.addEventListener("pointerdown", (e) => {
     const f = $("#find"); if (!f || !f.classList.contains("open")) return;
     const path = e.composedPath();
-    if (path.some((n) => n === f || (n.id && (n.id === "fres" || n.id === "pform")) || (n.dataset && n.dataset.a === "findopen"))) return;
+    if (path.some((n) => n === f || (n.id && (n.id === "fres" || n.id === "pform" || n.id === "menu")) || (n.dataset && n.dataset.a === "findopen"))) return;
     shutFind();
   }, true);
   $("#fq").addEventListener("blur", () => setTimeout(() => { const f = $("#find"); if (!$("#fq").value && root.activeElement !== $("#fq")) f.classList.remove("open"); }, 150));
@@ -6890,7 +6929,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
   });
 
   // ---------- Esporta / importa liste e impostazioni ----------
-  const EXP = ["vp", "vpRG", "vpPoc", "colO", "lists", "cl", "bar", "barRow", "sort", "theme", "ind", "key", "excl", "ci", "lr", "fut", "lay", "tz", "pf", "psort", "pfcur", "lang", "nm", "rowc", "glass", "tpl", "rcol", "nf", "fs"];
+  const EXP = ["lists", "cl", "bar", "barRow", "sort", "theme", "ind", "key", "excl", "ci", "lr", "fut", "lay", "tz", "pf", "psort", "pfcur", "lang", "nm", "rowc", "glass", "tpl", "rcol", "nf", "fs"];
   function exportData() {
     const data = Object.fromEntries(EXP.map((k) => [k, st[k]]));
     const json = JSON.stringify({ app: "Owlook", version: chrome.runtime.getManifest().version, exported: new Date().toISOString(), data }, null, 2);
@@ -6923,7 +6962,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     }));
     if (!lists.length) return null;
     const out = { lists };
-    out.cl = lists.some((l) => l.id === d.cl) ? d.cl : lists[0].id;
+    out.cl = lists.some((l) => l.id === d.cl) ? d.cl : lists[0] ? lists[0].id : "";
     if (Array.isArray(d.bar)) out.bar = [0, 1, 2, 3, 4, 5].map((i) => (d.bar[i] && typeof d.bar[i].s === "string" ? { s: d.bar[i].s.slice(0, 30), n: String(d.bar[i].n || d.bar[i].s).slice(0, 40) } : null));
     if (SORTS.includes(d.sort)) out.sort = d.sort;
     if (THEMES.some(([k]) => k === d.theme)) out.theme = d.theme;
@@ -6995,7 +7034,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       if (JSON.stringify(v) !== JSON.stringify(st[k])) { st[k] = v; diff[k] = 1; }
     }
     if (!Object.keys(diff).length) return;
-    if (!st.lists.some((l) => l.id === st.cl)) st.cl = st.lists[0].id;
+    if (!st.lists.some((l) => l.id === st.cl)) st.cl = st.lists[0] ? st.lists[0].id : "";
     if (cur && (isHidden() || !isOpen())) closeChart();
     if (diff.ind && cur) { drawInd(); syncSeries(); }
     if ((diff.lr || diff.ci) && cur) { drawTools(); load(false); }
@@ -7034,8 +7073,8 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
     st = { ...st, ...keep, ind: mergeInd(v.ind) };
     if (st.ind.lc === "#38bdf8") st.ind.lc = "#2bd97c";
     if (!v.ind || !v.ind.tv1 || !Array.isArray(v.ind.fx)) persist(); // salvo subito colori e indicatori nel formato nuovo
-    if (!Array.isArray(st.lists) || !st.lists.length) st.lists = [{ id: "l1", name: "La mia lista", items: DEFAULTS }];
-    if (!st.lists.some((l) => l.id === st.cl)) st.cl = st.lists[0].id;
+    if (!Array.isArray(st.lists)) st.lists = [{ id: "l1", name: "La mia lista", items: DEFAULTS }]; // vuoto è permesso: liste tutte eliminate
+    if (!st.lists.some((l) => l.id === st.cl)) st.cl = st.lists[0] ? st.lists[0].id : "";
     while (st.bar.length < 6) st.bar.push(null);
     if (!Array.isArray(st.pf)) st.pf = [];
     if (!PFCURS.some(([c]) => c === st.pfcur)) st.pfcur = "EUR";
