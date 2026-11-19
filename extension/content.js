@@ -1409,7 +1409,7 @@ input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7}
 .bi .bnm{display:flex;align-items:center;gap:4px;min-width:0}
 .bi .bnm>b{min-width:0;font-size:12px;font-weight:650;letter-spacing:-.01em}
 /* in colonna: le righe condividono le colonne (sottogriglia), così il tasto storico sta alla stessa altezza in tutte, dopo il nome più lungo */
-.bar:not(.row1):not(.two)>.items{display:grid;grid-template-columns:minmax(0,max-content) auto minmax(max-content,1fr) 58px;align-content:center;gap:1px 8px}
+.bar:not(.row1):not(.two)>.items{display:grid;grid-template-columns:minmax(0,max-content) auto minmax(max-content,1fr) 58px;align-content:start;gap:1px 8px} /* in alto, non al centro: con più di tre titoli lo scorrimento parte dal primo */
 .bar:not(.row1):not(.two) .bi{grid-column:1/-1;grid-template-columns:subgrid;column-gap:8px}
 .bar:not(.row1):not(.two) .bi .bnm{display:contents}
 .bar:not(.row1):not(.two) .bi .bnm>b{justify-self:start;max-width:100%}
@@ -6515,7 +6515,7 @@ m-2170 -3643 c1159 -98 2246 -605 3112 -1452 280 -275 288 -275 548 -19 733
       else st.nsub[cur] = Date.now();
       persist(); nbellFlip(b, on); drawNews(); draw(); if (npop) drawNpop(); return;
     }
-    if (a !== "csel" && a !== "ivmenu" && a !== "rgmenu" && a !== "fxmenu" && a !== "ctmenu" && a !== "addmenu" && !b.closest("#menu")) closeMenu();
+    if (a !== "csel" && a !== "ivmenu" && a !== "rgmenu" && a !== "fxmenu" && a !== "ctmenu" && a !== "addmenu" && a !== "tplmenu" && !b.closest("#menu")) closeMenu();
     // ricliccando lo stesso ticker (o il pulsante dell'analisi storica) il grafico si richiude
     if (a === "line") return cur === b.dataset.s && mode === "l" && !newsOn ? userCloseChart() : openChart(b.dataset.s, "l");
     if (a === "rgmenu") { // grafico stretto: i periodi in un menu

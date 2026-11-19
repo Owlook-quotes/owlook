@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.88.1 beta
+
+- Fixed: with four or more featured tickers the box scrolled badly and cut the rows in half.
+- Fixed: clicking the chart setups button again did not close its menu.
+
 ## 1.88.0 beta
 
 - Candlestick chart: volume profile and its button removed.
